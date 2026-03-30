@@ -1,0 +1,69 @@
+repos:
+  - repo: local
+    hooks:
+      - id: go-work-sync
+        name: go work sync
+        language: system
+        entry: go work sync
+        files: go\.(work|mod|sum)$
+        pass_filenames: false
+
+      - id: go-build
+        name: go build
+        language: system
+        entry: go build ./client/... ./server/... ./broker/...
+        types: [go]
+        pass_filenames: false
+
+      - id: go-test
+        name: go test
+        language: system
+        entry: go test ./common/... ./client/... ./server/... ./broker/...
+        types: [go]
+        pass_filenames: false
+
+      - id: go-fmt
+        name: go fmt
+        language: system
+        entry: gofmt -l -w
+        types: [go]
+
+      - id: golangci-lint-common
+        name: golangci-lint (common)
+        language: system
+        entry: bash -c 'cd common && golangci-lint run --fix ./...'
+        types: [go]
+        files: ^common/
+        pass_filenames: false
+
+      - id: golangci-lint-client
+        name: golangci-lint (client)
+        language: system
+        entry: bash -c 'cd client && golangci-lint run --fix ./...'
+        types: [go]
+        files: ^client/
+        pass_filenames: false
+
+      - id: golangci-lint-broker
+        name: golangci-lint (broker)
+        language: system
+        entry: bash -c 'cd broker && golangci-lint run --fix ./...'
+        types: [go]
+        files: ^broker/
+        pass_filenames: false
+
+      - id: golangci-lint-server
+        name: golangci-lint (server)
+        language: system
+        entry: bash -c 'cd server && golangci-lint run --fix ./...'
+        types: [go]
+        files: ^server/
+        pass_filenames: false
+
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.6.0
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: check-merge-conflict
+      - id: check-yaml
