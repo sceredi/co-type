@@ -26,7 +26,7 @@ ARG MODULE
 RUN go build -o /bin/app ./${MODULE}/cmd/app/main.go
 
 # Final stage
-FROM alpine:3.21
+FROM alpine:3.23
 ARG MODULE
 COPY --from=builder /bin/app /bin/app
 ENTRYPOINT ["/bin/app"]
