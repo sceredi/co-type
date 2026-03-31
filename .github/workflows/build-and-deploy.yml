@@ -1,0 +1,194 @@
+name: CI/CD Process
+on:
+  workflow_call:
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-24.04, windows-2025, macos-15]
+    runs-on: ${{ matrix.os }}
+    env:
+      ci: true
+    steps:
+      - name: Checkout
+        uses: DanySK/action-checkout@0.2.28
+      - name: Set up Go
+        uses: actions/setup-go@v6.3.0
+        with:
+          go-version-file: go.work
+      - name: Install dependencies
+        shell: bash
+        run: |
+          go work sync
+          for module in broker client common server; do
+            (cd "$module" && go mod tidy)
+          done
+      - name: Build
+        run: go build -v ./broker/... ./client/... ./common/... ./server/...
+      - name: Test
+        run: go test -v -race ./broker/... ./client/... ./common/... ./server/...
+
+  code-style:
+    runs-on: ubuntu-24.04
+    strategy:
+      fail-fast: false
+      matrix:
+        module: [broker, client, common, server]
+    steps:
+      - name: Checkout
+        uses: DanySK/action-checkout@0.2.28
+      - name: Set up Go
+        uses: actions/setup-go@v6.3.0
+        with:
+          go-version-file: go.work
+      - name: Install dependencies
+        working-directory: ${{ matrix.module }}
+        run: go mod tidy
+      - name: Check formatting
+        working-directory: ${{ matrix.module }}
+        run: test -z "$(gofmt -l .)"
+      - name: Run linter
+        uses: golangci/golangci-lint-action@v9.2.0
+        with:
+          working-directory: ${{ matrix.module }}
+          args: ./...
+
+  dry-website-build:
+    concurrency:
+      group: upload-docs-${{ github.event.number || github.ref }}
+    runs-on: ubuntu-latest
+    if: github.event_name != 'pull_request' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master')
+    steps:
+      - name: Checkout
+        uses: DanySK/action-checkout@0.2.28
+      - name: Set up Go
+        uses: actions/setup-go@v6.3.0
+        with:
+          go-version-file: go.work
+      - name: Install gomarkdoc
+        run: go install github.com/princjef/gomarkdoc/cmd/gomarkdoc@latest
+      - name: Generate docs
+        run: gomarkdoc --output docs/index.md ./broker/... ./client/... ./common/... ./server/...
+
+  release:
+    if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/main'
+    permissions:
+      contents: write
+      packages: write
+    outputs:
+      has_released: ${{ env.HAS_RELEASED }}
+      release_version: ${{ env.RELEASE_VERSION }}
+    concurrency:
+      group: release-${{ github.event.number || github.ref }}
+    runs-on: ubuntu-24.04
+    needs:
+      - build
+      - code-style
+      - dry-website-build
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6.0.2
+        with:
+          persist-credentials: false
+      - name: Setup node
+        uses: actions/setup-node@v6.3.0
+        with:
+          cache: npm
+          node-version: lts/*
+      - run: npm ci
+      - name: Release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+        run: npx semantic-release
+
+  upload-docs:
+    concurrency:
+      # Only one release job at a time. Strictly sequential.
+      group: upload-docs-${{ github.event.number || github.ref }}
+    runs-on: ubuntu-latest
+    needs:
+      - release
+    if: github.event_name != 'pull_request' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master') && needs.release.outputs.has_released == 'true'
+    # Skips if is PR or isn't inside main branch
+    steps:
+      - name: Checkout
+        uses: DanySK/action-checkout@0.2.28
+      - name: Set up Go
+        uses: actions/setup-go@v6.3.0
+        with:
+          go-version-file: go.work
+      - name: Install gomarkdoc
+        run: go install github.com/princjef/gomarkdoc/cmd/gomarkdoc@latest
+      - name: Generate docs
+        run: gomarkdoc --output docs/index.md ./broker/... ./client/... ./common/... ./server/...
+      - name: Deploy to GitHub Pages
+        uses: crazy-max/ghaction-github-pages@v5.0.0
+        with:
+          target_branch: gh-pages
+          build_dir: docs/
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  deploy-image:
+    runs-on: ubuntu-24.04
+    needs: release
+    strategy:
+      fail-fast: false
+      matrix:
+        module: [broker, client, server]
+    env:
+      REGISTRY: ghcr.io
+      IMAGE_NAME: ${{ github.repository_owner }}
+      RELEASE_VERSION: ${{ needs.release.outputs.release_version }}
+      HAS_RELEASED: ${{ needs.release.outputs.has_released }}
+    if: github.event_name != 'pull_request' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master')
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4.2.2
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3.9.0
+
+      - name: Log in to the Container registry
+        uses: docker/login-action@v4.0.0
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract metadata for Docker
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}/${{ matrix.module }}
+          tags: |
+            type=raw,value=latest
+            type=raw,value=${{ env.RELEASE_VERSION }},enable=${{ env.HAS_RELEASED == 'true' }}
+
+      - name: Build and push
+        uses: docker/build-push-action@v6.14.0
+        with:
+          context: .
+          push: true
+          build-args: MODULE=${{ matrix.module }}
+          tags: ${{ steps.meta.outputs.tags }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+  success:
+    runs-on: ubuntu-24.04
+    needs:
+      - build
+      - code-style
+      - dry-website-build
+      - release
+      - upload-docs
+      - deploy-image
+    if: >-
+      always() && (
+        contains(join(needs.*.result, ','), 'failure')
+        || !contains(join(needs.*.result, ','), 'cancelled')
+      )
+    steps:
+      - name: Verify that there were no failures
+        run: ${{ !contains(join(needs.*.result, ','), 'failure') }}
