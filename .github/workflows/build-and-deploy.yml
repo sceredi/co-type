@@ -160,7 +160,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}/${{ matrix.module }}
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}/co-type-${{ matrix.module }}
           tags: |
             type=raw,value=latest
             type=raw,value=${{ env.RELEASE_VERSION }},enable=${{ env.HAS_RELEASED == 'true' }}
