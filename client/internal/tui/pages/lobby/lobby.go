@@ -140,7 +140,7 @@ func (m Model) View() string {
 	buttons := lipgloss.JoinHorizontal(lipgloss.Right, readyBtn, leaveBtn)
 
 	v := lipgloss.JoinVertical(
-		lipgloss.Top,
+		lipgloss.Center,
 		m.header.View(),
 		buttons,
 	)
