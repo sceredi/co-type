@@ -1,8 +1,11 @@
 package tui
 
 import (
+	"log"
+
 	tea "charm.land/bubbletea/v2"
 	"charm.land/lipgloss/v2"
+	"github.com/sceredi/co-type/client/internal/tui/pages"
 	"github.com/sceredi/co-type/client/internal/tui/pages/lobby"
 )
 
@@ -38,6 +41,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case tea.WindowSizeMsg:
 		m.width = msg.Width
 		m.height = msg.Height
+		log.Printf("Window size: %d x %d", m.width, m.height)
 	}
 
 	m.lobby, cmd = m.lobby.Update(msg)
@@ -54,15 +58,16 @@ func (m Model) View() tea.View {
 	case lobbyPage:
 		v = m.lobby.View()
 	}
-	if m.width > 0 && m.height > 0 {
-		v = lipgloss.Place(
-			m.width,
-			m.height,
-			lipgloss.Center,
-			lipgloss.Center,
-			v,
-		)
+	if m.width < pages.Width || m.height < pages.Height {
+		v = "Your terminal is too small to display the game. \nPlease increase the size of your terminal or \ndecrease the font size [ctrl + minus]."
 	}
+	v = lipgloss.Place(
+		m.width,
+		m.height,
+		lipgloss.Center,
+		lipgloss.Center,
+		v,
+	)
 	view := tea.NewView(v)
 	view.AltScreen = true
 	return view
