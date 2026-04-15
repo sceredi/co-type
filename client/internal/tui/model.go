@@ -7,6 +7,7 @@ import (
 	"charm.land/lipgloss/v2"
 	"github.com/sceredi/co-type/client/internal/tui/pages"
 	"github.com/sceredi/co-type/client/internal/tui/pages/lobby"
+	"github.com/sceredi/co-type/common/domain"
 )
 
 type page int
@@ -24,8 +25,14 @@ type Model struct {
 }
 
 func New() Model {
+	// TODO: remove hardcoded values
+	p := domain.NewPlayer("sceredi")
+	l := domain.NewLobby("lobby1", p)
 	return Model{
-		lobby: lobby.New(),
+		lobby: lobby.New(
+			&p,
+			&l,
+		),
 	}
 }
 

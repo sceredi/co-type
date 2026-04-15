@@ -7,6 +7,7 @@ replace github.com/sceredi/co-type/common => ../common
 require (
 	charm.land/bubbletea/v2 v2.0.2
 	charm.land/lipgloss/v2 v2.0.2
+	github.com/sceredi/co-type/common v0.0.0-00010101000000-000000000000
 )
 
 require (
