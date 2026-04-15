@@ -137,19 +137,12 @@ func (m Model) View() string {
 	readyBtn := styles.ButtonPrimary.Render(readyLabel)
 	leaveBtn := styles.ButtonDanger.Render("[ esc ] Leave")
 
-	footerLeft := lipgloss.JoinHorizontal(lipgloss.Center, readyBtn, leaveBtn)
+	buttons := lipgloss.JoinHorizontal(lipgloss.Right, readyBtn, leaveBtn)
 
-	// Full layout
-	full := lipgloss.NewStyle().
-		Width(m.width).
-		Height(m.height).
-		Padding(1, 1)
-
-	return full.Render(
-		lipgloss.JoinVertical(
-			lipgloss.Top,
-			m.header.View(),
-			footerLeft,
-		),
+	v := lipgloss.JoinVertical(
+		lipgloss.Top,
+		m.header.View(),
+		buttons,
 	)
+	return v
 }
