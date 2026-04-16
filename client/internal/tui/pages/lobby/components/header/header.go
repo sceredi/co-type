@@ -23,7 +23,7 @@ func Render(player *domain.Player, lobby *domain.Lobby) string {
 			fmt.Sprintf("%d/%d", len(lobby.Players), lobby.MaxPlayers),
 		).
 		StyleFunc(func(row, col int) lipgloss.Style {
-			return lipgloss.NewStyle().Width(pages.Width/4 - 1).Align(lipgloss.Center)
+			return lipgloss.NewStyle().Width(pages.Width / 4).Align(lipgloss.Center)
 		})
 
 	return t.Render()

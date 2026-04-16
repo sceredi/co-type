@@ -1,23 +1,12 @@
 package lobby
 
 import (
-	"log"
-
 	tea "charm.land/bubbletea/v2"
 	"charm.land/lipgloss/v2"
 	"github.com/sceredi/co-type/client/internal/tui/pages/lobby/components/header"
 	"github.com/sceredi/co-type/client/internal/tui/styles"
 	"github.com/sceredi/co-type/common/domain"
 )
-
-// --- Messages ---
-type PlayerReadyMsg struct{}
-
-func newPlayerReadyMsg() tea.Cmd {
-	return func() tea.Msg {
-		return PlayerReadyMsg{}
-	}
-}
 
 // The Model struct represents the state of the lobby page.
 type Model struct {
@@ -42,17 +31,12 @@ func (m Model) Update(msg tea.Msg) (Model, tea.Cmd) {
 
 	switch msg := msg.(type) {
 
-	case PlayerReadyMsg:
-		log.Printf("Updating ready from %t\n", m.player.IsReady)
-		m.player.IsReady = !m.player.IsReady
-
 	case tea.KeyPressMsg:
 		switch msg.String() {
 		case "ctrl+c", "q":
 			return m, tea.Quit
 		case "r":
-			log.Println("Pressed ready")
-			cmds = append(cmds, newPlayerReadyMsg())
+			handleReadyCmd(&m)
 		}
 
 	}
@@ -71,7 +55,7 @@ func (m Model) View() string {
 	readyBtn := styles.ButtonPrimary.Render(readyLabel)
 	leaveBtn := styles.ButtonDanger.Render("[ esc ] Leave")
 
-	buttons := lipgloss.JoinHorizontal(lipgloss.Right, readyBtn, leaveBtn)
+	buttons := lipgloss.JoinHorizontal(lipgloss.Center, readyBtn, leaveBtn)
 
 	v := lipgloss.JoinVertical(
 		lipgloss.Center,

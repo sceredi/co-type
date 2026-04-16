@@ -27,7 +27,7 @@ type Model struct {
 func New() Model {
 	// TODO: remove hardcoded values
 	p := domain.NewPlayer("sceredi")
-	l := domain.NewLobby("lobby1", p)
+	l := domain.NewLobby("lobby1", &p)
 	return Model{
 		lobby: lobby.New(
 			&p,
