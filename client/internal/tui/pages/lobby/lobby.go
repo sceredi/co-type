@@ -38,6 +38,10 @@ func (m Model) Update(msg tea.Msg) (Model, tea.Cmd) {
 		switch msg.String() {
 		case "ctrl+c", "q":
 			return m, tea.Quit
+		case "up", "k":
+			handlePlayerSelect(m.selectedPlayer-1, &m)
+		case "down", "j":
+			handlePlayerSelect(m.selectedPlayer+1, &m)
 		case "r":
 			handleReadyCmd(&m)
 		}
