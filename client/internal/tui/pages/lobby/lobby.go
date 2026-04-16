@@ -4,20 +4,23 @@ import (
 	tea "charm.land/bubbletea/v2"
 	"charm.land/lipgloss/v2"
 	"github.com/sceredi/co-type/client/internal/tui/pages/lobby/components/header"
+	"github.com/sceredi/co-type/client/internal/tui/pages/lobby/components/playerlist"
 	"github.com/sceredi/co-type/client/internal/tui/styles"
 	"github.com/sceredi/co-type/common/domain"
 )
 
 // The Model struct represents the state of the lobby page.
 type Model struct {
-	player *domain.Player
-	lobby  *domain.Lobby
+	selectedPlayer int
+	player         *domain.Player
+	lobby          *domain.Lobby
 }
 
 func New(player *domain.Player, lobby *domain.Lobby) Model {
 	m := Model{
-		player: player,
-		lobby:  lobby,
+		selectedPlayer: 0,
+		player:         player,
+		lobby:          lobby,
 	}
 	return m
 }
@@ -60,6 +63,7 @@ func (m Model) View() string {
 	v := lipgloss.JoinVertical(
 		lipgloss.Center,
 		header.Render(m.player, m.lobby),
+		playerlist.Render(m.selectedPlayer, m.lobby),
 		buttons,
 	)
 	return v

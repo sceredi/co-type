@@ -11,6 +11,12 @@ import (
 )
 
 func Render(player *domain.Player, lobby *domain.Lobby) string {
+	readyPlayerCount := 0
+	for _, p := range lobby.Players {
+		if p.IsReady {
+			readyPlayerCount++
+		}
+	}
 	t := table.New().
 		Border(lipgloss.NormalBorder()).
 		BorderColumn(true).
@@ -20,7 +26,7 @@ func Render(player *domain.Player, lobby *domain.Lobby) string {
 			styles.NewLabelBold("co-type"),
 			fmt.Sprintf("[ %s ] %s", styles.NewLabelBold("i"), lobby.ID),
 			styles.NewLabelBold(player.Name),
-			fmt.Sprintf("%d/%d", len(lobby.Players), lobby.MaxPlayers),
+			fmt.Sprintf("%d/%d", readyPlayerCount, len(lobby.Players)),
 		).
 		StyleFunc(func(row, col int) lipgloss.Style {
 			return lipgloss.NewStyle().Width(pages.Width / 4).Align(lipgloss.Center)
