@@ -7,6 +7,7 @@ import (
 	"github.com/sceredi/co-type/client/internal/tui/pages/lobby/components/playerinfo"
 	"github.com/sceredi/co-type/client/internal/tui/pages/lobby/components/playerlist"
 	"github.com/sceredi/co-type/client/internal/tui/pages/lobby/components/settings"
+	lobby_messages "github.com/sceredi/co-type/client/internal/tui/pages/lobby/messages"
 	"github.com/sceredi/co-type/client/internal/tui/styles"
 	"github.com/sceredi/co-type/common/domain"
 )
@@ -45,6 +46,15 @@ func (m Model) Init() tea.Cmd {
 func (m Model) Update(msg tea.Msg) (Model, tea.Cmd) {
 	var cmd tea.Cmd
 	var cmds []tea.Cmd
+
+	switch msg := msg.(type) {
+	case lobby_messages.UpdatePlayerMsg:
+		msg.Player.AllowedCharacters = msg.AllowedCharacters
+		msg.Player.BlockedCharacters = msg.BlockedCharacters
+		msg.Player.CanDelete = msg.BackspaceAllowed
+	case lobby_messages.CloseSettingsMsg:
+		m.focus = focusPlayersList
+	}
 
 	if m.focus == focusPlayersList {
 		switch msg := msg.(type) {

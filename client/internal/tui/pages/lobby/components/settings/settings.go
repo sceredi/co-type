@@ -6,6 +6,7 @@ import (
 	"charm.land/bubbles/v2/textinput"
 	tea "charm.land/bubbletea/v2"
 	"charm.land/lipgloss/v2"
+	lobby_messages "github.com/sceredi/co-type/client/internal/tui/pages/lobby/messages"
 	"github.com/sceredi/co-type/client/internal/tui/styles"
 	"github.com/sceredi/co-type/common/domain"
 )
@@ -15,6 +16,7 @@ type focusSlot int
 const (
 	focusAllowed focusSlot = iota
 	focusBlocked
+	focusBackspace
 	focusConfim
 	focusCancel
 )
@@ -86,6 +88,14 @@ func (m Model) Init() tea.Cmd {
 	return textinput.Blink
 }
 
+func (m *Model) confirmSaveCmd() tea.Cmd {
+	return lobby_messages.NewUpdatePlayerCmd(m.player, m.allowedList.Value(), m.blockedList.Value(), m.backspaceAllowed)
+}
+
+func (m *Model) cancelSaveCmd() tea.Cmd {
+	return lobby_messages.NewUpdatePlayerCmd(m.player, m.player.AllowedCharacters, m.player.BlockedCharacters, m.player.CanDelete)
+}
+
 func (m Model) Update(msg tea.Msg) (Model, tea.Cmd) {
 	var cmds []tea.Cmd
 	switch msg := msg.(type) {
@@ -93,7 +103,22 @@ func (m Model) Update(msg tea.Msg) (Model, tea.Cmd) {
 		switch msg.String() {
 		case "ctrl+c":
 			return m, tea.Quit
+		case "space":
+			if m.focus == focusBackspace {
+				m.backspaceAllowed = !m.backspaceAllowed
+			}
 		case "tab", "shift+tab", "enter", "up", "down":
+			if msg.String() == "enter" && m.focus == focusConfim {
+				cmd := m.confirmSaveCmd()
+				return m, tea.Batch(cmd, lobby_messages.NewCloseSettingsCmd())
+			}
+			if msg.String() == "enter" && m.focus == focusCancel {
+				cmd := m.cancelSaveCmd()
+				return m, tea.Batch(cmd, lobby_messages.NewCloseSettingsCmd())
+			}
+			if msg.String() == "enter" && m.focus == focusBackspace {
+				m.backspaceAllowed = !m.backspaceAllowed
+			}
 			v := msg.String()
 			if v == "tab" || v == "enter" || v == "down" {
 				m.focus++
@@ -122,6 +147,42 @@ func (m Model) View() string {
 		c = *m.allowedList.Cursor()
 		c.Y += lipgloss.Height(allowedDescription)
 	}
+
+	allowedView := styles.PaddingVertical.Render(
+		lipgloss.JoinVertical(
+			lipgloss.Left,
+			allowedDescription,
+			m.allowedList.View(),
+		),
+	)
+
+	blockedView := styles.PaddingVertical.Render(
+		lipgloss.JoinVertical(
+			lipgloss.Left,
+			blockedDescription,
+			m.blockedList.View(),
+		),
+	)
+	backspaceStyle := lipgloss.NewStyle().Border(lipgloss.NormalBorder(), false, false, true, false)
+	backspaceText := "enabled"
+	backspaceTextStyle := lipgloss.NewStyle().Foreground(styles.Green)
+	if !m.backspaceAllowed {
+		backspaceText = "disabled"
+		backspaceTextStyle = backspaceTextStyle.Foreground(styles.Red)
+	}
+	if m.focus == focusBackspace {
+		backspaceStyle = backspaceStyle.BorderForeground(styles.Blue)
+	}
+	backspace := fmt.Sprintf("Backspace: %s", backspaceTextStyle.Render(backspaceText))
+	backspace = backspaceStyle.Render(backspace)
+
+	editorView := lipgloss.JoinVertical(
+		lipgloss.Left,
+		allowedView,
+		blockedView,
+		backspace,
+	)
+
 	confirmButtonStyle := styles.ButtonDefault
 	cancelButtonStyle := styles.ButtonDefault
 	switch m.focus {
@@ -137,10 +198,7 @@ func (m Model) View() string {
 	v := lipgloss.JoinVertical(
 		lipgloss.Center,
 		header,
-		allowedDescription,
-		m.allowedList.View(),
-		blockedDescription,
-		m.blockedList.View(),
+		editorView,
 		buttons,
 	)
 	return styles.NewContainer(v)
