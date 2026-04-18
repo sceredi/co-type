@@ -5,6 +5,7 @@ import (
 	"charm.land/lipgloss/v2"
 	"github.com/sceredi/co-type/client/internal/tui/pages/lobby/components/header"
 	"github.com/sceredi/co-type/client/internal/tui/pages/lobby/components/playerlist"
+	"github.com/sceredi/co-type/client/internal/tui/pages/lobby/components/settings"
 	"github.com/sceredi/co-type/client/internal/tui/styles"
 	"github.com/sceredi/co-type/common/domain"
 )
@@ -14,6 +15,8 @@ type Model struct {
 	selectedPlayer int
 	player         *domain.Player
 	lobby          *domain.Lobby
+
+	settings settings.Model
 }
 
 func New(player *domain.Player, lobby *domain.Lobby) Model {
@@ -22,6 +25,10 @@ func New(player *domain.Player, lobby *domain.Lobby) Model {
 		player:         player,
 		lobby:          lobby,
 	}
+	p := m.lobby.Players[m.selectedPlayer]
+	allowed := p.AllowedCharacters
+	blocked := p.BlockedCharacters
+	m.settings = settings.New(allowed, blocked)
 	return m
 }
 
@@ -62,12 +69,14 @@ func (m Model) View() string {
 	readyBtn := styles.ButtonPrimary.Render(readyLabel)
 	leaveBtn := styles.ButtonDanger.Render("[ esc ] Leave")
 
+	body := lipgloss.JoinHorizontal(lipgloss.Center, playerlist.Render(m.selectedPlayer, m.lobby), m.settings.View())
+
 	buttons := lipgloss.JoinHorizontal(lipgloss.Center, readyBtn, leaveBtn)
 
 	v := lipgloss.JoinVertical(
 		lipgloss.Center,
 		header.Render(m.player, m.lobby),
-		playerlist.Render(m.selectedPlayer, m.lobby),
+		body,
 		buttons,
 	)
 	return v

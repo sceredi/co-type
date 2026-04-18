@@ -1,8 +1,6 @@
 package tui
 
 import (
-	"log"
-
 	tea "charm.land/bubbletea/v2"
 	"charm.land/lipgloss/v2"
 	"github.com/sceredi/co-type/client/internal/tui/pages"
@@ -27,6 +25,7 @@ type Model struct {
 func New() Model {
 	// TODO: remove hardcoded values
 	p := domain.NewPlayer("sceredi")
+	p.AllowedCharacters = "/[a-z]/"
 	l := domain.NewLobby("lobby1", &p)
 	p2 := domain.NewPlayer("player2")
 	p3 := domain.NewPlayer("player3")
@@ -51,7 +50,6 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case tea.WindowSizeMsg:
 		m.width = msg.Width
 		m.height = msg.Height
-		log.Printf("Window size: %d x %d", m.width, m.height)
 	}
 
 	m.lobby, cmd = m.lobby.Update(msg)
