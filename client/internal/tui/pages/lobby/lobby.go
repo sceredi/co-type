@@ -10,8 +10,16 @@ import (
 	"github.com/sceredi/co-type/common/domain"
 )
 
+type focusSlot int
+
+const (
+	focusPlayersList focusSlot = iota
+	focusSettings
+)
+
 // The Model struct represents the state of the lobby page.
 type Model struct {
+	focus          focusSlot
 	selectedPlayer int
 	player         *domain.Player
 	lobby          *domain.Lobby
@@ -21,6 +29,7 @@ type Model struct {
 
 func New(player *domain.Player, lobby *domain.Lobby) Model {
 	m := Model{
+		focus:          focusPlayersList,
 		selectedPlayer: 0,
 		player:         player,
 		lobby:          lobby,
@@ -37,24 +46,37 @@ func (m Model) Init() tea.Cmd {
 }
 
 func (m Model) Update(msg tea.Msg) (Model, tea.Cmd) {
+	var cmd tea.Cmd
 	var cmds []tea.Cmd
 
 	switch msg := msg.(type) {
-
 	case tea.KeyPressMsg:
 		switch msg.String() {
-		case "ctrl+c", "q":
-			return m, tea.Quit
-		case "up", "k":
-			handlePlayerSelect(m.selectedPlayer-1, &m)
-		case "down", "j":
-			handlePlayerSelect(m.selectedPlayer+1, &m)
-		case "r":
-			handleReadyCmd(&m)
+		case "right":
+			m.focus = (m.focus + 1) % (focusSettings + 1)
+			m.settings, _ = m.settings.Update(settings.ChangeFocusMsg{IsFocussed: m.focus == focusSettings})
 		}
-
 	}
 
+	if m.focus == focusPlayersList {
+		switch msg := msg.(type) {
+		case tea.KeyPressMsg:
+			switch msg.String() {
+			case "ctrl+c":
+				return m, tea.Quit
+			case "up":
+				handlePlayerSelect(m.selectedPlayer-1, &m)
+			case "down":
+				handlePlayerSelect(m.selectedPlayer+1, &m)
+			case "r":
+				handleReadyCmd(&m)
+			}
+		}
+	} else {
+		m.settings, cmd = m.settings.Update(msg)
+	}
+
+	cmds = append(cmds, cmd)
 	return m, tea.Batch(cmds...)
 }
 
@@ -69,7 +91,10 @@ func (m Model) View() string {
 	readyBtn := styles.ButtonPrimary.Render(readyLabel)
 	leaveBtn := styles.ButtonDanger.Render("[ esc ] Leave")
 
-	body := lipgloss.JoinHorizontal(lipgloss.Center, playerlist.Render(m.selectedPlayer, m.lobby), m.settings.View())
+	body := lipgloss.JoinHorizontal(lipgloss.Center,
+		playerlist.Render(m.selectedPlayer, m.lobby, m.focus == focusPlayersList),
+		m.settings.View(),
+	)
 
 	buttons := lipgloss.JoinHorizontal(lipgloss.Center, readyBtn, leaveBtn)
 
