@@ -1,23 +1,22 @@
 package settings
 
 import (
-	"image/color"
+	"fmt"
 
 	"charm.land/bubbles/v2/textinput"
 	tea "charm.land/bubbletea/v2"
 	"charm.land/lipgloss/v2"
 	"github.com/sceredi/co-type/client/internal/tui/styles"
+	"github.com/sceredi/co-type/common/domain"
 )
-
-type ChangeFocusMsg struct {
-	IsFocussed bool
-}
 
 type focusSlot int
 
 const (
 	focusAllowed focusSlot = iota
 	focusBlocked
+	focusConfim
+	focusCancel
 )
 
 const (
@@ -26,10 +25,11 @@ const (
 )
 
 type Model struct {
-	isFocussed  bool
-	focus       focusSlot
-	allowedList textinput.Model
-	blockedList textinput.Model
+	focus            focusSlot
+	player           *domain.Player
+	allowedList      textinput.Model
+	blockedList      textinput.Model
+	backspaceAllowed bool
 }
 
 func newTextinput(placeholder string, value string) textinput.Model {
@@ -47,30 +47,27 @@ func newTextinput(placeholder string, value string) textinput.Model {
 	return ti
 }
 
-func New(allowed string, blocked string) Model {
-	allowedList := newTextinput("eg. /[a-z]/", allowed)
-	blockedList := newTextinput("eg. /[0-9]/", blocked)
+func New(player *domain.Player) Model {
+	allowedList := newTextinput("eg. /[a-z]/", player.AllowedCharacters)
+	blockedList := newTextinput("eg. /[0-9]/", player.BlockedCharacters)
+	allowedList.Focus()
 	return Model{
-		isFocussed:  false,
-		focus:       focusAllowed,
-		allowedList: allowedList,
-		blockedList: blockedList,
+		focus:            focusAllowed,
+		player:           player,
+		allowedList:      allowedList,
+		blockedList:      blockedList,
+		backspaceAllowed: player.CanDelete,
 	}
 }
 
-func (m *Model) unfocus() {
+func (m *Model) updateFocus() {
 	m.allowedList.Blur()
 	m.blockedList.Blur()
-}
-func (m *Model) updateFocus() {
-	m.unfocus()
-	if m.isFocussed {
-		switch m.focus {
-		case focusAllowed:
-			m.allowedList.Focus()
-		case focusBlocked:
-			m.blockedList.Focus()
-		}
+	switch m.focus {
+	case focusAllowed:
+		m.allowedList.Focus()
+	case focusBlocked:
+		m.blockedList.Focus()
 	}
 }
 
@@ -92,10 +89,6 @@ func (m Model) Init() tea.Cmd {
 func (m Model) Update(msg tea.Msg) (Model, tea.Cmd) {
 	var cmds []tea.Cmd
 	switch msg := msg.(type) {
-	case ChangeFocusMsg:
-		m.isFocussed = msg.IsFocussed
-		m.updateFocus()
-		m.allowedList.Focus()
 	case tea.KeyPressMsg:
 		switch msg.String() {
 		case "ctrl+c":
@@ -107,7 +100,7 @@ func (m Model) Update(msg tea.Msg) (Model, tea.Cmd) {
 			} else {
 				m.focus--
 			}
-			m.focus = m.focus % (focusBlocked + 1)
+			m.focus = m.focus % (focusCancel + 1)
 			m.updateFocus()
 		}
 	}
@@ -117,27 +110,38 @@ func (m Model) Update(msg tea.Msg) (Model, tea.Cmd) {
 }
 
 func (m Model) View() string {
-	var color color.Color
-	if m.isFocussed {
-		color = styles.Blue
-		var c tea.Cursor
-		var focussedList textinput.Model
-		if m.allowedList.Focused() {
-			focussedList = m.allowedList
-		} else {
-			focussedList = m.blockedList
-		}
-		if !focussedList.VirtualCursor() {
-			c = *m.allowedList.Cursor()
-			c.Y += lipgloss.Height(allowedDescription)
-		}
+	header := styles.PaddingVertical.Render(fmt.Sprintf("Editing settings for %s", styles.NewLabelBold(m.player.Name)))
+	var c tea.Cursor
+	var focussedList textinput.Model
+	if m.allowedList.Focused() {
+		focussedList = m.allowedList
+	} else {
+		focussedList = m.blockedList
 	}
+	if !focussedList.VirtualCursor() {
+		c = *m.allowedList.Cursor()
+		c.Y += lipgloss.Height(allowedDescription)
+	}
+	confirmButtonStyle := styles.ButtonDefault
+	cancelButtonStyle := styles.ButtonDefault
+	switch m.focus {
+	case focusConfim:
+		confirmButtonStyle = styles.ButtonPrimary
+	case focusCancel:
+		cancelButtonStyle = styles.ButtonDanger
+	}
+	confirmBtn := confirmButtonStyle.Render("Confirm")
+	cancelBtn := cancelButtonStyle.Render("Cancel")
+
+	buttons := lipgloss.JoinHorizontal(lipgloss.Center, confirmBtn, cancelBtn)
 	v := lipgloss.JoinVertical(
 		lipgloss.Center,
+		header,
 		allowedDescription,
 		m.allowedList.View(),
 		blockedDescription,
 		m.blockedList.View(),
+		buttons,
 	)
-	return styles.NewContainer(v, color)
+	return styles.NewContainer(v)
 }

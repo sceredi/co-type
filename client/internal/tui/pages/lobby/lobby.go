@@ -4,6 +4,7 @@ import (
 	tea "charm.land/bubbletea/v2"
 	"charm.land/lipgloss/v2"
 	"github.com/sceredi/co-type/client/internal/tui/pages/lobby/components/header"
+	"github.com/sceredi/co-type/client/internal/tui/pages/lobby/components/playerinfo"
 	"github.com/sceredi/co-type/client/internal/tui/pages/lobby/components/playerlist"
 	"github.com/sceredi/co-type/client/internal/tui/pages/lobby/components/settings"
 	"github.com/sceredi/co-type/client/internal/tui/styles"
@@ -34,10 +35,6 @@ func New(player *domain.Player, lobby *domain.Lobby) Model {
 		player:         player,
 		lobby:          lobby,
 	}
-	p := m.lobby.Players[m.selectedPlayer]
-	allowed := p.AllowedCharacters
-	blocked := p.BlockedCharacters
-	m.settings = settings.New(allowed, blocked)
 	return m
 }
 
@@ -49,15 +46,6 @@ func (m Model) Update(msg tea.Msg) (Model, tea.Cmd) {
 	var cmd tea.Cmd
 	var cmds []tea.Cmd
 
-	switch msg := msg.(type) {
-	case tea.KeyPressMsg:
-		switch msg.String() {
-		case "right":
-			m.focus = (m.focus + 1) % (focusSettings + 1)
-			m.settings, _ = m.settings.Update(settings.ChangeFocusMsg{IsFocussed: m.focus == focusSettings})
-		}
-	}
-
 	if m.focus == focusPlayersList {
 		switch msg := msg.(type) {
 		case tea.KeyPressMsg:
@@ -65,11 +53,13 @@ func (m Model) Update(msg tea.Msg) (Model, tea.Cmd) {
 			case "ctrl+c":
 				return m, tea.Quit
 			case "up":
-				handlePlayerSelect(m.selectedPlayer-1, &m)
+				m.handlePlayerSelect(m.selectedPlayer - 1)
 			case "down":
-				handlePlayerSelect(m.selectedPlayer+1, &m)
+				m.handlePlayerSelect(m.selectedPlayer + 1)
 			case "r":
-				handleReadyCmd(&m)
+				m.handleReadyCmd()
+			case "enter":
+				m.handleOpenSettingsModal()
 			}
 		}
 	} else {
@@ -91,9 +81,10 @@ func (m Model) View() string {
 	leaveBtn := styles.ButtonDanger.Render("[ esc ] Leave")
 
 	body := lipgloss.JoinHorizontal(lipgloss.Center,
-		playerlist.Render(m.selectedPlayer, m.lobby, m.focus == focusPlayersList),
-		m.settings.View(),
+		playerlist.Render(m.selectedPlayer, m.lobby),
+		playerinfo.Render(*m.lobby.Players[m.selectedPlayer]),
 	)
+	body = styles.NewContainer(body)
 
 	buttons := lipgloss.JoinHorizontal(lipgloss.Center, readyBtn, leaveBtn)
 
@@ -103,5 +94,10 @@ func (m Model) View() string {
 		body,
 		buttons,
 	)
+
+	if m.focus == focusSettings {
+		return m.settings.View()
+	}
+
 	return v
 }

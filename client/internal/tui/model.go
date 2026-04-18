@@ -29,7 +29,8 @@ func New() Model {
 	l := domain.NewLobby("lobby1", &p)
 	p2 := domain.NewPlayer("player2")
 	p3 := domain.NewPlayer("player3")
-	l.AddPlayers(&p2, &p3)
+	p4 := domain.NewPlayer("player4")
+	l.AddPlayers(&p2, &p3, &p4)
 	return Model{
 		lobby: lobby.New(
 			&p,

@@ -1,19 +1,13 @@
 package playerlist
 
 import (
-	"image/color"
-
 	"charm.land/lipgloss/v2"
 	"charm.land/lipgloss/v2/table"
 	"github.com/sceredi/co-type/client/internal/tui/styles"
 	"github.com/sceredi/co-type/common/domain"
 )
 
-func Render(selectedPlayer int, lobby *domain.Lobby, focussed bool) string {
-	var color color.Color
-	if focussed {
-		color = styles.Blue
-	}
+func Render(selectedPlayer int, lobby *domain.Lobby) string {
 	rows := make([][]string, len(lobby.Players))
 	for i, player := range lobby.Players {
 		pointer := " "
@@ -33,8 +27,7 @@ func Render(selectedPlayer int, lobby *domain.Lobby, focussed bool) string {
 		rows[i] = append(rows[i], ready)
 	}
 	t := table.New().
-		Border(lipgloss.RoundedBorder()).
-		BorderStyle(lipgloss.NewStyle().Foreground(color)).
+		Border(lipgloss.HiddenBorder()).
 		BorderColumn(false).
 		StyleFunc(func(row, col int) lipgloss.Style {
 			return lipgloss.NewStyle().Padding(1)
