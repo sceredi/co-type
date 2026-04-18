@@ -5,7 +5,7 @@ import (
 )
 
 var (
-	buttonDefault = lipgloss.NewStyle().Padding(0, 3).Border(lipgloss.RoundedBorder()).Bold(true)
-	ButtonPrimary = buttonDefault.BorderForeground(Green).Foreground(Green)
-	ButtonDanger  = buttonDefault.BorderForeground(Red).Foreground(Red)
+	ButtonDefault = lipgloss.NewStyle().Padding(0, 3).Border(lipgloss.RoundedBorder()).Bold(true)
+	ButtonPrimary = ButtonDefault.BorderForeground(Green).Foreground(Green)
+	ButtonDanger  = ButtonDefault.BorderForeground(Red).Foreground(Red)
 )

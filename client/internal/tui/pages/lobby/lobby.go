@@ -81,14 +81,13 @@ func (m Model) Update(msg tea.Msg) (Model, tea.Cmd) {
 }
 
 func (m Model) View() string {
-	var readyLabel string
+	readyLabel := "[ r ] Ready Up"
+	readyButtonStyle := styles.ButtonDefault
 	if m.player.IsReady {
 		readyLabel = "[ r ] Ready!"
-	} else {
-		readyLabel = "[ r ] Ready Up"
+		readyButtonStyle = styles.ButtonPrimary
 	}
-
-	readyBtn := styles.ButtonPrimary.Render(readyLabel)
+	readyBtn := readyButtonStyle.Render(readyLabel)
 	leaveBtn := styles.ButtonDanger.Render("[ esc ] Leave")
 
 	body := lipgloss.JoinHorizontal(lipgloss.Center,
