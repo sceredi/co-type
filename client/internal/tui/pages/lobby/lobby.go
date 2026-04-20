@@ -1,3 +1,4 @@
+// Package lobby defines the lobby page of the TUI.
 package lobby
 
 import (
@@ -29,6 +30,7 @@ type Model struct {
 	settings settings.Model
 }
 
+// New creates a new lobby model for the given player and lobby.
 func New(player *domain.Player, lobby *domain.Lobby) Model {
 	m := Model{
 		focus:          focusPlayersList,
@@ -39,10 +41,12 @@ func New(player *domain.Player, lobby *domain.Lobby) Model {
 	return m
 }
 
+// Init initializes the model. In this case, it does nothing and returns nil.
 func (m Model) Init() tea.Cmd {
 	return nil
 }
 
+// Update updates the model based on the given message and returns the updated model and any commands to execute.
 func (m Model) Update(msg tea.Msg) (Model, tea.Cmd) {
 	var cmd tea.Cmd
 	var cmds []tea.Cmd
@@ -82,6 +86,7 @@ func (m Model) Update(msg tea.Msg) (Model, tea.Cmd) {
 
 const keybinds = "↑/↓: select player • enter: edit player\nr: toggle ready • i: copy lobby code\nesc: leave lobby • ctrl+c: quit"
 
+// View renders the lobby page as a string.
 func (m Model) View() string {
 	readyLabel := "[ r ] Ready Up"
 	readyButtonStyle := styles.ButtonDefault

@@ -1,3 +1,4 @@
+// Package settings provides a bubbletea component to edit player settings
 package settings
 
 import (
@@ -26,6 +27,7 @@ const (
 	blockedDescription = "Blocked characters regex"
 )
 
+// Model is the bubbletea model for the settings component.
 type Model struct {
 	focus            focusSlot
 	player           *domain.Player
@@ -43,6 +45,7 @@ func newTextinput(placeholder string, value string) textinput.Model {
 	return ti
 }
 
+// New creates a new settings model for the given player.
 func New(player *domain.Player) Model {
 	allowedList := newTextinput("eg. /[a-z]/", player.AllowedCharacters)
 	blockedList := newTextinput("eg. /[0-9]/", player.BlockedCharacters)
@@ -64,6 +67,7 @@ func (m *Model) updateFocus() {
 		m.allowedList.Focus()
 	case focusBlocked:
 		m.blockedList.Focus()
+	default:
 	}
 }
 
@@ -74,47 +78,70 @@ func (m *Model) updateInputs(msg tea.Msg) tea.Cmd {
 		m.allowedList, cmd = m.allowedList.Update(msg)
 	case focusBlocked:
 		m.blockedList, cmd = m.blockedList.Update(msg)
+	default:
 	}
 	return cmd
 }
 
+// Init initializes the model. It starts the blinking cursor for the text inputs.
 func (m Model) Init() tea.Cmd {
 	return textinput.Blink
 }
 
 func (m *Model) confirmSaveCmd() tea.Cmd {
-	return lobby_messages.NewUpdatePlayerCmd(m.player, m.allowedList.Value(), m.blockedList.Value(), m.backspaceAllowed)
+	return lobby_messages.NewUpdatePlayerCmd(
+		m.player,
+		m.allowedList.Value(),
+		m.blockedList.Value(),
+		m.backspaceAllowed,
+	)
 }
 
 func (m *Model) cancelSaveCmd() tea.Cmd {
-	return lobby_messages.NewUpdatePlayerCmd(m.player, m.player.AllowedCharacters, m.player.BlockedCharacters, m.player.CanDelete)
+	return lobby_messages.NewUpdatePlayerCmd(
+		m.player,
+		m.player.AllowedCharacters,
+		m.player.BlockedCharacters,
+		m.player.CanDelete,
+	)
 }
 
+const (
+	exitk  = "ctrl+c"
+	spacek = "space"
+	tabk   = "tab"
+	stabk  = "shift+tab"
+	enterk = "enter"
+	upk    = "up"
+	downk  = "down"
+)
+
+// Update updates the model based on the given message.
 func (m Model) Update(msg tea.Msg) (Model, tea.Cmd) {
 	var cmds []tea.Cmd
 	switch msg := msg.(type) {
 	case tea.KeyPressMsg:
 		switch msg.String() {
-		case "ctrl+c":
+		case exitk:
 			return m, tea.Quit
-		case "space":
+		case spacek:
 			if m.focus == focusBackspace {
 				m.backspaceAllowed = !m.backspaceAllowed
 			}
-		case "tab", "shift+tab", "enter", "up", "down":
-			if msg.String() == "enter" && m.focus == focusConfim {
+		case tabk, stabk, enterk, upk, downk:
+			if msg.String() == enterk && m.focus == focusConfim {
 				cmd := m.confirmSaveCmd()
 				return m, tea.Batch(cmd, lobby_messages.NewCloseSettingsCmd())
 			}
-			if msg.String() == "enter" && m.focus == focusCancel {
+			if msg.String() == enterk && m.focus == focusCancel {
 				cmd := m.cancelSaveCmd()
 				return m, tea.Batch(cmd, lobby_messages.NewCloseSettingsCmd())
 			}
-			if msg.String() == "enter" && m.focus == focusBackspace {
+			if msg.String() == enterk && m.focus == focusBackspace {
 				m.backspaceAllowed = !m.backspaceAllowed
 			}
 			v := msg.String()
-			if v == "tab" || v == "enter" || v == "down" {
+			if v == "tab" || v == enterk || v == "down" {
 				m.focus++
 			} else {
 				m.focus--
@@ -130,8 +157,11 @@ func (m Model) Update(msg tea.Msg) (Model, tea.Cmd) {
 
 const keybinds = "↑/↓/tab/s+tab: select field\nspace: toggle • enter: confirm\nctrl+c: quit"
 
+// View renders the settings editor.
 func (m Model) View() string {
-	header := styles.PaddingVertical.Render(fmt.Sprintf("Editing settings for %s", styles.NewLabelBold(m.player.Name)))
+	header := styles.PaddingVertical.Render(
+		fmt.Sprintf("Editing settings for %s", styles.NewLabelBold(m.player.Name)),
+	)
 	var c tea.Cursor
 	var focussedList textinput.Model
 	if m.allowedList.Focused() {
@@ -186,6 +216,7 @@ func (m Model) View() string {
 		confirmButtonStyle = styles.ButtonPrimary
 	case focusCancel:
 		cancelButtonStyle = styles.ButtonDanger
+	default:
 	}
 	confirmBtn := confirmButtonStyle.Render("Confirm")
 	cancelBtn := cancelButtonStyle.Render("Cancel")
