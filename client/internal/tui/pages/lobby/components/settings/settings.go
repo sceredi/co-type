@@ -39,12 +39,6 @@ func newTextinput(placeholder string, value string) textinput.Model {
 	ti.Placeholder = placeholder
 	ti.CharLimit = 256
 	ti.SetWidth(20)
-	suggestions := []string{
-		"/[a-z]/",
-		"/[0-9]/",
-		"/[a-zA-Z0-9]/",
-	}
-	ti.SetSuggestions(suggestions)
 	ti.SetValue(value)
 	return ti
 }
