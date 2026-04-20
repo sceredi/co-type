@@ -20,12 +20,32 @@ type JoinLobbyErrorMsg struct {
 	Error string
 }
 
+// NewCreateLobbyCmd creates a new command to create a lobby.
+func NewCreateLobbyCmd(lobbyCode string, playerName string) tea.Cmd {
+	return func() tea.Msg {
+		if lobbyCode == "" || playerName == "" {
+			return JoinLobbyErrorMsg{
+				Error: "Lobby code and username must not be empty",
+			}
+		}
+		// TODO: actually create the lobby
+		player := domain.NewPlayer(playerName)
+		lobby := domain.NewLobby(lobbyCode, &player)
+		return JoinLobbyMsg{Lobby: lobby}
+	}
+}
+
 // NewJoinLobbyCmd creates a new command to join a lobby with the given ID.
-func NewJoinLobbyCmd(id string) tea.Cmd {
+func NewJoinLobbyCmd(lobbyCode string, playerName string) tea.Cmd {
 	return func() tea.Msg {
 		// TODO: try to join, then based on the response join or return an error
-		log.Printf("Joining lobby %s", id)
-		return JoinLobbyErrorMsg{Error: fmt.Sprintf("Unable to join lobby \"%s\"", id)}
+		if lobbyCode == "" || playerName == "" {
+			return JoinLobbyErrorMsg{
+				Error: "Lobby code and username must not be empty",
+			}
+		}
+		log.Printf("Joining lobby %s as %s", lobbyCode, playerName)
+		return JoinLobbyErrorMsg{Error: fmt.Sprintf("Unable to join lobby \"%s\"", lobbyCode)}
 	}
 }
 

@@ -2,12 +2,12 @@
 package welcome
 
 import (
-	"fmt"
+	"log"
 
 	"charm.land/bubbles/v2/textinput"
 	tea "charm.land/bubbletea/v2"
 	"charm.land/lipgloss/v2"
-	"github.com/sceredi/co-type/client/internal/tui/pages/welcome/components/joinlobby"
+	"github.com/sceredi/co-type/client/internal/tui/pages/common"
 	welcome_messages "github.com/sceredi/co-type/client/internal/tui/pages/welcome/messages"
 	"github.com/sceredi/co-type/client/internal/tui/styles"
 )
@@ -15,21 +15,32 @@ import (
 type focusSlot int
 
 const (
-	focusWelcome focusSlot = iota
+	focusName focusSlot = iota
+	focusCode
+	focusCreate
 	focusJoin
 )
 
 // Model is the model for the welcome page.
 type Model struct {
-	focus     focusSlot
-	joinlobby joinlobby.Model
+	focus focusSlot
+
+	nameTi textinput.Model
+	codeTi textinput.Model
+
+	error string
 }
 
 // New creates a new welcome model.
 func New() Model {
+	tn := common.NewTextinput("Choose your username", "")
+	tn.Focus()
+	tc := common.NewTextinput("CT2026", "")
+	tc.CharLimit = 10
 	return Model{
-		focus:     focusWelcome,
-		joinlobby: joinlobby.New(),
+		focus:  focusName,
+		nameTi: tn,
+		codeTi: tc,
 	}
 }
 
@@ -38,47 +49,119 @@ func (m Model) Init() tea.Cmd {
 	return textinput.Blink
 }
 
+func (m *Model) updateFocus() {
+	m.nameTi.Blur()
+	m.codeTi.Blur()
+	switch m.focus {
+	case focusName:
+		m.nameTi.Focus()
+	case focusCode:
+		m.codeTi.Focus()
+	default:
+	}
+}
+
 // Update updates the welcome model based on the given message.
 func (m Model) Update(msg tea.Msg) (Model, tea.Cmd) {
 	var cmds []tea.Cmd
 	var cmd tea.Cmd
-	if m.focus == focusWelcome {
-		switch msg := msg.(type) {
-		case tea.KeyPressMsg:
-			switch msg.String() {
-			case "c":
+	switch msg := msg.(type) {
+	case tea.KeyPressMsg:
+		switch msg.String() {
+		case "tab", "shift+tab", "up", "down":
+			v := msg.String()
+			if v == "tab" || v == "down" {
+				m.focus++
+			} else {
+				m.focus--
+			}
+			m.focus = (m.focus + focusJoin + 1) % (focusJoin + 1)
+			m.updateFocus()
+		case "enter":
+			switch m.focus {
+			case focusName:
+				m.focus++
+			case focusCreate:
 				// TODO: create new lobby
-			case "j":
+				cmds = append(cmds, welcome_messages.NewCreateLobbyCmd(m.codeTi.Value(), m.nameTi.Value()))
+			case focusJoin:
 				// TODO: join the lobby
-				m.focus = focusJoin
+				cmds = append(cmds, welcome_messages.NewJoinLobbyCmd(m.codeTi.Value(), m.nameTi.Value()))
+			default:
+				log.Fatalf("welcome: unexpected focus value %d", m.focus)
 			}
 		}
-	} else {
-		switch msg.(type) {
-		case welcome_messages.LeaveJoinLobbyMsg:
-			m.focus = focusWelcome
-		}
-		m.joinlobby, cmd = m.joinlobby.Update(msg)
+	case welcome_messages.JoinLobbyErrorMsg:
+		m.error = msg.Error
+	}
+	switch m.focus {
+	case focusName:
+		m.nameTi, cmd = m.nameTi.Update(msg)
+	case focusCode:
+		m.codeTi, cmd = m.codeTi.Update(msg)
+	default:
 	}
 	cmds = append(cmds, cmd)
 	return m, tea.Batch(cmds...)
 }
 
+const keybinds = "↑/↓/tab/s+tab: select field\nenter: confirm • ctrl+c: quit"
+
 // View renders the welcome page.
 func (m Model) View() string {
 	header := styles.LabelBold.PaddingBottom(1).Render("CO-TYPE")
-	var content string
-	if m.focus == focusWelcome {
-		createBtn := styles.ButtonDefault.Render(fmt.Sprintf("[ %s ] Create lobby", styles.NewLabelBold("c")))
-		joinBtn := styles.ButtonDefault.Render(fmt.Sprintf("[ %s ] Join lobby", styles.NewLabelBold("j")))
-		content = lipgloss.JoinVertical(lipgloss.Center, createBtn, joinBtn)
-	} else {
-		content = m.joinlobby.View()
+	var c tea.Cursor
+	focussedTi := m.nameTi
+	if m.codeTi.Focused() {
+		focussedTi = m.codeTi
 	}
+	if !focussedTi.VirtualCursor() {
+		c = *m.nameTi.Cursor()
+		c.Y += lipgloss.Height("")
+	}
+	var content string
+	createButtonStyle := styles.ButtonDefault
+	joinButtonStyle := styles.ButtonDefault
+	switch m.focus {
+	case focusCreate:
+		createButtonStyle = styles.ButtonBlue
+	case focusJoin:
+		joinButtonStyle = styles.ButtonBlue
+	default:
+	}
+	createBtn := createButtonStyle.Render("Create lobby")
+	joinBtn := joinButtonStyle.Render("Join lobby")
+	content = lipgloss.JoinVertical(
+		lipgloss.Center,
+		styles.PaddingVertical.Render(
+			lipgloss.JoinVertical(
+				lipgloss.Left,
+				"Username:",
+				m.nameTi.View(),
+			),
+		),
+		styles.PaddingVertical.Render(
+			lipgloss.JoinVertical(
+				lipgloss.Left,
+				"Lobby code:",
+				m.codeTi.View(),
+			),
+		),
+		createBtn,
+		joinBtn,
+	)
 	v := lipgloss.JoinVertical(
 		lipgloss.Center,
 		header,
 		content,
+		keybinds,
 	)
+	if m.error != "" {
+		v = lipgloss.JoinVertical(
+			lipgloss.Center,
+			v,
+			lipgloss.NewStyle().Foreground(styles.Red).Render(m.error),
+		)
+	}
 	return styles.NewContainer(v)
 }
