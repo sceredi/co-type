@@ -1,3 +1,4 @@
+// Package header defines the header component of the lobby page.
 package header
 
 import (
@@ -10,6 +11,7 @@ import (
 	"github.com/sceredi/co-type/common/domain"
 )
 
+// Render renders the header component for the given player and lobby.
 func Render(player *domain.Player, lobby *domain.Lobby) string {
 	readyPlayerCount := 0
 	for _, p := range lobby.Players {
@@ -28,7 +30,7 @@ func Render(player *domain.Player, lobby *domain.Lobby) string {
 			styles.NewLabelBold(player.Name),
 			fmt.Sprintf("%d/%d", readyPlayerCount, len(lobby.Players)),
 		).
-		StyleFunc(func(row, col int) lipgloss.Style {
+		StyleFunc(func(_, _ int) lipgloss.Style {
 			return lipgloss.NewStyle().Width(pages.Width / 4).Align(lipgloss.Center)
 		})
 

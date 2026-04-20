@@ -1,3 +1,4 @@
+// Package playerinfo defines the component that renders the player's information in the lobby page.
 package playerinfo
 
 import (
@@ -14,6 +15,7 @@ const (
 	backspaceDesc = "Backspace:"
 )
 
+// Render renders the player information component for the given player.
 func Render(player domain.Player) string {
 	renderer := lipgloss.NewStyle().Padding(1)
 	var allowed, blocked string
@@ -21,7 +23,6 @@ func Render(player domain.Player) string {
 		allowed = fmt.Sprintf("%s: \"%s\"", allowedDesc, player.AllowedCharacters)
 	} else {
 		allowed = fmt.Sprintf("%s not yet set", allowedDesc)
-
 	}
 	if player.BlockedCharacters != "" {
 		blocked = fmt.Sprintf("%s: \"%s\"", blockedDesc, player.BlockedCharacters)

@@ -1,3 +1,4 @@
+// Package playerlist defines the player list component of the lobby page.
 package playerlist
 
 import (
@@ -7,6 +8,7 @@ import (
 	"github.com/sceredi/co-type/common/domain"
 )
 
+// Render renders the player list component for the given selected player and lobby.
 func Render(selectedPlayer int, lobby *domain.Lobby) string {
 	rows := make([][]string, len(lobby.Players))
 	for i, player := range lobby.Players {
@@ -29,7 +31,7 @@ func Render(selectedPlayer int, lobby *domain.Lobby) string {
 	t := table.New().
 		Border(lipgloss.HiddenBorder()).
 		BorderColumn(false).
-		StyleFunc(func(row, col int) lipgloss.Style {
+		StyleFunc(func(_, _ int) lipgloss.Style {
 			return lipgloss.NewStyle().Padding(1)
 		}).
 		Rows(rows...)

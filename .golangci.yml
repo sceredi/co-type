@@ -7,7 +7,6 @@ linters:
     - exhaustive
     - goconst
     - godot
-    - gomoddirectives
     - goprintffuncname
     - gosec
     - misspell
@@ -16,7 +15,6 @@ linters:
     - nilerr
     - noctx
     - nolintlint
-    - prealloc
     - revive
     - rowserrcheck
     - sqlclosecheck
