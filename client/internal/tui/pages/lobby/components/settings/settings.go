@@ -119,7 +119,7 @@ func (m Model) Update(msg tea.Msg) (Model, tea.Cmd) {
 			} else {
 				m.focus--
 			}
-			m.focus = m.focus % (focusCancel + 1)
+			m.focus = (m.focus + focusCancel + 1) % (focusCancel + 1)
 			m.updateFocus()
 		}
 	}
@@ -127,6 +127,8 @@ func (m Model) Update(msg tea.Msg) (Model, tea.Cmd) {
 	cmds = append(cmds, cmd)
 	return m, tea.Batch(cmds...)
 }
+
+const keybinds = "↑/↓/tab/s+tab: select field\nspace: toggle • enter: confirm\nctrl+c: quit"
 
 func (m Model) View() string {
 	header := styles.PaddingVertical.Render(fmt.Sprintf("Editing settings for %s", styles.NewLabelBold(m.player.Name)))
@@ -194,6 +196,7 @@ func (m Model) View() string {
 		header,
 		editorView,
 		buttons,
+		keybinds,
 	)
 	return styles.NewContainer(v)
 }
