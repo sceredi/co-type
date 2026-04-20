@@ -10,6 +10,7 @@ import (
 	"github.com/sceredi/co-type/client/internal/tui/pages"
 	"github.com/sceredi/co-type/client/internal/tui/pages/lobby"
 	"github.com/sceredi/co-type/client/internal/tui/pages/welcome"
+	welcome_messages "github.com/sceredi/co-type/client/internal/tui/pages/welcome/messages"
 )
 
 type page int
@@ -22,9 +23,9 @@ const (
 
 // Model is the main model of the TUI.
 type Model struct {
-	width       int
-	height      int
-	currentPage page
+	width  int
+	height int
+	page   page
 
 	welcome welcome.Model
 	lobby   lobby.Model
@@ -33,7 +34,7 @@ type Model struct {
 // New creates a new TUI model.
 func New() Model {
 	return Model{
-		currentPage: welcomePage,
+		page: welcomePage,
 
 		welcome: welcome.New(),
 	}
@@ -57,15 +58,18 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		case "ctrl+c":
 			return m, tea.Quit
 		}
+	case welcome_messages.JoinLobbyMsg:
+		m.lobby = lobby.New(msg.Lobby.Host, &msg.Lobby)
+		m.page = lobbyPage
 	}
 
-	switch m.currentPage {
+	switch m.page {
 	case welcomePage:
 		m.welcome, cmd = m.welcome.Update(msg)
 	case lobbyPage:
 		m.lobby, cmd = m.lobby.Update(msg)
 	default:
-		log.Fatalf("model: ERROR Unexpected page %d", m.currentPage)
+		log.Fatalf("model: ERROR Unexpected page %d", m.page)
 	}
 
 	return m, cmd
@@ -74,7 +78,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 // View returns the view of the model.
 func (m Model) View() tea.View {
 	var v string
-	switch m.currentPage {
+	switch m.page {
 	case welcomePage:
 		v = m.welcome.View()
 	case lobbyPage:

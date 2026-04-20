@@ -12,4 +12,6 @@ var (
 	ButtonPrimary = ButtonDefault.BorderForeground(Green).Foreground(Green)
 	// ButtonDanger is a style for danger buttons with a red border and foreground.
 	ButtonDanger = ButtonDefault.BorderForeground(Red).Foreground(Red)
+	// ButtonBlue is a style for blue buttons with a blue border and foreground.
+	ButtonBlue = ButtonDefault.BorderForeground(Blue).Foreground(Blue)
 )
