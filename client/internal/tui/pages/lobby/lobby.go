@@ -80,6 +80,8 @@ func (m Model) Update(msg tea.Msg) (Model, tea.Cmd) {
 	return m, tea.Batch(cmds...)
 }
 
+const keybinds = "↑/↓: select player • enter: edit player\nr: toggle ready • i: copy lobby code\nesc: leave lobby • ctrl+c: quit"
+
 func (m Model) View() string {
 	readyLabel := "[ r ] Ready Up"
 	readyButtonStyle := styles.ButtonDefault
@@ -103,6 +105,7 @@ func (m Model) View() string {
 		header.Render(m.player, m.lobby),
 		body,
 		buttons,
+		keybinds,
 	)
 
 	if m.focus == focusSettings {
