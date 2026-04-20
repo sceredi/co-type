@@ -64,8 +64,8 @@ func (m Model) Update(msg tea.Msg) (Model, tea.Cmd) {
 		switch msg := msg.(type) {
 		case tea.KeyPressMsg:
 			switch msg.String() {
-			case "ctrl+c":
-				return m, tea.Quit
+			case "i":
+				cmd = tea.SetClipboard(m.lobby.ID)
 			case "up":
 				m.handlePlayerSelect(m.selectedPlayer - 1)
 			case "down":

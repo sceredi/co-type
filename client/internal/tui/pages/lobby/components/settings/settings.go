@@ -7,6 +7,7 @@ import (
 	"charm.land/bubbles/v2/textinput"
 	tea "charm.land/bubbletea/v2"
 	"charm.land/lipgloss/v2"
+	"github.com/sceredi/co-type/client/internal/tui/pages/common"
 	lobby_messages "github.com/sceredi/co-type/client/internal/tui/pages/lobby/messages"
 	"github.com/sceredi/co-type/client/internal/tui/styles"
 	"github.com/sceredi/co-type/common/domain"
@@ -36,19 +37,10 @@ type Model struct {
 	backspaceAllowed bool
 }
 
-func newTextinput(placeholder string, value string) textinput.Model {
-	ti := textinput.New()
-	ti.Placeholder = placeholder
-	ti.CharLimit = 256
-	ti.SetWidth(20)
-	ti.SetValue(value)
-	return ti
-}
-
 // New creates a new settings model for the given player.
 func New(player *domain.Player) Model {
-	allowedList := newTextinput("eg. /[a-z]/", player.AllowedCharacters)
-	blockedList := newTextinput("eg. /[0-9]/", player.BlockedCharacters)
+	allowedList := common.NewTextinput("eg. /[a-z]/", player.AllowedCharacters)
+	blockedList := common.NewTextinput("eg. /[0-9]/", player.BlockedCharacters)
 	allowedList.Focus()
 	return Model{
 		focus:            focusAllowed,
@@ -107,7 +99,6 @@ func (m *Model) cancelSaveCmd() tea.Cmd {
 }
 
 const (
-	exitk  = "ctrl+c"
 	spacek = "space"
 	tabk   = "tab"
 	stabk  = "shift+tab"
@@ -122,8 +113,6 @@ func (m Model) Update(msg tea.Msg) (Model, tea.Cmd) {
 	switch msg := msg.(type) {
 	case tea.KeyPressMsg:
 		switch msg.String() {
-		case exitk:
-			return m, tea.Quit
 		case spacek:
 			if m.focus == focusBackspace {
 				m.backspaceAllowed = !m.backspaceAllowed
@@ -141,7 +130,7 @@ func (m Model) Update(msg tea.Msg) (Model, tea.Cmd) {
 				m.backspaceAllowed = !m.backspaceAllowed
 			}
 			v := msg.String()
-			if v == "tab" || v == enterk || v == "down" {
+			if v == tabk || v == enterk || v == downk {
 				m.focus++
 			} else {
 				m.focus--

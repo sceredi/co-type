@@ -9,13 +9,14 @@ import (
 	"charm.land/lipgloss/v2"
 	"github.com/sceredi/co-type/client/internal/tui/pages"
 	"github.com/sceredi/co-type/client/internal/tui/pages/lobby"
-	"github.com/sceredi/co-type/common/domain"
+	"github.com/sceredi/co-type/client/internal/tui/pages/welcome"
 )
 
 type page int
 
 const (
-	lobbyPage page = iota
+	welcomePage page = iota
+	lobbyPage
 	gamePage
 )
 
@@ -24,31 +25,23 @@ type Model struct {
 	width       int
 	height      int
 	currentPage page
-	lobby       lobby.Model
+
+	welcome welcome.Model
+	lobby   lobby.Model
 }
 
 // New creates a new TUI model.
 func New() Model {
-	// TODO: remove hardcoded values
-	p := domain.NewPlayer("sceredi")
-	p.AllowedCharacters = "/[a-z]/"
-	l := domain.NewLobby("lobby1", &p)
-	p2 := domain.NewPlayer("player2")
-	p3 := domain.NewPlayer("player3")
-	p4 := domain.NewPlayer("player4")
-	l.AddPlayers(&p2, &p3, &p4)
 	return Model{
-		lobby: lobby.New(
-			&p,
-			&l,
-		),
+		currentPage: welcomePage,
+
+		welcome: welcome.New(),
 	}
 }
 
 // Init initializes the model.
 func (m Model) Init() tea.Cmd {
-	cmd := m.lobby.Init()
-	return cmd
+	return nil
 }
 
 // Update updates the model based on the given message and returns the updated model and any commands to execute.
@@ -59,13 +52,22 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case tea.WindowSizeMsg:
 		m.width = msg.Width
 		m.height = msg.Height
+	case tea.KeyPressMsg:
+		switch msg.String() {
+		case "ctrl+c":
+			return m, tea.Quit
+		}
 	}
 
-	m.lobby, cmd = m.lobby.Update(msg)
+	switch m.currentPage {
+	case welcomePage:
+		m.welcome, cmd = m.welcome.Update(msg)
+	case lobbyPage:
+		m.lobby, cmd = m.lobby.Update(msg)
+	default:
+		log.Fatalf("model: ERROR Unexpected page %d", m.currentPage)
+	}
 
-	// TODO: Manage movement between pages
-
-	// TODO: Update only the current page
 	return m, cmd
 }
 
@@ -73,6 +75,8 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 func (m Model) View() tea.View {
 	var v string
 	switch m.currentPage {
+	case welcomePage:
+		v = m.welcome.View()
 	case lobbyPage:
 		v = m.lobby.View()
 	default:
