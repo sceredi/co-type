@@ -152,18 +152,6 @@ func (m Model) View() string {
 	header := styles.PaddingVertical.Render(
 		fmt.Sprintf("Editing settings for %s", styles.NewLabelBold(m.player.Name)),
 	)
-	var c tea.Cursor
-	var focussedList textinput.Model
-	if m.allowedList.Focused() {
-		focussedList = m.allowedList
-	} else {
-		focussedList = m.blockedList
-	}
-	if !focussedList.VirtualCursor() {
-		c = *m.allowedList.Cursor()
-		c.Y += lipgloss.Height(allowedDescription)
-	}
-
 	allowedView := styles.PaddingVertical.Render(
 		lipgloss.JoinVertical(
 			lipgloss.Left,
