@@ -53,10 +53,28 @@ func (m Model) View() string {
 	correct := style.Background(styles.DarkGreen).Render(m.game.Lobby.Snippet[:ce])
 	wrong := style.Background(styles.DarkRed).Render(m.game.Lobby.Snippet[ce:end])
 	rest := m.game.Lobby.Snippet[end:]
-	v := lipgloss.NewStyle().
+	v := styles.NewContainer(lipgloss.NewStyle().
 		Width(m.width).
 		Height(m.height).
 		Align(lipgloss.Left).
-		Render(correct + wrong + rest)
-	return styles.NewContainer(v)
+		Render(correct + wrong + rest),
+	)
+	if m.game.State.Status == domain.Paused {
+		base := lipgloss.NewLayer(v)
+		topContent := styles.NewContainer(
+			lipgloss.JoinVertical(
+				lipgloss.Center,
+				"Game paused",
+				"Press [ r ] to resume",
+			),
+		)
+		x := (lipgloss.Width(v) / 2) - (lipgloss.Width(topContent) / 2)
+		y := (lipgloss.Height(v) / 2) - (lipgloss.Height(topContent) / 2)
+		top := lipgloss.NewLayer(
+			topContent,
+		).X(x).Y(y).Z(1)
+		comp := lipgloss.NewCompositor(base, top)
+		return comp.Render()
+	}
+	return v
 }
