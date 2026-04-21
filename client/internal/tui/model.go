@@ -8,6 +8,7 @@ import (
 	tea "charm.land/bubbletea/v2"
 	"charm.land/lipgloss/v2"
 	"github.com/sceredi/co-type/client/internal/tui/pages"
+	"github.com/sceredi/co-type/client/internal/tui/pages/game"
 	"github.com/sceredi/co-type/client/internal/tui/pages/lobby"
 	lobby_messages "github.com/sceredi/co-type/client/internal/tui/pages/lobby/messages"
 	"github.com/sceredi/co-type/client/internal/tui/pages/welcome"
@@ -30,6 +31,7 @@ type Model struct {
 
 	welcome welcome.Model
 	lobby   lobby.Model
+	game    game.Model
 }
 
 // New creates a new TUI model.
@@ -70,11 +72,16 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		}
 		m.welcome, cmd = m.welcome.Update(msg)
 	case lobbyPage:
-		switch msg.(type) {
-		case lobby_messages.LeaveMessage:
+		switch msg := msg.(type) {
+		case lobby_messages.LeaveMsg:
 			m.page = welcomePage
+		case lobby_messages.StartGameMsg:
+			m.game = game.New(msg.Game)
+			m.page = gamePage
 		}
 		m.lobby, cmd = m.lobby.Update(msg)
+	case gamePage:
+		m.game, cmd = m.game.Update(msg)
 	default:
 		log.Fatalf("model: ERROR Unexpected page %d", m.page)
 	}
@@ -90,6 +97,8 @@ func (m Model) View() tea.View {
 		v = m.welcome.View()
 	case lobbyPage:
 		v = m.lobby.View()
+	case gamePage:
+		v = m.game.View()
 	default:
 		// TODO: not yet implemented
 		log.Fatal("not yet implemented")

@@ -7,6 +7,8 @@ import (
 var (
 	// Red is a color for errors and warnings.
 	Red = lipgloss.Color("124")
+	// DarkRed is a darker Red.
+	DarkRed = lipgloss.Color("88")
 	// Green is a color for success messages and highlights.
 	Green = lipgloss.Color("106")
 	// DarkGreen is a darker Green.

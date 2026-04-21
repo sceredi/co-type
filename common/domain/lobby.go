@@ -5,6 +5,7 @@ type Lobby struct {
 	ID      string
 	Players []*Player
 	Host    *Player
+	Snippet string
 }
 
 // NewLobby creates a new lobby with the given ID and host player.
@@ -13,6 +14,7 @@ func NewLobby(id string, host *Player) Lobby {
 		ID:      id,
 		Players: []*Player{host},
 		Host:    host,
+		Snippet: "",
 	}
 }
 
