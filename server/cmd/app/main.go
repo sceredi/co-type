@@ -4,9 +4,9 @@ package main
 import (
 	"fmt"
 
-	shared "github.com/sceredi/co-type/common/example"
+	"github.com/sceredi/co-type/server/internal/example"
 )
 
 func main() {
-	fmt.Printf("Hello from %s!", shared.Name)
+	fmt.Printf("Hello from %s!", example.Name)
 }
