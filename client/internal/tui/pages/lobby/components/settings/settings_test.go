@@ -60,7 +60,7 @@ func TestConfirmEmitsCommand(t *testing.T) {
 	for range 3 {
 		m, _ = m.Update(tea.KeyPressMsg{Code: tea.KeyTab})
 	}
-	if m.focus != focusConfim {
+	if m.focus != focusConfirm {
 		t.Fatalf("expected focusConfim, got %d", m.focus)
 	}
 

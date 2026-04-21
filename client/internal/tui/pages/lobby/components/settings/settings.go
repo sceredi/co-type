@@ -19,7 +19,7 @@ const (
 	focusAllowed focusSlot = iota
 	focusBlocked
 	focusBackspace
-	focusConfim
+	focusConfirm
 	focusCancel
 )
 
@@ -119,7 +119,7 @@ func (m Model) Update(msg tea.Msg) (Model, tea.Cmd) {
 				m.backspaceAllowed = !m.backspaceAllowed
 			}
 		case tabk, stabk, enterk, upk, downk:
-			if msg.String() == enterk && m.focus == focusConfim {
+			if msg.String() == enterk && m.focus == focusConfirm {
 				cmd := m.confirmSaveCmd()
 				return m, tea.Batch(cmd, lobby_messages.NewCloseSettingsCmd())
 			}
@@ -202,7 +202,7 @@ func (m Model) View() string {
 	confirmButtonStyle := styles.ButtonDefault
 	cancelButtonStyle := styles.ButtonDefault
 	switch m.focus {
-	case focusConfim:
+	case focusConfirm:
 		confirmButtonStyle = styles.ButtonPrimary
 	case focusCancel:
 		cancelButtonStyle = styles.ButtonDanger
