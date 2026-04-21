@@ -1,7 +1,5 @@
 package domain
 
-const MaxPlayers = 8
-
 // Lobby represents the state of the lobby.
 type Lobby struct {
 	ID      string
@@ -9,6 +7,7 @@ type Lobby struct {
 	Host    *Player
 }
 
+// NewLobby creates a new lobby with the given ID and host player.
 func NewLobby(id string, host *Player) Lobby {
 	return Lobby{
 		ID:      id,
@@ -17,6 +16,7 @@ func NewLobby(id string, host *Player) Lobby {
 	}
 }
 
+// AddPlayers adds the given players to the lobby.
 func (l *Lobby) AddPlayers(players ...*Player) {
 	l.Players = append(l.Players, players...)
 }
