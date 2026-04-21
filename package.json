@@ -1,13 +1,13 @@
 {
-  "name": "template-for-go-projects",
-  "description": "A starting point fo go projects",
-  "homepage": "https://github.com/sceredi/template-for-go-projects#readme",
+  "name": "co-type",
+  "description": "A cooperative typing game written in go",
+  "homepage": "https://github.com/sceredi/co-type#readme",
   "bugs": {
-    "url": "https://github.com/sceredi/template-for-go-projects/issues"
+    "url": "https://github.com/sceredi/co-type/issues"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/sceredi/template-for-go-projects.git"
+    "url": "git+https://github.com/sceredi/co-type.git"
   },
   "devDependencies": {
     "semantic-release-preconfigured-conventional-commits": "1.1.157"
