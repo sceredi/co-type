@@ -68,7 +68,7 @@ func (m Model) Update(msg tea.Msg) (Model, tea.Cmd) {
 			switch msg.String() {
 			case "i":
 				log.Printf("Copying %s", m.lobby.ID)
-				cmds = append(cmds, tea.SetClipboard(m.lobby.ID), tea.SetPrimaryClipboard(m.lobby.ID))
+				cmds = append(cmds, tea.SetClipboard(m.lobby.ID))
 			case "up":
 				m.handlePlayerSelect(m.selectedPlayer - 1)
 			case "down":
@@ -77,6 +77,8 @@ func (m Model) Update(msg tea.Msg) (Model, tea.Cmd) {
 				m.handleReadyCmd()
 			case "enter":
 				m.handleOpenSettingsModal()
+			case "esc":
+				cmds = append(cmds, lobby_messages.NewLeaveMessage())
 			}
 		}
 	} else {
