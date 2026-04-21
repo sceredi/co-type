@@ -8,7 +8,9 @@ import (
 	tea "charm.land/bubbletea/v2"
 	"charm.land/lipgloss/v2"
 	"github.com/sceredi/co-type/client/internal/tui/pages"
+	"github.com/sceredi/co-type/client/internal/tui/pages/end"
 	"github.com/sceredi/co-type/client/internal/tui/pages/game"
+	game_messages "github.com/sceredi/co-type/client/internal/tui/pages/game/messages"
 	"github.com/sceredi/co-type/client/internal/tui/pages/lobby"
 	lobby_messages "github.com/sceredi/co-type/client/internal/tui/pages/lobby/messages"
 	"github.com/sceredi/co-type/client/internal/tui/pages/welcome"
@@ -21,6 +23,7 @@ const (
 	welcomePage page = iota
 	lobbyPage
 	gamePage
+	endPage
 )
 
 // Model is the main model of the TUI.
@@ -32,6 +35,7 @@ type Model struct {
 	welcome welcome.Model
 	lobby   lobby.Model
 	game    game.Model
+	end     end.Model
 }
 
 // New creates a new TUI model.
@@ -81,7 +85,15 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		}
 		m.lobby, cmd = m.lobby.Update(msg)
 	case gamePage:
+		switch msg := msg.(type) {
+		case game_messages.GameEndMsg:
+			m.end = end.New(msg.Stats)
+			m.page = endPage
+		}
 		m.game, cmd = m.game.Update(msg)
+	case endPage:
+		m.end, cmd = m.end.Update(msg)
+
 	default:
 		log.Fatalf("model: ERROR Unexpected page %d", m.page)
 	}
@@ -99,9 +111,10 @@ func (m Model) View() tea.View {
 		v = m.lobby.View()
 	case gamePage:
 		v = m.game.View()
+	case endPage:
+		v = m.end.View()
 	default:
-		// TODO: not yet implemented
-		log.Fatal("not yet implemented")
+		log.Fatal("model.go -> Unexpected page value in View()")
 	}
 	if m.width < pages.Width || m.height < pages.Height {
 		v = "Your terminal is too small to display the game. \nPlease increase the size of your terminal or \ndecrease the font size [ctrl + minus]."

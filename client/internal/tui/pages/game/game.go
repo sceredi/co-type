@@ -3,9 +3,11 @@ package game
 
 import (
 	"log"
+	"time"
 
 	tea "charm.land/bubbletea/v2"
 	"charm.land/lipgloss/v2"
+	game_messages "github.com/sceredi/co-type/client/internal/tui/pages/game/messages"
 	"github.com/sceredi/co-type/client/internal/tui/styles"
 	"github.com/sceredi/co-type/common/domain"
 )
@@ -28,7 +30,7 @@ func (m Model) Init() tea.Cmd {
 	return nil
 }
 
-// Update updates the game model base on the given message.
+// Update updates the game model based on the given message.
 func (m Model) Update(msg tea.Msg) (Model, tea.Cmd) {
 	var cmds []tea.Cmd
 	var cmd tea.Cmd
@@ -38,10 +40,21 @@ func (m Model) Update(msg tea.Msg) (Model, tea.Cmd) {
 		m.width = msg.Width
 		m.height = msg.Height
 	case tea.KeyPressMsg:
+		switch msg.String() {
+		case "enter":
+			// TODO: this is hardcoded
+			tt := time.Now().Round(0).Add(-(120) * time.Second)
+			td := time.Since(tt)
+			cmd = game_messages.NewGameEndCmd(domain.GameStats{
+				TotalTime: td,
+				Lobby:     m.game.Lobby,
+			})
+			cmds = append(cmds, cmd)
+		}
+
 		log.Printf("game: pressed %s", msg.String())
 	}
 
-	cmds = append(cmds, cmd)
 	return m, tea.Batch(cmds...)
 }
 
