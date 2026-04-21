@@ -38,7 +38,7 @@ func TestLeaveMessageReturnsToWelcomePage(t *testing.T) {
 	updated, _ := m.Update(welcome_messages.JoinLobbyMsg{Lobby: lobby})
 	m = updated.(Model)
 
-	updated, _ = m.Update(lobby_messages.LeaveMessage{})
+	updated, _ = m.Update(lobby_messages.LeaveMsg{})
 	got := updated.(Model)
 
 	if got.page != welcomePage {

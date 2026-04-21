@@ -22,12 +22,12 @@ func NewPlayerReadyCmd(name string, isReady bool) tea.Cmd {
 	}
 }
 
-// LeaveMessage is a message that indicates the player wants to leave the lobby and return to the main menu.
-type LeaveMessage struct{}
+// LeaveMsg is a message that indicates the player wants to leave the lobby and return to the main menu.
+type LeaveMsg struct{}
 
-// NewLeaveMessage returns a command that creates a LeaveMessage.
-func NewLeaveMessage() tea.Cmd {
-	return func() tea.Msg { return LeaveMessage{} }
+// NewLeaveCmd returns a command that creates a LeaveMessage.
+func NewLeaveCmd() tea.Cmd {
+	return func() tea.Msg { return LeaveMsg{} }
 }
 
 // UpdatePlayerMsg is a message that indicates that a player's settings have been updated.
@@ -57,5 +57,17 @@ type CloseSettingsMsg struct{}
 func NewCloseSettingsCmd() tea.Cmd {
 	return func() tea.Msg {
 		return CloseSettingsMsg{}
+	}
+}
+
+// StartGameMsg is a message that indicates that a game should be started.
+type StartGameMsg struct {
+	Game domain.Game
+}
+
+// NewStartGameCmd return a command that creates a StartGameMsg.
+func NewStartGameCmd(game domain.Game) tea.Cmd {
+	return func() tea.Msg {
+		return StartGameMsg{Game: game}
 	}
 }

@@ -35,6 +35,7 @@ type Model struct {
 	allowedList      textinput.Model
 	blockedList      textinput.Model
 	backspaceAllowed bool
+	PlayerName       string
 }
 
 // New creates a new settings model for the given player.

@@ -74,11 +74,11 @@ func (m Model) Update(msg tea.Msg) (Model, tea.Cmd) {
 			case "down":
 				m.handlePlayerSelect(m.selectedPlayer + 1)
 			case "r":
-				m.handleReadyCmd()
+				cmd = m.handleReadyCmd()
 			case "enter":
 				m.handleOpenSettingsModal()
 			case "esc":
-				cmds = append(cmds, lobby_messages.NewLeaveMessage())
+				cmds = append(cmds, lobby_messages.NewLeaveCmd())
 			}
 		}
 	} else {
