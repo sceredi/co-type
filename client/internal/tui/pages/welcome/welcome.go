@@ -111,15 +111,6 @@ const keybinds = "↑/↓/tab/s+tab: select field\nenter: confirm • ctrl+c: qu
 // View renders the welcome page.
 func (m Model) View() string {
 	header := styles.LabelBold.PaddingBottom(1).Render("CO-TYPE")
-	var c tea.Cursor
-	focussedTi := m.nameTi
-	if m.codeTi.Focused() {
-		focussedTi = m.codeTi
-	}
-	if !focussedTi.VirtualCursor() {
-		c = *m.nameTi.Cursor()
-		c.Y += lipgloss.Height("")
-	}
 	var content string
 	createButtonStyle := styles.ButtonDefault
 	joinButtonStyle := styles.ButtonDefault
