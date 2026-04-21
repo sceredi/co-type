@@ -9,6 +9,7 @@ import (
 	"charm.land/lipgloss/v2"
 	"github.com/sceredi/co-type/client/internal/tui/pages"
 	"github.com/sceredi/co-type/client/internal/tui/pages/lobby"
+	lobby_messages "github.com/sceredi/co-type/client/internal/tui/pages/lobby/messages"
 	"github.com/sceredi/co-type/client/internal/tui/pages/welcome"
 	welcome_messages "github.com/sceredi/co-type/client/internal/tui/pages/welcome/messages"
 )
@@ -58,15 +59,21 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		case "ctrl+c":
 			return m, tea.Quit
 		}
-	case welcome_messages.JoinLobbyMsg:
-		m.lobby = lobby.New(msg.Lobby.Host, &msg.Lobby)
-		m.page = lobbyPage
 	}
 
 	switch m.page {
 	case welcomePage:
+		switch msg := msg.(type) {
+		case welcome_messages.JoinLobbyMsg:
+			m.lobby = lobby.New(msg.Lobby.Host, &msg.Lobby)
+			m.page = lobbyPage
+		}
 		m.welcome, cmd = m.welcome.Update(msg)
 	case lobbyPage:
+		switch msg.(type) {
+		case lobby_messages.LeaveMessage:
+			m.page = welcomePage
+		}
 		m.lobby, cmd = m.lobby.Update(msg)
 	default:
 		log.Fatalf("model: ERROR Unexpected page %d", m.page)
