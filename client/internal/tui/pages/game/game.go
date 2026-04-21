@@ -45,6 +45,16 @@ func (m Model) Update(msg tea.Msg) (Model, tea.Cmd) {
 	return m, tea.Batch(cmds...)
 }
 
+func (m Model) renderPlayers() string {
+	rows := make([]string, len(m.game.Lobby.Players)+1)
+	rows[0] = "Players:"
+	for i, p := range m.game.Lobby.Players {
+		rows[i+1] = p.Name
+	}
+	v := lipgloss.JoinVertical(lipgloss.Left, rows...)
+	return v
+}
+
 // View renders the game page.
 func (m Model) View() string {
 	style := lipgloss.NewStyle()
@@ -53,12 +63,20 @@ func (m Model) View() string {
 	correct := style.Background(styles.DarkGreen).Render(m.game.Lobby.Snippet[:ce])
 	wrong := style.Background(styles.DarkRed).Render(m.game.Lobby.Snippet[ce:end])
 	rest := m.game.Lobby.Snippet[end:]
-	v := styles.NewContainer(lipgloss.NewStyle().
+	board := lipgloss.NewStyle().
 		Width(m.width).
 		Height(m.height).
 		Align(lipgloss.Left).
-		Render(correct + wrong + rest),
-	)
+		PaddingRight(2).
+		BorderStyle(lipgloss.NormalBorder()).
+		BorderRight(true).
+		Render(correct + wrong + rest)
+	players := lipgloss.NewStyle().PaddingLeft(2).Render(m.renderPlayers())
+
+	v := lipgloss.JoinHorizontal(lipgloss.Top, board, players)
+
+	v = styles.NewContainer(v)
+
 	if m.game.State.Status == domain.Paused {
 		base := lipgloss.NewLayer(v)
 		topContent := styles.NewContainer(
