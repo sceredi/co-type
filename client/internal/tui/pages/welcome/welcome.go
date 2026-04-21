@@ -79,8 +79,9 @@ func (m Model) Update(msg tea.Msg) (Model, tea.Cmd) {
 			m.updateFocus()
 		case "enter":
 			switch m.focus {
-			case focusName:
+			case focusName, focusCode:
 				m.focus++
+				m.updateFocus()
 			case focusCreate:
 				// TODO: create new lobby
 				cmds = append(cmds, welcome_messages.NewCreateLobbyCmd(m.codeTi.Value(), m.nameTi.Value()))
