@@ -1,0 +1,20 @@
+syntax = "proto3";
+
+package discovery;
+
+option go_package = "github.com/sceredi/co-type/common/proto/discovery";
+
+// The discovery service definition.
+service DiscoveryService {
+  // Registers a server.
+  rpc RegisterServer(RegisterServerRequest) returns (RegisterServerResponse) {}
+}
+
+// The register server request message.
+message RegisterServerRequest {
+  string host_name = 1;
+  int32 port = 2;
+}
+
+// The register server response message.
+message RegisterServerResponse {}
