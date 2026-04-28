@@ -21,37 +21,38 @@ func TestNewServerService(t *testing.T) {
 func TestServerService_CreateServer(t *testing.T) {
 	tests := []struct {
 		name    string
-		seed    []domain.CreateServerRequest
-		input   domain.CreateServerRequest
+		seed    []*domain.Server
+		addr    string
+		port    int32
 		wantErr error
 	}{
 		{
 			name:    "creates new server",
-			input:   domain.CreateServerRequest{Addr: "8.8.8.8"},
+			addr:    "8.8.8.8",
+			port:    8080,
 			wantErr: nil,
 		},
 		{
 			name: "returns ErrServerAlreadyExists when server already exists",
-			seed: []domain.CreateServerRequest{
-				{Addr: "8.8.8.8"},
+			seed: []*domain.Server{
+				{Addr: "8.8.8.8", Port: 8080},
 			},
-			input:   domain.CreateServerRequest{Addr: "8.8.8.8"},
+			addr:    "8.8.8.8",
+			port:    9090,
 			wantErr: domain.ErrServerAlreadyExists,
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			// TODO: construct the receiver type.
-			var svc service.ServerService
 			repo := memory.NewServerRepository()
-			svc = service.NewServerService(repo)
-			for _, req := range tt.seed {
-				if _, err := svc.Create(req); err != nil {
+			svc := service.NewServerService(repo)
+			for _, server := range tt.seed {
+				if _, err := repo.Create(server); err != nil {
 					t.Fatalf("seed create failed: %v", err)
 				}
 			}
 
-			got, err := svc.Create(tt.input)
+			got, err := svc.Create(tt.addr, tt.port)
 			if !errors.Is(err, tt.wantErr) {
 				t.Fatalf("Create() error = %v, want %v", err, tt.wantErr)
 			}
@@ -63,8 +64,11 @@ func TestServerService_CreateServer(t *testing.T) {
 				return
 			}
 
-			if got.Addr != tt.input.Addr {
-				t.Fatalf("Create() got = %s, want %s", got.Addr, tt.input.Addr)
+			if got.Addr != tt.addr {
+				t.Fatalf("Create() got addr = %s, want %s", got.Addr, tt.addr)
+			}
+			if got.Port != tt.port {
+				t.Fatalf("Create() got port = %d, want %d", got.Port, tt.port)
 			}
 		})
 	}

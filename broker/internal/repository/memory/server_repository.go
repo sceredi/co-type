@@ -2,6 +2,9 @@
 package memory
 
 import (
+	"context"
+	"log/slog"
+
 	"github.com/sceredi/co-type/broker/internal/domain"
 	"github.com/sceredi/co-type/broker/internal/repository"
 )
@@ -18,6 +21,10 @@ func NewServerRepository() repository.ServerRepository {
 }
 
 func (r *serverRepository) Create(server *domain.Server) (*domain.Server, error) {
+	slog.InfoContext(context.Background(), "Storing server in memory",
+		slog.String("server", server.Addr),
+		slog.Int("port", int(server.Port)),
+	)
 	for _, s := range r.servers {
 		if s.Addr == server.Addr {
 			return nil, domain.ErrServerAlreadyExists
