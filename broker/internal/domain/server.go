@@ -16,18 +16,13 @@ var (
 type Server struct {
 	// Addr is the address of the server.
 	Addr string
+	Port int32
 }
 
 // NewServer creates a new Server instance with the given address.
-func NewServer(addr string) (*Server, error) {
+func NewServer(addr string, port int32) (*Server, error) {
 	if addr == "" {
 		return nil, ErrServerAddrInvalid
 	}
-	return &Server{Addr: addr}, nil
-}
-
-// CreateServerRequest represents a request to create a new server.
-type CreateServerRequest struct {
-	// Addr is the address of the server to create.
-	Addr string
+	return &Server{Addr: addr, Port: port}, nil
 }
