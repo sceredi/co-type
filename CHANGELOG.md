@@ -1,3 +1,22 @@
+## [0.2.0](https://github.com/sceredi/co-type/compare/v0.1.0...v0.2.0) (2026-04-29)
+
+### Features
+
+* add name to servers ([5cc665f](https://github.com/sceredi/co-type/commit/5cc665f0d3b29f07fb9ba3f815e1f6ac2ad532c4))
+* add server registration ([2fc09c4](https://github.com/sceredi/co-type/commit/2fc09c4f2d554e8114e7e9d182a16a8ea69a7208))
+* **broker:** server creation ([1e033a1](https://github.com/sceredi/co-type/commit/1e033a1e9404548d643595ffa2e6a0225e35fe69))
+
+### Bug Fixes
+
+* manage client disconnenction ([c0bb4bc](https://github.com/sceredi/co-type/commit/c0bb4bc958bfc273113b24583c8de640d4980fd8))
+
+### General maintenance
+
+* fix typo ([a730c82](https://github.com/sceredi/co-type/commit/a730c82c582fa244c381597900950ccc13253ae8))
+* fix typo ([dddd37f](https://github.com/sceredi/co-type/commit/dddd37fe5a127cdad87c8af14320de6b68c5f55d))
+* group config utils ([6d1523d](https://github.com/sceredi/co-type/commit/6d1523d80de9e84a1ec5e57aedd750fa57ad7ff8))
+* remove unreachable code ([1c072f4](https://github.com/sceredi/co-type/commit/1c072f4d6ed0ab109217b362d2372c98a25fe4be))
+
 ## [0.1.0](https://github.com/sceredi/co-type/compare/v0.0.0...v0.1.0) (2026-04-21)
 
 ### Features
