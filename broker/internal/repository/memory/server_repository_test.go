@@ -13,7 +13,7 @@ func TestNewServerRepository(t *testing.T) {
 	var repo repository.ServerRepository
 	repo = memory.NewServerRepository()
 	if repo == nil {
-		t.Fatal("NewLobbyRepository() returned nil")
+		t.Fatal("NewServerRepository() returned nil")
 	}
 }
 
