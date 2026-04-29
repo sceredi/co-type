@@ -29,5 +29,4 @@ func main() {
 	if err != nil {
 		log.Fatalf("Failed to start discovery listener: %v", err)
 	}
-	fmt.Println("Hello from Broker")
 }
