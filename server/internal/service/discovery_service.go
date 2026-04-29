@@ -17,7 +17,7 @@ type discoveryService struct {
 	gtw grpc.ControlGateway
 }
 
-// NewDiscoveryService creates a new instance of DiscoveryService with the provided DiscoveryServiceClient and returns it.
+// NewDiscoveryService creates a new instance of DiscoveryService with the provided ControlGateway and returns it.
 func NewDiscoveryService(gtw grpc.ControlGateway) DiscoveryService {
 	return &discoveryService{gtw: gtw}
 }
