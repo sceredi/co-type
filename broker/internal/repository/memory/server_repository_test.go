@@ -30,7 +30,15 @@ func TestServerRepository_Create(t *testing.T) {
 			wantErr: nil,
 		},
 		{
-			name: "returns ErrServerAlreadyExists when server already exists",
+			name: "returns ErrServerAlreadyExists when server with same name already exists",
+			seed: []*domain.Server{
+				{Name: "test_server"},
+			},
+			input:   &domain.Server{Name: "test_server"},
+			wantErr: domain.ErrServerAlreadyExists,
+		},
+		{
+			name: "returns ErrServerAlreadyExists when server with same addr already exists",
 			seed: []*domain.Server{
 				{Addr: "8.8.8.8"},
 			},

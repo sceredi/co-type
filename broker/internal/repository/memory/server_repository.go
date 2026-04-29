@@ -26,7 +26,7 @@ func (r *serverRepository) Create(server *domain.Server) (*domain.Server, error)
 		slog.Int("port", int(server.Port)),
 	)
 	for _, s := range r.servers {
-		if s.Addr == server.Addr {
+		if s.Name == server.Name || s.Addr == server.Addr {
 			return nil, domain.ErrServerAlreadyExists
 		}
 	}
