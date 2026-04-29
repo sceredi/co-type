@@ -10,13 +10,11 @@ import (
 	"strconv"
 
 	"github.com/sceredi/co-type/broker/internal/config"
+	cfg_utils "github.com/sceredi/co-type/common/config"
 )
 
 func main() {
-	err := config.Setup()
-	if err != nil {
-		log.Fatal("Error loading from .env file")
-	}
+	cfg_utils.Setup()
 	port, err := strconv.Atoi(os.Getenv("BROKER_PORT"))
 	if err != nil {
 		log.Fatalf("Invalid port number: %v", err)

@@ -7,13 +7,15 @@ import (
 	"log/slog"
 	"os"
 
+	cfg_utils "github.com/sceredi/co-type/common/config"
 	"github.com/sceredi/co-type/server/internal/config"
+
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 )
 
 func main() {
-	config.Setup()
+	cfg_utils.Setup()
 	serverName := os.Getenv("SERVER_NAME")
 	serverAddr := os.Getenv("SERVER_ADDR")
 	idx := serverName[len(serverName)-1] - '0'
