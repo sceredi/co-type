@@ -1,12 +1,13 @@
 package grpc
 
 import (
-	"context"
 	"errors"
 	"log/slog"
 
 	"github.com/sceredi/co-type/broker/internal/service"
 	"github.com/sceredi/co-type/common/proto/control"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 )
 
 // ControlHandler implements the ControlServiceServer interface and handles incoming gRPC requests for server management.
@@ -25,19 +26,22 @@ func (h *ControlHandler) Manage(stream control.ControlService_ManageServer) erro
 	for {
 		env, err := stream.Recv()
 		if err != nil {
-			slog.ErrorContext(context.Background(), "Failed to receive message from stream",
+			if status.Code(err) == codes.Canceled {
+				slog.DebugContext(stream.Context(), "Stream canceled by client")
+			}
+			slog.ErrorContext(stream.Context(), "Failed to receive message from stream",
 				slog.String("error", err.Error()),
 			)
 			return err
 		}
-		slog.InfoContext(context.Background(), "Received message from stream",
+		slog.InfoContext(stream.Context(), "Received message from stream",
 			slog.Any("payload", env.GetPayload()),
 		)
 		switch msg := env.Payload.(type) {
 		case *control.ServerEnvelope_Register:
 			h.manageRegisterServerReq(msg.Register, stream)
 		default:
-			slog.WarnContext(context.Background(), "Received unknown message type",
+			slog.WarnContext(stream.Context(), "Received unknown message type",
 				slog.Any("payload", env.GetPayload()),
 			)
 			return toGRPCError(errors.New("unknown message type"))
