@@ -8,9 +8,13 @@ import (
 
 // Setup sets up the default logger for cli services.
 func Setup() {
+	var level slog.Level
+	if err := level.UnmarshalText([]byte(os.Getenv("LOG_LEVEL"))); err != nil {
+		level = slog.LevelInfo
+	}
 	opts := &slog.HandlerOptions{
 		AddSource: true,
-		Level:     slog.LevelInfo,
+		Level:     level,
 	}
 
 	logger := slog.New(
