@@ -50,10 +50,11 @@ func (h *ControlHandler) Manage(stream control.ControlService_ManageServer) erro
 }
 
 func (h *ControlHandler) manageRegisterServerReq(msg *control.RegisterServer, stream control.ControlService_ManageServer) {
-	_, err := h.serverSvc.Create(msg.GetHost(), msg.GetPort())
+	_, err := h.serverSvc.Create(msg.GetName(), msg.GetHost(), msg.GetPort())
 	if err != nil {
 		slog.Error("Failed to register server",
-			slog.String("host_name", msg.GetHost()),
+			slog.String("name", msg.GetName()),
+			slog.String("host", msg.GetHost()),
 			slog.Int("port", int(msg.GetPort())),
 			slog.String("error", err.Error()),
 		)

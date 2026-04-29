@@ -20,26 +20,29 @@ func TestNewServerService(t *testing.T) {
 
 func TestServerService_CreateServer(t *testing.T) {
 	tests := []struct {
-		name    string
-		seed    []*domain.Server
-		addr    string
-		port    int32
-		wantErr error
+		name     string
+		seed     []*domain.Server
+		hostName string
+		addr     string
+		port     int32
+		wantErr  error
 	}{
 		{
-			name:    "creates new server",
-			addr:    "8.8.8.8",
-			port:    8080,
-			wantErr: nil,
+			name:     "creates new server",
+			hostName: "test_server",
+			addr:     "8.8.8.8",
+			port:     8080,
+			wantErr:  nil,
 		},
 		{
 			name: "returns ErrServerAlreadyExists when server already exists",
 			seed: []*domain.Server{
-				{Addr: "8.8.8.8", Port: 8080},
+				{Name: "test_server2", Addr: "8.8.8.8", Port: 8080},
 			},
-			addr:    "8.8.8.8",
-			port:    9090,
-			wantErr: domain.ErrServerAlreadyExists,
+			hostName: "test_server",
+			addr:     "8.8.8.8",
+			port:     9090,
+			wantErr:  domain.ErrServerAlreadyExists,
 		},
 	}
 	for _, tt := range tests {
@@ -52,7 +55,7 @@ func TestServerService_CreateServer(t *testing.T) {
 				}
 			}
 
-			got, err := svc.Create(tt.addr, tt.port)
+			got, err := svc.Create(tt.hostName, tt.addr, tt.port)
 			if !errors.Is(err, tt.wantErr) {
 				t.Fatalf("Create() error = %v, want %v", err, tt.wantErr)
 			}
@@ -64,6 +67,9 @@ func TestServerService_CreateServer(t *testing.T) {
 				return
 			}
 
+			if got.Name != tt.hostName {
+				t.Fatalf("NewServer() got name = %s, want %s", got.Name, tt.hostName)
+			}
 			if got.Addr != tt.addr {
 				t.Fatalf("Create() got addr = %s, want %s", got.Addr, tt.addr)
 			}

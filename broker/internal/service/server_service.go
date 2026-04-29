@@ -14,7 +14,7 @@ import (
 // ServerService defines the interface for managing servers in the broker service.
 type ServerService interface {
 	// Create creates a new server in the broker service. It takes a CreateServerRequest and returns the created Server or an error if the operation fails.
-	Create(addr string, port int32) (*domain.Server, error)
+	Create(name, addr string, port int32) (*domain.Server, error)
 }
 
 type serverService struct {
@@ -26,12 +26,13 @@ func NewServerService(serverRepo repository.ServerRepository) ServerService {
 	return &serverService{serverRepo: serverRepo}
 }
 
-func (s *serverService) Create(addr string, port int32) (*domain.Server, error) {
+func (s *serverService) Create(name, addr string, port int32) (*domain.Server, error) {
 	slog.InfoContext(context.Background(), "Creating server",
+		slog.String("name", name),
 		slog.String("addr", addr),
 		slog.Int("port", int(port)),
 	)
-	server, err := domain.NewServer(addr, port)
+	server, err := domain.NewServer(name, addr, port)
 	if err != nil {
 		return nil, err
 	}
