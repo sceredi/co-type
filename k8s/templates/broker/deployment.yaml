@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: broker
+  namespace: cotype
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: broker
+  template:
+    metadata:
+      labels:
+        app: broker
+    spec:
+      containers:
+        - name: broker
+          image: co-type/broker:latest
+          imagePullPolicy: Never
+          ports:
+            - name: gateway
+              containerPort: {{ .Values.gatewayPort }}
+            - name: control
+              containerPort: {{ .Values.controlPort }}
+          env:
+            - name: GATEWAY_PORT
+              value: "{{ .Values.gatewayPort }}"
+            - name: CONTROL_PORT
+              value: "{{ .Values.controlPort }}"

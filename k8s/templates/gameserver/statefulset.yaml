@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: gameserver
+  namespace: cotype
+spec:
+  replicas: 3
+  serviceName: gameserver
+  selector:
+    matchLabels:
+      app: gameserver
+  template:
+    metadata:
+      labels:
+        app: gameserver
+    spec:
+      containers:
+        - name: gameserver
+          image: co-type/server:latest
+          imagePullPolicy: Never
+          ports:
+            - name: session
+              containerPort: 50053
+          env:
+            - name: SESSION_PORT
+              value: "50053"
+            - name: CONTROL_ADDR
+              value: "broker.cotype.svc.cluster.local"
+            - name: CONTROL_PORT
+              value: "{{ .Values.controlPort }}"
+
+            - name: SERVER_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: SERVER_ADDR
+              value: "localhost" # Where the server can be contacted by clients
+            - name: SERVER_PORT
+              value: "30100"

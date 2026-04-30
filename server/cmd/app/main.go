@@ -2,7 +2,9 @@
 package main
 
 import (
+	"context"
 	"fmt"
+	"io"
 	"log"
 	"log/slog"
 	"os"
@@ -15,15 +17,44 @@ import (
 )
 
 func main() {
+	writer := io.MultiWriter(os.Stderr)
+	if os.Getenv("LOCAL") == "true" {
+		f, _ := os.OpenFile("debug.log", os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0o600)
+		defer func() {
+			if err := f.Close(); err != nil {
+				log.Printf("failed to close file: %v", err)
+			}
+		}()
+
+		writer = io.MultiWriter(os.Stderr, f)
+	}
+	var level slog.Level
+	if err := level.UnmarshalText([]byte(os.Getenv("LOG_LEVEL"))); err != nil {
+		level = slog.LevelInfo
+	}
+	opts := &slog.HandlerOptions{
+		AddSource: true,
+		Level:     level,
+	}
+
+	logger := slog.New(
+		slog.NewJSONHandler(writer, opts),
+	)
+	slog.SetDefault(logger)
 	cfg_utils.Setup()
 	serverName := os.Getenv("SERVER_NAME")
 	serverAddr := os.Getenv("SERVER_ADDR")
 	idx := serverName[len(serverName)-1] - '0'
-	port := 50050 + int32(idx)
-	serverPort := port
-	brokerAddr := os.Getenv("BROKER_ADDR")
-	brokerPort := os.Getenv("BROKER_PORT")
-	addr := fmt.Sprintf("%s:%s", brokerAddr, brokerPort)
+	serverPort := 50050 + int32(idx)
+	slog.InfoContext(context.Background(), "Server info",
+		slog.String("serverName", serverName),
+		slog.String("serverAddr", serverAddr),
+		slog.Int("idx", int(idx)),
+		slog.Int("serverPort", int(serverPort)),
+	)
+	controlAddr := os.Getenv("CONTROL_ADDR")
+	controlPort := os.Getenv("CONTROL_PORT")
+	addr := fmt.Sprintf("%s:%s", controlAddr, controlPort)
 	conn, err := grpc.NewClient(addr, grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
 		log.Fatalf("Error creating gRPC client: %v", err)
