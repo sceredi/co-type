@@ -2,8 +2,6 @@
 package lobby
 
 import (
-	"log"
-
 	tea "charm.land/bubbletea/v2"
 	"charm.land/lipgloss/v2"
 	"github.com/sceredi/co-type/client/internal/tui/pages/lobby/components/header"
@@ -67,7 +65,6 @@ func (m Model) Update(msg tea.Msg) (Model, tea.Cmd) {
 		case tea.KeyPressMsg:
 			switch msg.String() {
 			case "i":
-				log.Printf("Copying %s", m.lobby.ID)
 				cmds = append(cmds, tea.SetClipboard(m.lobby.ID))
 			case "up":
 				m.handlePlayerSelect(m.selectedPlayer - 1)

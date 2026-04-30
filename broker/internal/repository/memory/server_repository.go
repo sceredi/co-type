@@ -5,8 +5,8 @@ import (
 	"context"
 	"log/slog"
 
-	"github.com/sceredi/co-type/broker/internal/domain"
 	"github.com/sceredi/co-type/broker/internal/repository"
+	"github.com/sceredi/co-type/common/domain"
 )
 
 type serverRepository struct {
@@ -32,4 +32,8 @@ func (r *serverRepository) Create(server *domain.Server) (*domain.Server, error)
 	}
 	r.servers = append(r.servers, server)
 	return server, nil
+}
+
+func (r *serverRepository) List() []*domain.Server {
+	return r.servers
 }

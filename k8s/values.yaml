@@ -1,4 +1,4 @@
-gatewayPort: 50051
+discoveryPort: 50051
 controlPort: 50052
 matchPort: 50053
 matchNodePort: 30100

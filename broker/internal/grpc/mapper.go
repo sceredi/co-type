@@ -5,7 +5,7 @@ package grpc
 import (
 	"errors"
 
-	"github.com/sceredi/co-type/broker/internal/domain"
+	"github.com/sceredi/co-type/common/domain"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
@@ -18,6 +18,8 @@ func toGRPCError(err error) error {
 		return status.Errorf(codes.InvalidArgument, "%s", err.Error())
 	case errors.Is(err, domain.ErrServerNotFound):
 		return status.Errorf(codes.NotFound, "%s", err.Error())
+	case errors.Is(err, domain.ErrNoAvailableServers):
+		return status.Errorf(codes.Unavailable, "%s", err.Error())
 	default:
 		return status.Errorf(codes.Internal, "internal server error")
 	}

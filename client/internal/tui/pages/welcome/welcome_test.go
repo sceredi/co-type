@@ -6,10 +6,22 @@ import (
 
 	tea "charm.land/bubbletea/v2"
 	welcome_messages "github.com/sceredi/co-type/client/internal/tui/pages/welcome/messages"
+	"github.com/sceredi/co-type/common/domain"
 )
 
+// mockDiscoveryService is a mock implementation of DiscoveryService for testing
+type mockDiscoveryService struct{}
+
+func (m *mockDiscoveryService) GetAvailableServer() (*domain.Server, error) {
+	return nil, nil
+}
+
+func newMockDiscoveryService() *mockDiscoveryService {
+	return &mockDiscoveryService{}
+}
+
 func TestTabCyclesThroughFocusSlots(t *testing.T) {
-	m := New()
+	m := New(newMockDiscoveryService())
 
 	if m.focus != focusName {
 		t.Fatalf("expected initial focusName, got %d", m.focus)
@@ -46,7 +58,7 @@ func TestTabCyclesThroughFocusSlots(t *testing.T) {
 }
 
 func TestEnterOnNameAdvancesToCode(t *testing.T) {
-	m := New()
+	m := New(newMockDiscoveryService())
 
 	m, _ = m.Update(tea.KeyPressMsg{Code: tea.KeyEnter})
 
@@ -56,7 +68,7 @@ func TestEnterOnNameAdvancesToCode(t *testing.T) {
 }
 
 func TestJoinLobbyErrorMsgUpdatesViewError(t *testing.T) {
-	m := New()
+	m := New(newMockDiscoveryService())
 	m, _ = m.Update(welcome_messages.JoinLobbyErrorMsg{Error: "Unable to join lobby \"ABCD\""})
 
 	if m.error != "Unable to join lobby \"ABCD\"" {

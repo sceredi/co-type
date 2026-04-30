@@ -7,6 +7,7 @@ import (
 	"charm.land/bubbles/v2/textinput"
 	tea "charm.land/bubbletea/v2"
 	"charm.land/lipgloss/v2"
+	"github.com/sceredi/co-type/client/internal/service"
 	"github.com/sceredi/co-type/client/internal/tui/pages/common"
 	welcome_messages "github.com/sceredi/co-type/client/internal/tui/pages/welcome/messages"
 	"github.com/sceredi/co-type/client/internal/tui/styles"
@@ -29,18 +30,23 @@ type Model struct {
 	codeTi textinput.Model
 
 	error string
+
+	ds service.DiscoveryService
 }
 
 // New creates a new welcome model.
-func New() Model {
+func New(ds service.DiscoveryService) Model {
 	tn := common.NewTextinput("Choose your username", "")
 	tn.Focus()
 	tc := common.NewTextinput("CT2026", "")
 	tc.CharLimit = 10
 	return Model{
-		focus:  focusName,
+		focus: focusName,
+
 		nameTi: tn,
 		codeTi: tc,
+
+		ds: ds,
 	}
 }
 
@@ -84,7 +90,7 @@ func (m Model) Update(msg tea.Msg) (Model, tea.Cmd) {
 				m.updateFocus()
 			case focusCreate:
 				// TODO: create new lobby
-				cmds = append(cmds, welcome_messages.NewCreateLobbyCmd(m.codeTi.Value(), m.nameTi.Value()))
+				cmds = append(cmds, welcome_messages.NewCreateLobbyCmd(m.ds, m.codeTi.Value(), m.nameTi.Value()))
 			case focusJoin:
 				// TODO: join the lobby
 				cmds = append(cmds, welcome_messages.NewJoinLobbyCmd(m.codeTi.Value(), m.nameTi.Value()))

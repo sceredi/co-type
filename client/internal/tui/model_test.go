@@ -9,6 +9,17 @@ import (
 	"github.com/sceredi/co-type/common/domain"
 )
 
+// mockDiscoveryService is a mock implementation of DiscoveryService for testing
+type mockDiscoveryService struct{}
+
+func (m *mockDiscoveryService) GetAvailableServer() (*domain.Server, error) {
+	return nil, nil
+}
+
+func newMockDiscoveryService() *mockDiscoveryService {
+	return &mockDiscoveryService{}
+}
+
 func TestJoinLobbyMsgSwitchesToLobbyPage(t *testing.T) {
 	host := &domain.Player{Name: "Host"}
 	lobby := domain.Lobby{
@@ -17,7 +28,7 @@ func TestJoinLobbyMsgSwitchesToLobbyPage(t *testing.T) {
 		Players: []*domain.Player{host},
 	}
 
-	m := New()
+	m := New(newMockDiscoveryService())
 	updated, _ := m.Update(welcome_messages.JoinLobbyMsg{Lobby: lobby})
 	got := updated.(Model)
 
@@ -34,7 +45,7 @@ func TestLeaveMessageReturnsToWelcomePage(t *testing.T) {
 		Players: []*domain.Player{host},
 	}
 
-	m := New()
+	m := New(newMockDiscoveryService())
 	updated, _ := m.Update(welcome_messages.JoinLobbyMsg{Lobby: lobby})
 	m = updated.(Model)
 
@@ -47,7 +58,7 @@ func TestLeaveMessageReturnsToWelcomePage(t *testing.T) {
 }
 
 func TestCtrlCReturnsQuitCommand(t *testing.T) {
-	m := New()
+	m := New(newMockDiscoveryService())
 
 	_, cmd := m.Update(tea.KeyPressMsg{Text: "ctrl+c"})
 	if cmd == nil {

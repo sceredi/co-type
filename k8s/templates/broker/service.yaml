@@ -8,9 +8,9 @@ spec:
   selector:
     app: broker
   ports:
-    - name: gateway
-      port: {{ .Values.gatewayPort }}
-      targetPort: {{ .Values.gatewayPort }}
+    - name: discovery
+      port: {{ .Values.discoveryPort }}
+      targetPort: {{ .Values.discoveryPort }}
       nodePort: 30051 # clients outside the cluster connect to $(minikube ip):30051
     - name: control
       port: {{ .Values.controlPort }}

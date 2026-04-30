@@ -2,10 +2,12 @@
 package welcome_messages
 
 import (
+	"context"
 	"fmt"
-	"log"
+	"log/slog"
 
 	tea "charm.land/bubbletea/v2"
+	"github.com/sceredi/co-type/client/internal/service"
 	"github.com/sceredi/co-type/common/domain"
 )
 
@@ -21,8 +23,18 @@ type JoinLobbyErrorMsg struct {
 }
 
 // NewCreateLobbyCmd creates a new command to create a lobby.
-func NewCreateLobbyCmd(lobbyCode string, playerName string) tea.Cmd {
+func NewCreateLobbyCmd(ds service.DiscoveryService, lobbyCode string, playerName string) tea.Cmd {
 	return func() tea.Msg {
+		// TODO: use the server returned
+		_, err := ds.GetAvailableServer()
+		if err != nil {
+			slog.ErrorContext(context.Background(), "unable to get server",
+				slog.String("err", err.Error()),
+			)
+			return JoinLobbyErrorMsg{
+				Error: fmt.Sprintf("Unable to create lobby:\n%s", err.Error()),
+			}
+		}
 		if lobbyCode == "" || playerName == "" {
 			return JoinLobbyErrorMsg{
 				Error: "Lobby code and username must not be empty",
@@ -44,7 +56,7 @@ func NewJoinLobbyCmd(lobbyCode string, playerName string) tea.Cmd {
 				Error: "Lobby code and username must not be empty",
 			}
 		}
-		log.Printf("Joining lobby %s as %s", lobbyCode, playerName)
+		slog.Debug("Joining lobby %s as %s", lobbyCode, playerName)
 		return JoinLobbyErrorMsg{Error: fmt.Sprintf("Unable to join lobby \"%s\"", lobbyCode)}
 	}
 }

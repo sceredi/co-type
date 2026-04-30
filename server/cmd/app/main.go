@@ -69,4 +69,8 @@ func main() {
 	if err != nil {
 		log.Fatalf("Error registering server: %v", err)
 	}
+	for {
+		// left empty for now
+		continue
+	}
 }
