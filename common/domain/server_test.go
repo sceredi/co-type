@@ -4,7 +4,7 @@ import (
 	"errors"
 	"testing"
 
-	"github.com/sceredi/co-type/broker/internal/domain"
+	"github.com/sceredi/co-type/common/domain"
 )
 
 func TestNewServer(t *testing.T) {
@@ -58,6 +58,9 @@ func TestNewServer(t *testing.T) {
 			}
 			if got.Port != tt.port {
 				t.Fatalf("NewServer() got port = %d, want %d", got.Port, tt.port)
+			}
+			if got.Load != 0 {
+				t.Fatalf("NewServer() got load = %d, want %d", got.Load, 0)
 			}
 		})
 	}

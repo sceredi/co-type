@@ -2,7 +2,8 @@
 package game
 
 import (
-	"log"
+	"context"
+	"log/slog"
 	"time"
 
 	tea "charm.land/bubbletea/v2"
@@ -52,7 +53,9 @@ func (m Model) Update(msg tea.Msg) (Model, tea.Cmd) {
 			cmds = append(cmds, cmd)
 		}
 
-		log.Printf("game: pressed %s", msg.String())
+		slog.DebugContext(context.Background(), "key pressed",
+			slog.String("key", msg.String()),
+		)
 	}
 
 	return m, tea.Batch(cmds...)

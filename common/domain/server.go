@@ -12,6 +12,8 @@ var (
 	ErrServerNameInvalid = errors.New("server name is invalid")
 	// ErrServerAddrInvalid is returned when a server address is invalid.
 	ErrServerAddrInvalid = errors.New("server address is invalid")
+	// ErrNoAvailableServers is returned when there are no available servers.
+	ErrNoAvailableServers = errors.New("no available servers")
 )
 
 // Server represents a server in the broker application.
@@ -19,6 +21,7 @@ type Server struct {
 	Name string
 	Addr string
 	Port int32
+	Load int
 }
 
 // NewServer creates a new Server instance with the given address.
@@ -29,5 +32,5 @@ func NewServer(name, addr string, port int32) (*Server, error) {
 	if addr == "" {
 		return nil, ErrServerAddrInvalid
 	}
-	return &Server{Name: name, Addr: addr, Port: port}, nil
+	return &Server{Name: name, Addr: addr, Port: port, Load: 0}, nil
 }

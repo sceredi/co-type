@@ -18,12 +18,12 @@ spec:
           image: co-type/broker:latest
           imagePullPolicy: Never
           ports:
-            - name: gateway
-              containerPort: {{ .Values.gatewayPort }}
+            - name: discovery
+              containerPort: {{ .Values.discoveryPort }}
             - name: control
               containerPort: {{ .Values.controlPort }}
           env:
-            - name: GATEWAY_PORT
-              value: "{{ .Values.gatewayPort }}"
+            - name: DISCOVERY_PORT
+              value: "{{ .Values.discoveryPort }}"
             - name: CONTROL_PORT
               value: "{{ .Values.controlPort }}"

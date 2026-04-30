@@ -7,6 +7,7 @@ import (
 
 	tea "charm.land/bubbletea/v2"
 	"charm.land/lipgloss/v2"
+	"github.com/sceredi/co-type/client/internal/service"
 	"github.com/sceredi/co-type/client/internal/tui/pages"
 	"github.com/sceredi/co-type/client/internal/tui/pages/end"
 	"github.com/sceredi/co-type/client/internal/tui/pages/game"
@@ -36,14 +37,18 @@ type Model struct {
 	lobby   lobby.Model
 	game    game.Model
 	end     end.Model
+
+	ds service.DiscoveryService
 }
 
 // New creates a new TUI model.
-func New() Model {
+func New(ds service.DiscoveryService) Model {
 	return Model{
 		page: welcomePage,
 
-		welcome: welcome.New(),
+		welcome: welcome.New(ds),
+
+		ds: ds,
 	}
 }
 

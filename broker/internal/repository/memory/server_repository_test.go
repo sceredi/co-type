@@ -4,9 +4,9 @@ import (
 	"errors"
 	"testing"
 
-	"github.com/sceredi/co-type/broker/internal/domain"
 	"github.com/sceredi/co-type/broker/internal/repository"
 	"github.com/sceredi/co-type/broker/internal/repository/memory"
+	"github.com/sceredi/co-type/common/domain"
 )
 
 func TestNewServerRepository(t *testing.T) {
@@ -70,6 +70,51 @@ func TestServerRepository_Create(t *testing.T) {
 
 			if got != tt.input {
 				t.Fatalf("Create() got = %p, want same pointer as input = %p", got, tt.input)
+			}
+		})
+	}
+}
+
+func TestServerRepository_List(t *testing.T) {
+	tests := []struct {
+		name      string
+		seed      []*domain.Server
+		wantCount int
+	}{
+		{
+			name:      "returns empty slice when repository is empty",
+			seed:      nil,
+			wantCount: 0,
+		},
+		{
+			name: "returns all seeded servers",
+			seed: []*domain.Server{
+				{Name: "server-1", Addr: "10.0.0.1", Port: 8080, Load: 1},
+				{Name: "server-2", Addr: "10.0.0.2", Port: 8081, Load: 2},
+				{Name: "server-3", Addr: "10.0.0.3", Port: 8082, Load: 3},
+			},
+			wantCount: 3,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			repo := memory.NewServerRepository()
+			for _, server := range tt.seed {
+				if _, err := repo.Create(server); err != nil {
+					t.Fatalf("seed create failed: %v", err)
+				}
+			}
+
+			got := repo.List()
+			if len(got) != tt.wantCount {
+				t.Fatalf("List() len = %d, want %d", len(got), tt.wantCount)
+			}
+
+			for i := range tt.seed {
+				if got[i] != tt.seed[i] {
+					t.Fatalf("List() got[%d] = %p, want same pointer as seed[%d] = %p", i, got[i], i, tt.seed[i])
+				}
 			}
 		})
 	}

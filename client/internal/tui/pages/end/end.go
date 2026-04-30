@@ -3,7 +3,7 @@ package end
 
 import (
 	"fmt"
-	"log"
+	"log/slog"
 	"time"
 
 	tea "charm.land/bubbletea/v2"
@@ -32,7 +32,7 @@ func (m Model) Update(msg tea.Msg) (Model, tea.Cmd) {
 	var cmds []tea.Cmd
 	var cmd tea.Cmd
 
-	log.Printf("Received %v", msg)
+	slog.Debug("Received %v", msg)
 
 	cmds = append(cmds, cmd)
 	return m, tea.Batch(cmds...)
