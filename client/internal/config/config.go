@@ -4,7 +4,7 @@ package config
 import (
 	"context"
 
-	ctgrpc "github.com/sceredi/co-type/client/internal/grpc"
+	"github.com/sceredi/co-type/client/internal/api/grpc/gateway"
 	"github.com/sceredi/co-type/client/internal/service"
 	"github.com/sceredi/co-type/common/proto/discovery"
 	"google.golang.org/grpc"
@@ -13,6 +13,6 @@ import (
 // CreateDiscoveryService creates a new DiscoveryService using the provided gRPC connection.
 func CreateDiscoveryService(conn *grpc.ClientConn) service.DiscoveryService {
 	c := discovery.NewDiscoveryServiceClient(conn)
-	gtw := ctgrpc.NewDiscoveryGateway(context.Background(), c)
+	gtw := gateway.NewDiscoveryGateway(context.Background(), c)
 	return service.NewDiscoveryService(gtw)
 }

@@ -32,3 +32,16 @@ func ToGRPCMessage(err error) string {
 	}
 	return err.Error()
 }
+
+// FromGRPCError converts a gRPC error back to a standard error, extracting the message from the gRPC status.
+func FromGRPCError(err error) error {
+	if err == nil {
+		return nil
+	}
+
+	st, ok := status.FromError(err)
+	if !ok {
+		return err
+	}
+	return errors.New(st.Message())
+}
