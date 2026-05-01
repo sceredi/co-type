@@ -4,11 +4,18 @@ package config
 import (
 	"context"
 	"log"
+	"time"
 
+	"github.com/sceredi/co-type/common/config"
 	"github.com/sceredi/co-type/common/proto/control"
-	ctgrpc "github.com/sceredi/co-type/server/internal/grpc"
+	"github.com/sceredi/co-type/common/proto/game"
+	"github.com/sceredi/co-type/server/internal/api/grpc/gateway"
+	"github.com/sceredi/co-type/server/internal/api/grpc/handler"
+	"github.com/sceredi/co-type/server/internal/repository/memory"
 	"github.com/sceredi/co-type/server/internal/service"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/keepalive"
+	"google.golang.org/grpc/reflection"
 )
 
 // CreateDiscoveryService creates a new instance of DiscoveryService using the provided gRPC connection.
@@ -18,6 +25,28 @@ func CreateDiscoveryService(conn *grpc.ClientConn) service.DiscoveryService {
 	if err != nil {
 		log.Fatalf("Error creating gRPC stream: %v", err)
 	}
-	gtw := ctgrpc.NewControlGateway(stream)
+	gtw := gateway.NewControlGateway(stream)
 	return service.NewDiscoveryService(gtw)
+}
+
+// CreateListeners creates and starts the gRPC servers.
+func CreateListeners() *grpc.Server {
+	lobbyRepo := memory.NewLobbyRepository()
+	lobbySvc := service.NewLobbyService(lobbyRepo)
+
+	gameHandler := handler.NewGameHandler(lobbySvc)
+
+	grpcServer := grpc.NewServer(
+		grpc.KeepaliveParams(keepalive.ServerParameters{
+			Time:    3 * time.Second,
+			Timeout: 3 * time.Second,
+		}),
+	)
+
+	game.RegisterGameServiceServer(grpcServer, gameHandler)
+
+	reflection.Register(grpcServer)
+
+	config.CreateListener(grpcServer, "game")
+	return grpcServer
 }

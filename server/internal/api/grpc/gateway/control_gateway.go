@@ -1,5 +1,5 @@
-// Package grpc provides the gRPC implementation of the ControlGateway interface for the server service.
-package grpc
+// Package gateway provides the implementation for the Gateways to connect gRPC services to the relative service.
+package gateway
 
 import (
 	"github.com/sceredi/co-type/common/proto/control"

@@ -1,5 +1,10 @@
 package domain
 
+import "errors"
+
+// ErrLobbyAlreadyExists is returned when a lobby with the same ID already exists.
+var ErrLobbyAlreadyExists = errors.New("lobby already exists")
+
 // Lobby represents the state of the lobby.
 type Lobby struct {
 	ID      string

@@ -1,3 +1,5 @@
+// Package grpc implements the gRPC server for the broker service.
+// It provides the necessary handlers and mappers to handle gRPC requests and responses, allowing clients to interact with the broker service using gRPC protocol.
 package grpc
 
 import (
@@ -5,6 +7,7 @@ import (
 	"log/slog"
 
 	"github.com/sceredi/co-type/broker/internal/service"
+	grpc_utils "github.com/sceredi/co-type/common/grpc"
 	"github.com/sceredi/co-type/common/proto/control"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -28,28 +31,32 @@ func (h *ControlHandler) Manage(stream control.ControlService_ManageServer) erro
 		if err != nil {
 			if status.Code(err) == codes.Canceled {
 				slog.DebugContext(stream.Context(), "Stream canceled by client")
+			} else {
+				slog.ErrorContext(stream.Context(), "Failed to receive message from stream",
+					slog.String("error", err.Error()),
+				)
+				return err
 			}
-			slog.ErrorContext(stream.Context(), "Failed to receive message from stream",
-				slog.String("error", err.Error()),
-			)
-			return err
 		}
 		slog.InfoContext(stream.Context(), "Received message from stream",
 			slog.Any("payload", env.GetPayload()),
 		)
-		switch msg := env.Payload.(type) {
+		switch msg := env.GetPayload().(type) {
 		case *control.ServerEnvelope_Register:
-			h.manageRegisterServerReq(msg.Register, stream)
+			err = h.manageRegisterServerReq(msg.Register, stream)
+			if err != nil {
+				return err
+			}
 		default:
-			slog.WarnContext(stream.Context(), "Received unknown message type",
+			slog.ErrorContext(stream.Context(), "Received unknown message type",
 				slog.Any("payload", env.GetPayload()),
 			)
-			return toGRPCError(errors.New("unknown message type"))
+			return grpc_utils.ToGRPCError(errors.New("unknown message type"))
 		}
 	}
 }
 
-func (h *ControlHandler) manageRegisterServerReq(msg *control.RegisterServer, stream control.ControlService_ManageServer) {
+func (h *ControlHandler) manageRegisterServerReq(msg *control.RegisterServer, stream control.ControlService_ManageServer) error {
 	_, err := h.serverSvc.Create(msg.GetName(), msg.GetHost(), msg.GetPort())
 	if err != nil {
 		slog.Error("Failed to register server",
@@ -64,16 +71,13 @@ func (h *ControlHandler) manageRegisterServerReq(msg *control.RegisterServer, st
 			Payload: &control.BrokerEnvelope_RegisterAck{
 				RegisterAck: &control.RegisterServerAck{
 					Success: err == nil,
-					Message: toGRPCMessage(err),
+					Message: grpc_utils.ToGRPCMessage(err),
 				},
 			},
 		},
 	)
 	if err != nil {
-		slog.Error("Failed to send register acknowledgment",
-			slog.String("host_name", msg.GetHost()),
-			slog.Int("port", int(msg.GetPort())),
-			slog.String("error", err.Error()),
-		)
+		slog.ErrorContext(stream.Context(), "Stream unexpectedly terminated")
 	}
+	return err
 }

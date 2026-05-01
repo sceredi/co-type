@@ -19,11 +19,11 @@ spec:
           image: co-type/server:latest
           imagePullPolicy: Never
           ports:
-            - name: session
-              containerPort: 50053
+            - name: game
+              containerPort: {{ .Values.matchPort }}
           env:
-            - name: SESSION_PORT
-              value: "50053"
+            - name: GAME_PORT
+              value: "{{ .Values.matchPort }}"
             - name: CONTROL_ADDR
               value: "broker.cotype.svc.cluster.local"
             - name: CONTROL_PORT

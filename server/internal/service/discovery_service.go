@@ -3,7 +3,7 @@
 // It defines the interfaces that the handlers will use to interact with the domain models and repositories.
 package service
 
-import "github.com/sceredi/co-type/server/internal/grpc"
+import "github.com/sceredi/co-type/server/internal/api/grpc/gateway"
 
 // DiscoveryService defines the interface for managing service discovery in the server service.
 // It provides a method to register the server with the service discovery mechanism.
@@ -14,11 +14,11 @@ type DiscoveryService interface {
 }
 
 type discoveryService struct {
-	gtw grpc.ControlGateway
+	gtw gateway.ControlGateway
 }
 
 // NewDiscoveryService creates a new instance of DiscoveryService with the provided ControlGateway and returns it.
-func NewDiscoveryService(gtw grpc.ControlGateway) DiscoveryService {
+func NewDiscoveryService(gtw gateway.ControlGateway) DiscoveryService {
 	return &discoveryService{gtw: gtw}
 }
 

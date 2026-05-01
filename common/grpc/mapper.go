@@ -1,5 +1,4 @@
-// Package grpc implements the gRPC server for the broker service.
-// It provides the necessary handlers and mappers to handle gRPC requests and responses, allowing clients to interact with the broker service using gRPC protocol.
+// Package grpc provides helpers for gRPC communication.
 package grpc
 
 import (
@@ -10,7 +9,8 @@ import (
 	"google.golang.org/grpc/status"
 )
 
-func toGRPCError(err error) error {
+// ToGRPCError maps domain errors to gRPC status errors, allowing for consistent error handling in gRPC responses.
+func ToGRPCError(err error) error {
 	switch {
 	case errors.Is(err, domain.ErrServerAlreadyExists):
 		return status.Errorf(codes.AlreadyExists, "%s", err.Error())
@@ -25,7 +25,8 @@ func toGRPCError(err error) error {
 	}
 }
 
-func toGRPCMessage(err error) string {
+// ToGRPCMessage converts an error to a string message for gRPC responses.
+func ToGRPCMessage(err error) string {
 	if err == nil {
 		return ""
 	}
