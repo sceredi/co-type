@@ -2,7 +2,7 @@
 package service
 
 import (
-	"github.com/sceredi/co-type/client/internal/grpc"
+	"github.com/sceredi/co-type/client/internal/api/grpc/gateway"
 	"github.com/sceredi/co-type/common/domain"
 )
 
@@ -12,11 +12,11 @@ type DiscoveryService interface {
 }
 
 type discoveryService struct {
-	gtw grpc.DiscoveryGateway
+	gtw gateway.DiscoveryGateway
 }
 
 // NewDiscoveryService creates a new instance of DiscoveryService with the provided DiscoveryGateway and returns it.
-func NewDiscoveryService(gtw grpc.DiscoveryGateway) DiscoveryService {
+func NewDiscoveryService(gtw gateway.DiscoveryGateway) DiscoveryService {
 	return &discoveryService{gtw: gtw}
 }
 

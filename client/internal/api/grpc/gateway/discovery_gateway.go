@@ -1,9 +1,11 @@
-package grpc
+// Package gateway contains all the gateway that the client uses to connect to the broker and game servers.
+package gateway
 
 import (
 	"context"
 
 	"github.com/sceredi/co-type/common/domain"
+	"github.com/sceredi/co-type/common/grpc"
 	"github.com/sceredi/co-type/common/proto/discovery"
 )
 
@@ -27,7 +29,7 @@ func (g *discoveryGateway) AvailableServer() (*domain.Server, error) {
 	req := &discovery.AvailableServerRequest{}
 	srv, err := g.conn.AvailableServer(g.ctx, req)
 	if err != nil {
-		return nil, fromGRPCError(err)
+		return nil, grpc.FromGRPCError(err)
 	}
 	return domain.NewServer(srv.Name, srv.Addr, srv.Port)
 }
