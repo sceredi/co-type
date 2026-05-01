@@ -4,7 +4,7 @@ package config
 import (
 	"time"
 
-	handler "github.com/sceredi/co-type/broker/internal/grpc"
+	"github.com/sceredi/co-type/broker/internal/api/grpc/handler"
 	"github.com/sceredi/co-type/broker/internal/repository/memory"
 	"github.com/sceredi/co-type/broker/internal/service"
 	"github.com/sceredi/co-type/common/config"

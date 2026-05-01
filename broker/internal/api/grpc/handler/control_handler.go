@@ -1,6 +1,5 @@
-// Package grpc implements the gRPC server for the broker service.
-// It provides the necessary handlers and mappers to handle gRPC requests and responses, allowing clients to interact with the broker service using gRPC protocol.
-package grpc
+// Package handler provides the implementation for the gRPC handlers that manage incoming requests.
+package handler
 
 import (
 	"errors"
