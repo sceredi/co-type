@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/sceredi/co-type/broker/internal/service"
+	grpc_utils "github.com/sceredi/co-type/common/grpc"
 	"github.com/sceredi/co-type/common/proto/discovery"
 )
 
@@ -23,7 +24,7 @@ func NewDiscoveryHandler(serverSvc service.ServerService) *DiscoveryHandler {
 func (h *DiscoveryHandler) AvailableServer(_ context.Context, _ *discovery.AvailableServerRequest) (*discovery.AvailableServerResponse, error) {
 	server, err := h.serverSvc.LowestLoad()
 	if err != nil {
-		return nil, toGRPCError(err)
+		return nil, grpc_utils.ToGRPCError(err)
 	}
 	return &discovery.AvailableServerResponse{
 		Name: server.Name,

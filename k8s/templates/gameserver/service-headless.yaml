@@ -8,5 +8,5 @@ spec:
   selector:
     app: gameserver
   ports:
-    - port: 50053
-      targetPort: 50053
+    - port: {{ .Values.matchPort }}
+      targetPort: {{ .Values.matchPort }}

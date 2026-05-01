@@ -4,7 +4,7 @@ import (
 	"errors"
 	"testing"
 
-	"github.com/sceredi/co-type/server/internal/grpc"
+	"github.com/sceredi/co-type/server/internal/api/grpc/gateway"
 	"github.com/sceredi/co-type/server/internal/service"
 )
 
@@ -22,7 +22,7 @@ func (m *mockDiscoveryGateway) Register(name, host string, port int32) error {
 	return m.err
 }
 
-var _ grpc.ControlGateway = (*mockDiscoveryGateway)(nil)
+var _ gateway.ControlGateway = (*mockDiscoveryGateway)(nil)
 
 func TestNewDiscoveryService(t *testing.T) {
 	var svc service.DiscoveryService

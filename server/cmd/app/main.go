@@ -8,6 +8,8 @@ import (
 	"log"
 	"log/slog"
 	"os"
+	"os/signal"
+	"syscall"
 
 	cfg_utils "github.com/sceredi/co-type/common/config"
 	"github.com/sceredi/co-type/server/internal/config"
@@ -69,8 +71,12 @@ func main() {
 	if err != nil {
 		log.Fatalf("Error registering server: %v", err)
 	}
-	for {
-		// left empty for now
-		continue
-	}
+
+	grpcServer := config.CreateListeners()
+
+	quit := make(chan os.Signal, 1)
+	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
+	<-quit
+
+	grpcServer.GracefulStop()
 }

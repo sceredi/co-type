@@ -38,11 +38,7 @@ func (s *serverService) Create(name, addr string, port int32) (*domain.Server, e
 	if err != nil {
 		return nil, err
 	}
-	result, err := s.serverRepo.Create(server)
-	if err != nil {
-		return nil, err
-	}
-	return result, nil
+	return s.serverRepo.Create(server)
 }
 
 func (s *serverService) LowestLoad() (*domain.Server, error) {
