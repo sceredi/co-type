@@ -7,7 +7,7 @@ replace github.com/sceredi/co-type/common => ../common
 require (
 	github.com/joho/godotenv v1.5.1
 	github.com/sceredi/co-type/common v0.0.0-00010101000000-000000000000
-	google.golang.org/grpc v1.81.0
+	google.golang.org/grpc v1.81.1
 )
 
 require (
