@@ -2,7 +2,8 @@
 package memory
 
 import (
-	"github.com/sceredi/co-type/common/domain"
+	commondomain "github.com/sceredi/co-type/common/domain"
+	"github.com/sceredi/co-type/server/internal/domain"
 	"github.com/sceredi/co-type/server/internal/repository"
 )
 
@@ -16,10 +17,18 @@ func NewLobbyRepository() repository.LobbyRepository {
 }
 
 func (r *lobbyRepository) Create(lobby *domain.Lobby) (*domain.Lobby, error) {
-	_, ok := r.lobbies[lobby.ID]
+	_, ok := r.lobbies[lobby.Base.ID]
 	if ok {
-		return nil, domain.ErrLobbyAlreadyExists
+		return nil, commondomain.ErrLobbyAlreadyExists
 	}
-	r.lobbies[lobby.ID] = lobby
+	r.lobbies[lobby.Base.ID] = lobby
 	return lobby, nil
+}
+
+func (r *lobbyRepository) Get(id string) *domain.Lobby {
+	lobby, ok := r.lobbies[id]
+	if !ok {
+		return nil
+	}
+	return lobby
 }

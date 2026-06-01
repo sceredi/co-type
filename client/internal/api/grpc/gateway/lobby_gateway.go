@@ -6,7 +6,7 @@ import (
 
 	"github.com/sceredi/co-type/common/domain"
 	"github.com/sceredi/co-type/common/grpc"
-	"github.com/sceredi/co-type/common/proto/game"
+	"github.com/sceredi/co-type/common/proto/lobby"
 )
 
 // LobbyGateway defines the interface for interacting with the lobby service.
@@ -17,16 +17,16 @@ type LobbyGateway interface {
 
 type lobbyGateway struct {
 	ctx  context.Context
-	conn game.GameServiceClient
+	conn lobby.LobbyServiceClient
 }
 
 // NewLobbyGateway creates a new LobbyGateway with the given gRPC connection.
-func NewLobbyGateway(ctx context.Context, conn game.GameServiceClient) LobbyGateway {
+func NewLobbyGateway(ctx context.Context, conn lobby.LobbyServiceClient) LobbyGateway {
 	return &lobbyGateway{ctx: ctx, conn: conn}
 }
 
 func (g *lobbyGateway) Create(id, hostName string) (*domain.Lobby, error) {
-	req := &game.CreateLobbyRequest{
+	req := &lobby.CreateLobbyRequest{
 		LobbyId:    id,
 		PlayerName: hostName,
 	}
