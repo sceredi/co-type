@@ -34,6 +34,6 @@ spec:
                 fieldRef:
                   fieldPath: metadata.name
             - name: SERVER_ADDR
-              value: "localhost" # Where the server can be contacted by clients
+              value: "{{ .Values.global.nodeIp }}" # Where the server can be contacted by clients
             - name: SERVER_PORT
               value: "30100"

@@ -20,8 +20,24 @@ func newMockDiscoveryService() *mockDiscoveryService {
 	return &mockDiscoveryService{}
 }
 
+// mockLobbyService is a mock implementation of LobbyService for testing
+type mockLobbyService struct{}
+
+func (m *mockLobbyService) Create(id, hostName string) (*domain.Lobby, error) {
+	host := &domain.Player{Name: hostName}
+	return &domain.Lobby{ID: id, Host: host, Players: []*domain.Player{host}}, nil
+}
+
+func (m *mockLobbyService) Connect(target *domain.Server) error {
+	return nil
+}
+
+func newMockLobbyService() *mockLobbyService {
+	return &mockLobbyService{}
+}
+
 func TestTabCyclesThroughFocusSlots(t *testing.T) {
-	m := New(newMockDiscoveryService())
+	m := New(newMockDiscoveryService(), newMockLobbyService())
 
 	if m.focus != focusName {
 		t.Fatalf("expected initial focusName, got %d", m.focus)
@@ -58,7 +74,7 @@ func TestTabCyclesThroughFocusSlots(t *testing.T) {
 }
 
 func TestEnterOnNameAdvancesToCode(t *testing.T) {
-	m := New(newMockDiscoveryService())
+	m := New(newMockDiscoveryService(), newMockLobbyService())
 
 	m, _ = m.Update(tea.KeyPressMsg{Code: tea.KeyEnter})
 
@@ -68,7 +84,7 @@ func TestEnterOnNameAdvancesToCode(t *testing.T) {
 }
 
 func TestJoinLobbyErrorMsgUpdatesViewError(t *testing.T) {
-	m := New(newMockDiscoveryService())
+	m := New(newMockDiscoveryService(), newMockLobbyService())
 	m, _ = m.Update(welcome_messages.JoinLobbyErrorMsg{Error: "Unable to join lobby \"ABCD\""})
 
 	if m.error != "Unable to join lobby \"ABCD\"" {

@@ -11,10 +11,9 @@ import (
 	"github.com/sceredi/co-type/common/domain"
 )
 
-// JoinLobbyMsg is a message that is sent when the user wants to join a lobby.
-type JoinLobbyMsg struct {
-	Lobby  *domain.Lobby
-	Server *domain.Server
+// JoinedLobbyMsg is a message that is sent when the user wants to join a lobby.
+type JoinedLobbyMsg struct {
+	Lobby *domain.Lobby
 }
 
 // JoinLobbyErrorMsg is a message that is sent when there is an error joining a lobby.
@@ -23,30 +22,46 @@ type JoinLobbyErrorMsg struct {
 }
 
 // NewCreateLobbyCmd creates a new command to create a lobby.
-func NewCreateLobbyCmd(ds service.DiscoveryService, lobbyCode string, playerName string) tea.Cmd {
+func NewCreateLobbyCmd(ds service.DiscoveryService, ls service.LobbyService, lobbyCode string, playerName string) tea.Cmd {
 	return func() tea.Msg {
+		if lobbyCode == "" || playerName == "" {
+			return JoinLobbyErrorMsg{
+				Error: "Lobby code and username must not be empty",
+			}
+		}
 		// TODO: use the server returned
-		s, err := ds.GetAvailableServer()
+		server, err := ds.GetAvailableServer()
 		slog.InfoContext(context.Background(), "got server",
-			slog.Any("server", s),
+			slog.Any("server", server),
 		)
 		if err != nil {
 			slog.ErrorContext(context.Background(), "unable to get server",
 				slog.String("err", err.Error()),
 			)
 			return JoinLobbyErrorMsg{
-				Error: fmt.Sprintf("Unable to create lobby:\n%s", err.Error()),
+				Error: fmt.Sprintf("Unable to get a game server:\n%s", err.Error()),
 			}
 		}
-		if lobbyCode == "" || playerName == "" {
+		err = ls.Connect(server)
+		if err != nil {
+			slog.ErrorContext(context.Background(), "unable to connect to gameserver",
+				slog.String("err", err.Error()),
+			)
 			return JoinLobbyErrorMsg{
-				Error: "Lobby code and username must not be empty",
+				Error: fmt.Sprintf("Unable to connect to game server:\n%s", err.Error()),
 			}
 		}
 		// TODO: actually create the lobby
-		player := domain.NewPlayer(playerName)
-		lobby := domain.NewLobby(lobbyCode, player)
-		return JoinLobbyMsg{Lobby: lobby, Server: s}
+		lobby, err := ls.Create(lobbyCode, playerName)
+		if err != nil {
+			slog.ErrorContext(context.Background(), "unable to create lobby",
+				slog.String("err", err.Error()),
+			)
+			return JoinLobbyErrorMsg{
+				Error: fmt.Sprintf("Unable to create lobby:\n%s", err.Error()),
+			}
+		}
+		return JoinedLobbyMsg{Lobby: lobby}
 	}
 }
 

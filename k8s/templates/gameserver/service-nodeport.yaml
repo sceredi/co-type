@@ -2,7 +2,7 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: gameserver-0
+  name: no-gameserver-0
   namespace: cotype
 spec:
   type: NodePort
@@ -17,7 +17,7 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: gameserver-1
+  name: no-gameserver-1
   namespace: cotype
 spec:
   type: NodePort
@@ -32,7 +32,7 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: gameserver-2
+  name: no-gameserver-2
   namespace: cotype
 spec:
   type: NodePort

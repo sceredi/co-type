@@ -12,10 +12,11 @@ var ErrLobbyGatewayNotSet = errors.New("lobby gateway not set")
 
 // LobbyService defines the interface for managing lobbies.
 type LobbyService interface {
-	// SetGateway sets the gateway for the LobbyService. This method must be called before using any other method of the service.
-	SetGateway(gtw gateway.LobbyGateway)
 	// Create creates a new lobby with the given id and host name. It returns the created lobby or an error if something goes wrong.
 	Create(id, hostName string) (*domain.Lobby, error)
+
+	// Connect connects to the given server. It returns an error if the connection fails.
+	Connect(target *domain.Server) error
 }
 
 type lobbyService struct {
@@ -23,12 +24,8 @@ type lobbyService struct {
 }
 
 // NewLobbyService creates a new instance of LobbyService.
-func NewLobbyService() LobbyService {
-	return &lobbyService{}
-}
-
-func (s *lobbyService) SetGateway(gtw gateway.LobbyGateway) {
-	s.gtw = gtw
+func NewLobbyService(gtw gateway.LobbyGateway) LobbyService {
+	return &lobbyService{gtw: gtw}
 }
 
 func (s *lobbyService) Create(id, hostName string) (*domain.Lobby, error) {
@@ -36,4 +33,8 @@ func (s *lobbyService) Create(id, hostName string) (*domain.Lobby, error) {
 		return nil, ErrLobbyGatewayNotSet
 	}
 	return s.gtw.Create(id, hostName)
+}
+
+func (s *lobbyService) Connect(target *domain.Server) error {
+	return s.gtw.Connect(target)
 }

@@ -16,7 +16,6 @@ import (
 	lobby_messages "github.com/sceredi/co-type/client/internal/tui/pages/lobby/messages"
 	"github.com/sceredi/co-type/client/internal/tui/pages/welcome"
 	welcome_messages "github.com/sceredi/co-type/client/internal/tui/pages/welcome/messages"
-	"github.com/sceredi/co-type/common/domain"
 )
 
 type page int
@@ -39,18 +38,19 @@ type Model struct {
 	game    game.Model
 	end     end.Model
 
-	ds     service.DiscoveryService
-	server *domain.Server
+	ds service.DiscoveryService
+	ls service.LobbyService
 }
 
 // New creates a new TUI model.
-func New(ds service.DiscoveryService) Model {
+func New(ds service.DiscoveryService, ls service.LobbyService) Model {
 	return Model{
 		page: welcomePage,
 
-		welcome: welcome.New(ds),
+		welcome: welcome.New(ds, ls),
 
 		ds: ds,
+		ls: ls,
 	}
 }
 
@@ -72,14 +72,12 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		case "ctrl+c":
 			return m, tea.Quit
 		}
-	case welcome_messages.JoinLobbyMsg:
-		m.server = msg.Server
 	}
 
 	switch m.page {
 	case welcomePage:
 		switch msg := msg.(type) {
-		case welcome_messages.JoinLobbyMsg:
+		case welcome_messages.JoinedLobbyMsg:
 			m.lobby = lobby.New(msg.Lobby.Host, msg.Lobby)
 			m.page = lobbyPage
 		}
