@@ -24,7 +24,7 @@ func TestServerService_CreateServer(t *testing.T) {
 		seed     []*domain.Server
 		hostName string
 		addr     string
-		port     int32
+		port     int
 		wantErr  error
 	}{
 		{

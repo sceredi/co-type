@@ -23,7 +23,7 @@ func NewServerRepository() repository.ServerRepository {
 func (r *serverRepository) Create(server *domain.Server) (*domain.Server, error) {
 	slog.InfoContext(context.Background(), "Storing server in memory",
 		slog.String("server", server.Addr),
-		slog.Int("port", int(server.Port)),
+		slog.Int("port", server.Port),
 	)
 	for _, s := range r.servers {
 		if s.Name == server.Name || s.Addr == server.Addr {

@@ -31,5 +31,5 @@ func (g *discoveryGateway) AvailableServer() (*domain.Server, error) {
 	if err != nil {
 		return nil, grpc.FromGRPCError(err)
 	}
-	return domain.NewServer(srv.Name, srv.Addr, srv.Port)
+	return domain.NewServer(srv.Name, srv.Addr, int(srv.Port))
 }

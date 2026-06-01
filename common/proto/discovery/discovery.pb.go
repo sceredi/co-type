@@ -63,7 +63,7 @@ type AvailableServerResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Name          string                 `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	Addr          string                 `protobuf:"bytes,2,opt,name=addr,proto3" json:"addr,omitempty"`
-	Port          int32                  `protobuf:"varint,3,opt,name=port,proto3" json:"port,omitempty"`
+	Port          int64                  `protobuf:"varint,3,opt,name=port,proto3" json:"port,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -112,7 +112,7 @@ func (x *AvailableServerResponse) GetAddr() string {
 	return ""
 }
 
-func (x *AvailableServerResponse) GetPort() int32 {
+func (x *AvailableServerResponse) GetPort() int64 {
 	if x != nil {
 		return x.Port
 	}
@@ -128,7 +128,7 @@ const file_common_proto_discovery_discovery_proto_rawDesc = "" +
 	"\x17AvailableServerResponse\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12\x12\n" +
 	"\x04addr\x18\x02 \x01(\tR\x04addr\x12\x12\n" +
-	"\x04port\x18\x03 \x01(\x05R\x04port2l\n" +
+	"\x04port\x18\x03 \x01(\x03R\x04port2l\n" +
 	"\x10DiscoveryService\x12X\n" +
 	"\x0fAvailableServer\x12!.discovery.AvailableServerRequest\x1a\".discovery.AvailableServerResponseB3Z1github.com/sceredi/co-type/common/proto/discoveryb\x06proto3"
 

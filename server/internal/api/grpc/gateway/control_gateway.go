@@ -9,7 +9,7 @@ import (
 // ControlGateway defines the interface for managing control operations in the server service.
 type ControlGateway interface {
 	// Register registers the server with the control service using the provided name, host, and port.
-	Register(name, host string, port int32) error
+	Register(name, host string, port int) error
 }
 
 type controlGateway struct {
@@ -21,13 +21,13 @@ func NewControlGateway(stream grpc.BidiStreamingClient[control.ServerEnvelope, c
 	return &controlGateway{stream: stream}
 }
 
-func (g *controlGateway) Register(name, host string, port int32) error {
+func (g *controlGateway) Register(name, host string, port int) error {
 	req := &control.ServerEnvelope{
 		Payload: &control.ServerEnvelope_Register{
 			Register: &control.RegisterServer{
 				Name: name,
 				Host: host,
-				Port: port,
+				Port: int64(port),
 			},
 		},
 	}

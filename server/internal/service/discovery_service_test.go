@@ -11,11 +11,11 @@ import (
 type mockDiscoveryGateway struct {
 	name string
 	host string
-	port int32
+	port int
 	err  error
 }
 
-func (m *mockDiscoveryGateway) Register(name, host string, port int32) error {
+func (m *mockDiscoveryGateway) Register(name, host string, port int) error {
 	m.name = name
 	m.host = host
 	m.port = port
@@ -38,7 +38,7 @@ func TestDiscoveryService_Register(t *testing.T) {
 		name    string
 		svcName string
 		host    string
-		port    int32
+		port    int
 		gateway *mockDiscoveryGateway
 		wantErr error
 	}{

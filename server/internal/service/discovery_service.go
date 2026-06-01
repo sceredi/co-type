@@ -10,7 +10,7 @@ import "github.com/sceredi/co-type/server/internal/api/grpc/gateway"
 // The Register method is responsible for registering the server and returns an error if the operation fails.
 type DiscoveryService interface {
 	// Register registers the server with the service discovery mechanism using the provided host and port.
-	Register(name, host string, port int32) error
+	Register(name, host string, port int) error
 }
 
 type discoveryService struct {
@@ -22,6 +22,6 @@ func NewDiscoveryService(gtw gateway.ControlGateway) DiscoveryService {
 	return &discoveryService{gtw: gtw}
 }
 
-func (s *discoveryService) Register(name, host string, port int32) error {
+func (s *discoveryService) Register(name, host string, port int) error {
 	return s.gtw.Register(name, host, port)
 }

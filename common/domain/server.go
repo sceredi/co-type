@@ -20,12 +20,12 @@ var (
 type Server struct {
 	Name string
 	Addr string
-	Port int32
+	Port int
 	Load int
 }
 
 // NewServer creates a new Server instance with the given address.
-func NewServer(name, addr string, port int32) (*Server, error) {
+func NewServer(name, addr string, port int) (*Server, error) {
 	if name == "" {
 		return nil, ErrServerNameInvalid
 	}
