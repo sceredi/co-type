@@ -3,6 +3,7 @@ package grpc
 
 import (
 	"errors"
+	"log"
 
 	"github.com/sceredi/co-type/common/domain"
 	"google.golang.org/grpc/codes"
@@ -21,6 +22,7 @@ func ToGRPCError(err error) error {
 	case errors.Is(err, domain.ErrNoAvailableServers):
 		return status.Errorf(codes.Unavailable, "%s", err.Error())
 	default:
+		log.Fatalf("unexpected error: %v", err)
 		return status.Errorf(codes.Internal, "internal server error")
 	}
 }

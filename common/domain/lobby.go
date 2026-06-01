@@ -14,8 +14,8 @@ type Lobby struct {
 }
 
 // NewLobby creates a new lobby with the given ID and host player.
-func NewLobby(id string, host *Player) Lobby {
-	return Lobby{
+func NewLobby(id string, host *Player) *Lobby {
+	return &Lobby{
 		ID:      id,
 		Players: []*Player{host},
 		Host:    host,

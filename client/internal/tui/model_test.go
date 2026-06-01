@@ -22,7 +22,7 @@ func newMockDiscoveryService() *mockDiscoveryService {
 
 func TestJoinLobbyMsgSwitchesToLobbyPage(t *testing.T) {
 	host := &domain.Player{Name: "Host"}
-	lobby := domain.Lobby{
+	lobby := &domain.Lobby{
 		ID:      "ABCD",
 		Host:    host,
 		Players: []*domain.Player{host},
@@ -39,7 +39,7 @@ func TestJoinLobbyMsgSwitchesToLobbyPage(t *testing.T) {
 
 func TestLeaveMessageReturnsToWelcomePage(t *testing.T) {
 	host := &domain.Player{Name: "Host"}
-	lobby := domain.Lobby{
+	lobby := &domain.Lobby{
 		ID:      "ABCD",
 		Host:    host,
 		Players: []*domain.Player{host},

@@ -28,6 +28,6 @@ func (s *lobbyService) Create(id, userName string) (*domain.Lobby, error) {
 		slog.String("userName", userName),
 	)
 	host := domain.NewPlayer(userName)
-	lobby := domain.NewLobby(id, &host)
+	lobby := domain.NewLobby(id, host)
 	return s.lobbyRepo.Create(lobby)
 }

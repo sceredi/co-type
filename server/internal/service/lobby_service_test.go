@@ -9,12 +9,12 @@ import (
 )
 
 type mockLobbyRepository struct {
-	received domain.Lobby
+	received *domain.Lobby
 	toReturn *domain.Lobby
 	err      error
 }
 
-func (m *mockLobbyRepository) Create(lobby domain.Lobby) (*domain.Lobby, error) {
+func (m *mockLobbyRepository) Create(lobby *domain.Lobby) (*domain.Lobby, error) {
 	m.received = lobby
 	if m.err != nil {
 		return nil, m.err
@@ -22,7 +22,7 @@ func (m *mockLobbyRepository) Create(lobby domain.Lobby) (*domain.Lobby, error) 
 	if m.toReturn != nil {
 		return m.toReturn, nil
 	}
-	return &lobby, nil
+	return lobby, nil
 }
 
 func TestNewLobbyService(t *testing.T) {
@@ -47,7 +47,7 @@ func TestLobbyService_Create(t *testing.T) {
 			name:     "creates lobby and delegates to repository",
 			id:       "lobby-1",
 			userName: "alice",
-			repo:     &mockLobbyRepository{toReturn: &repoLobby},
+			repo:     &mockLobbyRepository{toReturn: repoLobby},
 			wantErr:  nil,
 		},
 		{
@@ -94,5 +94,5 @@ func TestLobbyService_Create(t *testing.T) {
 
 func playerPtr(name string) *domain.Player {
 	p := domain.NewPlayer(name)
-	return &p
+	return p
 }
