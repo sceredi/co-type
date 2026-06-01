@@ -12,7 +12,7 @@ func TestNewServer(t *testing.T) {
 		name     string
 		hostName string
 		addr     string
-		port     int32
+		port     int
 		wantErr  error
 	}{
 		{

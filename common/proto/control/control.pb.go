@@ -192,7 +192,7 @@ type RegisterServer struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Name          string                 `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	Host          string                 `protobuf:"bytes,2,opt,name=host,proto3" json:"host,omitempty"`
-	Port          int32                  `protobuf:"varint,3,opt,name=port,proto3" json:"port,omitempty"`
+	Port          int64                  `protobuf:"varint,3,opt,name=port,proto3" json:"port,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -241,7 +241,7 @@ func (x *RegisterServer) GetHost() string {
 	return ""
 }
 
-func (x *RegisterServer) GetPort() int32 {
+func (x *RegisterServer) GetPort() int64 {
 	if x != nil {
 		return x.Port
 	}
@@ -391,7 +391,7 @@ const file_common_proto_control_control_proto_rawDesc = "" +
 	"\x0eRegisterServer\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12\x12\n" +
 	"\x04host\x18\x02 \x01(\tR\x04host\x12\x12\n" +
-	"\x04port\x18\x03 \x01(\x05R\x04port\"G\n" +
+	"\x04port\x18\x03 \x01(\x03R\x04port\"G\n" +
 	"\x11RegisterServerAck\x12\x18\n" +
 	"\asuccess\x18\x01 \x01(\bR\asuccess\x12\x18\n" +
 	"\amessage\x18\x02 \x01(\tR\amessage\"\v\n" +

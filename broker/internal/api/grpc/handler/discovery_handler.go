@@ -29,6 +29,6 @@ func (h *DiscoveryHandler) AvailableServer(_ context.Context, _ *discovery.Avail
 	return &discovery.AvailableServerResponse{
 		Name: server.Name,
 		Addr: server.Addr,
-		Port: server.Port,
+		Port: int64(server.Port),
 	}, nil
 }

@@ -9,6 +9,7 @@ import (
 	"log/slog"
 	"os"
 	"os/signal"
+	"strconv"
 	"syscall"
 
 	cfg_utils "github.com/sceredi/co-type/common/config"
@@ -46,13 +47,18 @@ func main() {
 	cfg_utils.Setup()
 	serverName := os.Getenv("SERVER_NAME")
 	serverAddr := os.Getenv("SERVER_ADDR")
+	serverPortStr := os.Getenv("SERVER_PORT")
+	serverPort, err := strconv.Atoi(serverPortStr)
+	if err != nil {
+		log.Fatalf("Error parsing server port: %v", err)
+	}
 	idx := serverName[len(serverName)-1] - '0'
-	serverPort := 50050 + int32(idx)
+	serverPort = serverPort + int(idx)
 	slog.InfoContext(context.Background(), "Server info",
 		slog.String("serverName", serverName),
 		slog.String("serverAddr", serverAddr),
 		slog.Int("idx", int(idx)),
-		slog.Int("serverPort", int(serverPort)),
+		slog.Int("serverPort", serverPort),
 	)
 	controlAddr := os.Getenv("CONTROL_ADDR")
 	controlPort := os.Getenv("CONTROL_PORT")

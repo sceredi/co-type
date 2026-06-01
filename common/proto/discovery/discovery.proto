@@ -17,5 +17,5 @@ message AvailableServerRequest{}
 message AvailableServerResponse {
   string name = 1;
   string addr = 2;
-  int32 port = 3;
+  int64 port = 3;
 }
