@@ -8,7 +8,7 @@ import (
 
 	"github.com/sceredi/co-type/common/config"
 	"github.com/sceredi/co-type/common/proto/control"
-	"github.com/sceredi/co-type/common/proto/game"
+	"github.com/sceredi/co-type/common/proto/lobby"
 	"github.com/sceredi/co-type/server/internal/api/grpc/gateway"
 	"github.com/sceredi/co-type/server/internal/api/grpc/handler"
 	"github.com/sceredi/co-type/server/internal/repository/memory"
@@ -34,7 +34,7 @@ func CreateListeners() *grpc.Server {
 	lobbyRepo := memory.NewLobbyRepository()
 	lobbySvc := service.NewLobbyService(lobbyRepo)
 
-	gameHandler := handler.NewGameHandler(lobbySvc)
+	lobbyHandler := handler.NewLobbyHandler(lobbySvc)
 
 	grpcServer := grpc.NewServer(
 		grpc.KeepaliveParams(keepalive.ServerParameters{
@@ -43,7 +43,7 @@ func CreateListeners() *grpc.Server {
 		}),
 	)
 
-	game.RegisterGameServiceServer(grpcServer, gameHandler)
+	lobby.RegisterLobbyServiceServer(grpcServer, lobbyHandler)
 
 	reflection.Register(grpcServer)
 

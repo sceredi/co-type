@@ -5,16 +5,18 @@ import (
 	"testing"
 
 	"github.com/sceredi/co-type/common/domain"
+	serverdomain "github.com/sceredi/co-type/server/internal/domain"
 	"github.com/sceredi/co-type/server/internal/service"
 )
 
 type mockLobbyRepository struct {
-	received *domain.Lobby
-	toReturn *domain.Lobby
+	received *serverdomain.Lobby
+	toReturn *serverdomain.Lobby
+	getResp  *serverdomain.Lobby
 	err      error
 }
 
-func (m *mockLobbyRepository) Create(lobby *domain.Lobby) (*domain.Lobby, error) {
+func (m *mockLobbyRepository) Create(lobby *serverdomain.Lobby) (*serverdomain.Lobby, error) {
 	m.received = lobby
 	if m.err != nil {
 		return nil, m.err
@@ -23,6 +25,10 @@ func (m *mockLobbyRepository) Create(lobby *domain.Lobby) (*domain.Lobby, error)
 		return m.toReturn, nil
 	}
 	return lobby, nil
+}
+
+func (m *mockLobbyRepository) Get(id string) *serverdomain.Lobby {
+	return m.getResp
 }
 
 func TestNewLobbyService(t *testing.T) {
@@ -34,7 +40,7 @@ func TestNewLobbyService(t *testing.T) {
 
 func TestLobbyService_Create(t *testing.T) {
 	repoErr := errors.New("repository create failed")
-	repoLobby := domain.NewLobby("repo-lobby", playerPtr("repo-host"))
+	repoLobby := serverdomain.NewLobby("repo-lobby", playerPtr("repo-host"))
 
 	tests := []struct {
 		name     string
@@ -68,14 +74,20 @@ func TestLobbyService_Create(t *testing.T) {
 				t.Fatalf("Create() error = %v, want %v", err, tt.wantErr)
 			}
 
-			if tt.repo.received.ID != tt.id {
-				t.Fatalf("Create() received id = %q, want %q", tt.repo.received.ID, tt.id)
+			if tt.repo.received == nil {
+				t.Fatal("Create() repository was not called")
 			}
-			if tt.repo.received.Host == nil || tt.repo.received.Host.Name != tt.userName {
-				t.Fatalf("Create() received host = %+v, want host name %q", tt.repo.received.Host, tt.userName)
+			if tt.repo.received.Base == nil {
+				t.Fatal("Create() received nil Base, want non-nil base lobby")
 			}
-			if len(tt.repo.received.Players) != 1 || tt.repo.received.Players[0] != tt.repo.received.Host {
-				t.Fatalf("Create() received players = %+v, want one host player", tt.repo.received.Players)
+			if tt.repo.received.Base.ID != tt.id {
+				t.Fatalf("Create() received id = %q, want %q", tt.repo.received.Base.ID, tt.id)
+			}
+			if tt.repo.received.Base.Host == nil || tt.repo.received.Base.Host.Name != tt.userName {
+				t.Fatalf("Create() received host = %+v, want host name %q", tt.repo.received.Base.Host, tt.userName)
+			}
+			if len(tt.repo.received.Base.Players) != 1 || tt.repo.received.Base.Players[0] != tt.repo.received.Base.Host {
+				t.Fatalf("Create() received players = %+v, want one host player", tt.repo.received.Base.Players)
 			}
 
 			if err != nil {
@@ -85,10 +97,33 @@ func TestLobbyService_Create(t *testing.T) {
 				return
 			}
 
+			if got == nil {
+				t.Fatal("Create() got nil, want non-nil lobby")
+			}
+			if tt.repo.toReturn == nil {
+				t.Fatal("Create() repository returned nil lobby")
+			}
+			if tt.repo.toReturn.Subs == nil {
+				t.Fatal("Create() repository returned lobby with nil Subs")
+			}
 			if got != tt.repo.toReturn {
 				t.Fatalf("Create() got = %p, want %p", got, tt.repo.toReturn)
 			}
+			if got.Subs[tt.userName] == nil {
+				t.Fatalf("Create() expected subscription channel for user %q", tt.userName)
+			}
 		})
+	}
+}
+
+func TestLobbyService_Get(t *testing.T) {
+	want := serverdomain.NewLobby("lobby-1", playerPtr("alice"))
+	repo := &mockLobbyRepository{getResp: want}
+	svc := service.NewLobbyService(repo)
+
+	got := svc.Get("lobby-1")
+	if got != want {
+		t.Fatalf("Get() got = %p, want %p", got, want)
 	}
 }
 

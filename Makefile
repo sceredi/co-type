@@ -22,7 +22,7 @@ build: proto
 
 .PHONY: test
 test:
-	go test -v -race ./common/... ./client/... ./server/... ./broker/...
+	go test -race ./common/... ./client/... ./server/... ./broker/...
 
 .PHONY: tidy
 tidy:

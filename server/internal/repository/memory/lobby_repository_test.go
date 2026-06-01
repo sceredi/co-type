@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	"github.com/sceredi/co-type/common/domain"
+	serverdomain "github.com/sceredi/co-type/server/internal/domain"
 	"github.com/sceredi/co-type/server/internal/repository"
 	"github.com/sceredi/co-type/server/internal/repository/memory"
 )
@@ -20,19 +21,19 @@ func TestNewLobbyRepository(t *testing.T) {
 func TestLobbyRepository_Create(t *testing.T) {
 	tests := []struct {
 		name    string
-		seed    *domain.Lobby
-		input   *domain.Lobby
+		seed    *serverdomain.Lobby
+		input   *serverdomain.Lobby
 		wantErr error
 	}{
 		{
 			name:    "creates a new lobby",
-			input:   domain.NewLobby("lobby-1", domain.NewPlayer("alice")),
+			input:   serverdomain.NewLobby("lobby-1", domain.NewPlayer("alice")),
 			wantErr: nil,
 		},
 		{
 			name:    "returns ErrLobbyAlreadyExists when lobby id already exists",
-			seed:    domain.NewLobby("lobby-1", domain.NewPlayer("alice")),
-			input:   domain.NewLobby("lobby-1", domain.NewPlayer("bob")),
+			seed:    serverdomain.NewLobby("lobby-1", domain.NewPlayer("alice")),
+			input:   serverdomain.NewLobby("lobby-1", domain.NewPlayer("bob")),
 			wantErr: domain.ErrLobbyAlreadyExists,
 		},
 	}
@@ -62,14 +63,17 @@ func TestLobbyRepository_Create(t *testing.T) {
 			if got == nil {
 				t.Fatal("Create() got nil, want non-nil lobby")
 			}
-			if got.ID != tt.input.ID {
-				t.Fatalf("Create() lobby id = %q, want %q", got.ID, tt.input.ID)
+			if got.Base == nil {
+				t.Fatal("Create() got nil Base, want non-nil base lobby")
 			}
-			if got.Host == nil || got.Host.Name != tt.input.Host.Name {
-				t.Fatalf("Create() host = %+v, want host name %q", got.Host, tt.input.Host.Name)
+			if got.Base.ID != tt.input.Base.ID {
+				t.Fatalf("Create() lobby id = %q, want %q", got.Base.ID, tt.input.Base.ID)
 			}
-			if len(got.Players) != 1 || got.Players[0] != got.Host {
-				t.Fatalf("Create() players = %+v, want one host player", got.Players)
+			if got.Base.Host == nil || got.Base.Host.Name != tt.input.Base.Host.Name {
+				t.Fatalf("Create() host = %+v, want host name %q", got.Base.Host, tt.input.Base.Host.Name)
+			}
+			if len(got.Base.Players) != 1 || got.Base.Players[0] != got.Base.Host {
+				t.Fatalf("Create() players = %+v, want one host player", got.Base.Players)
 			}
 		})
 	}
