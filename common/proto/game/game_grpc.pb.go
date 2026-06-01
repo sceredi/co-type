@@ -19,7 +19,7 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	GameService_Manage_FullMethodName = "/game.GameService/Manage"
+	GameService_CreateLobby_FullMethodName = "/game.GameService/CreateLobby"
 )
 
 // GameServiceClient is the client API for GameService service.
@@ -28,8 +28,7 @@ const (
 //
 // The game service definition.
 type GameServiceClient interface {
-	// Bidirectional streaming RPC for managing game lobbies and matches.
-	Manage(ctx context.Context, opts ...grpc.CallOption) (grpc.BidiStreamingClient[ServerEnvelope, ClientEnvelope], error)
+	CreateLobby(ctx context.Context, in *CreateLobbyRequest, opts ...grpc.CallOption) (*CreateLobbyResponse, error)
 }
 
 type gameServiceClient struct {
@@ -40,18 +39,15 @@ func NewGameServiceClient(cc grpc.ClientConnInterface) GameServiceClient {
 	return &gameServiceClient{cc}
 }
 
-func (c *gameServiceClient) Manage(ctx context.Context, opts ...grpc.CallOption) (grpc.BidiStreamingClient[ServerEnvelope, ClientEnvelope], error) {
+func (c *gameServiceClient) CreateLobby(ctx context.Context, in *CreateLobbyRequest, opts ...grpc.CallOption) (*CreateLobbyResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	stream, err := c.cc.NewStream(ctx, &GameService_ServiceDesc.Streams[0], GameService_Manage_FullMethodName, cOpts...)
+	out := new(CreateLobbyResponse)
+	err := c.cc.Invoke(ctx, GameService_CreateLobby_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
-	x := &grpc.GenericClientStream[ServerEnvelope, ClientEnvelope]{ClientStream: stream}
-	return x, nil
+	return out, nil
 }
-
-// This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
-type GameService_ManageClient = grpc.BidiStreamingClient[ServerEnvelope, ClientEnvelope]
 
 // GameServiceServer is the server API for GameService service.
 // All implementations must embed UnimplementedGameServiceServer
@@ -59,8 +55,7 @@ type GameService_ManageClient = grpc.BidiStreamingClient[ServerEnvelope, ClientE
 //
 // The game service definition.
 type GameServiceServer interface {
-	// Bidirectional streaming RPC for managing game lobbies and matches.
-	Manage(grpc.BidiStreamingServer[ServerEnvelope, ClientEnvelope]) error
+	CreateLobby(context.Context, *CreateLobbyRequest) (*CreateLobbyResponse, error)
 	mustEmbedUnimplementedGameServiceServer()
 }
 
@@ -71,8 +66,8 @@ type GameServiceServer interface {
 // pointer dereference when methods are called.
 type UnimplementedGameServiceServer struct{}
 
-func (UnimplementedGameServiceServer) Manage(grpc.BidiStreamingServer[ServerEnvelope, ClientEnvelope]) error {
-	return status.Error(codes.Unimplemented, "method Manage not implemented")
+func (UnimplementedGameServiceServer) CreateLobby(context.Context, *CreateLobbyRequest) (*CreateLobbyResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method CreateLobby not implemented")
 }
 func (UnimplementedGameServiceServer) mustEmbedUnimplementedGameServiceServer() {}
 func (UnimplementedGameServiceServer) testEmbeddedByValue()                     {}
@@ -95,12 +90,23 @@ func RegisterGameServiceServer(s grpc.ServiceRegistrar, srv GameServiceServer) {
 	s.RegisterService(&GameService_ServiceDesc, srv)
 }
 
-func _GameService_Manage_Handler(srv interface{}, stream grpc.ServerStream) error {
-	return srv.(GameServiceServer).Manage(&grpc.GenericServerStream[ServerEnvelope, ClientEnvelope]{ServerStream: stream})
+func _GameService_CreateLobby_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateLobbyRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(GameServiceServer).CreateLobby(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: GameService_CreateLobby_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(GameServiceServer).CreateLobby(ctx, req.(*CreateLobbyRequest))
+	}
+	return interceptor(ctx, in, info, handler)
 }
-
-// This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
-type GameService_ManageServer = grpc.BidiStreamingServer[ServerEnvelope, ClientEnvelope]
 
 // GameService_ServiceDesc is the grpc.ServiceDesc for GameService service.
 // It's only intended for direct use with grpc.RegisterService,
@@ -108,14 +114,12 @@ type GameService_ManageServer = grpc.BidiStreamingServer[ServerEnvelope, ClientE
 var GameService_ServiceDesc = grpc.ServiceDesc{
 	ServiceName: "game.GameService",
 	HandlerType: (*GameServiceServer)(nil),
-	Methods:     []grpc.MethodDesc{},
-	Streams: []grpc.StreamDesc{
+	Methods: []grpc.MethodDesc{
 		{
-			StreamName:    "Manage",
-			Handler:       _GameService_Manage_Handler,
-			ServerStreams: true,
-			ClientStreams: true,
+			MethodName: "CreateLobby",
+			Handler:    _GameService_CreateLobby_Handler,
 		},
 	},
+	Streams:  []grpc.StreamDesc{},
 	Metadata: "common/proto/game/game.proto",
 }

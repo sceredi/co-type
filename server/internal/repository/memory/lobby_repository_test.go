@@ -20,19 +20,19 @@ func TestNewLobbyRepository(t *testing.T) {
 func TestLobbyRepository_Create(t *testing.T) {
 	tests := []struct {
 		name    string
-		seed    domain.Lobby
-		input   domain.Lobby
+		seed    *domain.Lobby
+		input   *domain.Lobby
 		wantErr error
 	}{
 		{
 			name:    "creates a new lobby",
-			input:   domain.NewLobby("lobby-1", playerPtr("alice")),
+			input:   domain.NewLobby("lobby-1", domain.NewPlayer("alice")),
 			wantErr: nil,
 		},
 		{
 			name:    "returns ErrLobbyAlreadyExists when lobby id already exists",
-			seed:    domain.NewLobby("lobby-1", playerPtr("alice")),
-			input:   domain.NewLobby("lobby-1", playerPtr("bob")),
+			seed:    domain.NewLobby("lobby-1", domain.NewPlayer("alice")),
+			input:   domain.NewLobby("lobby-1", domain.NewPlayer("bob")),
 			wantErr: domain.ErrLobbyAlreadyExists,
 		},
 	}
@@ -41,7 +41,7 @@ func TestLobbyRepository_Create(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			repo := memory.NewLobbyRepository()
 
-			if tt.seed.ID != "" {
+			if tt.seed != nil {
 				if _, err := repo.Create(tt.seed); err != nil {
 					t.Fatalf("seed create failed: %v", err)
 				}
@@ -73,9 +73,4 @@ func TestLobbyRepository_Create(t *testing.T) {
 			}
 		})
 	}
-}
-
-func playerPtr(name string) *domain.Player {
-	p := domain.NewPlayer(name)
-	return &p
 }

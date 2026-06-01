@@ -21,174 +21,8 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
-// Envelopes for communication between clients and the game server.
-type ServerEnvelope struct {
-	state protoimpl.MessageState `protogen:"open.v1"`
-	// Types that are valid to be assigned to Payload:
-	//
-	//	*ServerEnvelope_Create
-	//	*ServerEnvelope_Join
-	Payload       isServerEnvelope_Payload `protobuf_oneof:"payload"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *ServerEnvelope) Reset() {
-	*x = ServerEnvelope{}
-	mi := &file_common_proto_game_game_proto_msgTypes[0]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *ServerEnvelope) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*ServerEnvelope) ProtoMessage() {}
-
-func (x *ServerEnvelope) ProtoReflect() protoreflect.Message {
-	mi := &file_common_proto_game_game_proto_msgTypes[0]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use ServerEnvelope.ProtoReflect.Descriptor instead.
-func (*ServerEnvelope) Descriptor() ([]byte, []int) {
-	return file_common_proto_game_game_proto_rawDescGZIP(), []int{0}
-}
-
-func (x *ServerEnvelope) GetPayload() isServerEnvelope_Payload {
-	if x != nil {
-		return x.Payload
-	}
-	return nil
-}
-
-func (x *ServerEnvelope) GetCreate() *CreateLobby {
-	if x != nil {
-		if x, ok := x.Payload.(*ServerEnvelope_Create); ok {
-			return x.Create
-		}
-	}
-	return nil
-}
-
-func (x *ServerEnvelope) GetJoin() *JoinLobby {
-	if x != nil {
-		if x, ok := x.Payload.(*ServerEnvelope_Join); ok {
-			return x.Join
-		}
-	}
-	return nil
-}
-
-type isServerEnvelope_Payload interface {
-	isServerEnvelope_Payload()
-}
-
-type ServerEnvelope_Create struct {
-	Create *CreateLobby `protobuf:"bytes,1,opt,name=create,proto3,oneof"`
-}
-
-type ServerEnvelope_Join struct {
-	Join *JoinLobby `protobuf:"bytes,2,opt,name=join,proto3,oneof"`
-}
-
-func (*ServerEnvelope_Create) isServerEnvelope_Payload() {}
-
-func (*ServerEnvelope_Join) isServerEnvelope_Payload() {}
-
-// Envelopes for communication from the game server to clients.
-type ClientEnvelope struct {
-	state protoimpl.MessageState `protogen:"open.v1"`
-	// Types that are valid to be assigned to Payload:
-	//
-	//	*ClientEnvelope_CreateAck
-	//	*ClientEnvelope_JoinAck
-	Payload       isClientEnvelope_Payload `protobuf_oneof:"payload"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *ClientEnvelope) Reset() {
-	*x = ClientEnvelope{}
-	mi := &file_common_proto_game_game_proto_msgTypes[1]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *ClientEnvelope) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*ClientEnvelope) ProtoMessage() {}
-
-func (x *ClientEnvelope) ProtoReflect() protoreflect.Message {
-	mi := &file_common_proto_game_game_proto_msgTypes[1]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use ClientEnvelope.ProtoReflect.Descriptor instead.
-func (*ClientEnvelope) Descriptor() ([]byte, []int) {
-	return file_common_proto_game_game_proto_rawDescGZIP(), []int{1}
-}
-
-func (x *ClientEnvelope) GetPayload() isClientEnvelope_Payload {
-	if x != nil {
-		return x.Payload
-	}
-	return nil
-}
-
-func (x *ClientEnvelope) GetCreateAck() *CreateLobbyAck {
-	if x != nil {
-		if x, ok := x.Payload.(*ClientEnvelope_CreateAck); ok {
-			return x.CreateAck
-		}
-	}
-	return nil
-}
-
-func (x *ClientEnvelope) GetJoinAck() *JoinLobbyAck {
-	if x != nil {
-		if x, ok := x.Payload.(*ClientEnvelope_JoinAck); ok {
-			return x.JoinAck
-		}
-	}
-	return nil
-}
-
-type isClientEnvelope_Payload interface {
-	isClientEnvelope_Payload()
-}
-
-type ClientEnvelope_CreateAck struct {
-	CreateAck *CreateLobbyAck `protobuf:"bytes,1,opt,name=create_ack,json=createAck,proto3,oneof"`
-}
-
-type ClientEnvelope_JoinAck struct {
-	JoinAck *JoinLobbyAck `protobuf:"bytes,2,opt,name=join_ack,json=joinAck,proto3,oneof"`
-}
-
-func (*ClientEnvelope_CreateAck) isClientEnvelope_Payload() {}
-
-func (*ClientEnvelope_JoinAck) isClientEnvelope_Payload() {}
-
 // Messages for lobby management.
-type CreateLobby struct {
+type CreateLobbyRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	LobbyId       string                 `protobuf:"bytes,1,opt,name=lobby_id,json=lobbyId,proto3" json:"lobby_id,omitempty"`
 	PlayerName    string                 `protobuf:"bytes,2,opt,name=player_name,json=playerName,proto3" json:"player_name,omitempty"`
@@ -196,21 +30,21 @@ type CreateLobby struct {
 	sizeCache     protoimpl.SizeCache
 }
 
-func (x *CreateLobby) Reset() {
-	*x = CreateLobby{}
-	mi := &file_common_proto_game_game_proto_msgTypes[2]
+func (x *CreateLobbyRequest) Reset() {
+	*x = CreateLobbyRequest{}
+	mi := &file_common_proto_game_game_proto_msgTypes[0]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
-func (x *CreateLobby) String() string {
+func (x *CreateLobbyRequest) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*CreateLobby) ProtoMessage() {}
+func (*CreateLobbyRequest) ProtoMessage() {}
 
-func (x *CreateLobby) ProtoReflect() protoreflect.Message {
-	mi := &file_common_proto_game_game_proto_msgTypes[2]
+func (x *CreateLobbyRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_common_proto_game_game_proto_msgTypes[0]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -221,19 +55,19 @@ func (x *CreateLobby) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use CreateLobby.ProtoReflect.Descriptor instead.
-func (*CreateLobby) Descriptor() ([]byte, []int) {
-	return file_common_proto_game_game_proto_rawDescGZIP(), []int{2}
+// Deprecated: Use CreateLobbyRequest.ProtoReflect.Descriptor instead.
+func (*CreateLobbyRequest) Descriptor() ([]byte, []int) {
+	return file_common_proto_game_game_proto_rawDescGZIP(), []int{0}
 }
 
-func (x *CreateLobby) GetLobbyId() string {
+func (x *CreateLobbyRequest) GetLobbyId() string {
 	if x != nil {
 		return x.LobbyId
 	}
 	return ""
 }
 
-func (x *CreateLobby) GetPlayerName() string {
+func (x *CreateLobbyRequest) GetPlayerName() string {
 	if x != nil {
 		return x.PlayerName
 	}
@@ -241,29 +75,27 @@ func (x *CreateLobby) GetPlayerName() string {
 }
 
 // Acknowledgment for lobby creation.
-type CreateLobbyAck struct {
+type CreateLobbyResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Success       bool                   `protobuf:"varint,1,opt,name=success,proto3" json:"success,omitempty"`
-	Message       string                 `protobuf:"bytes,2,opt,name=message,proto3" json:"message,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
-func (x *CreateLobbyAck) Reset() {
-	*x = CreateLobbyAck{}
-	mi := &file_common_proto_game_game_proto_msgTypes[3]
+func (x *CreateLobbyResponse) Reset() {
+	*x = CreateLobbyResponse{}
+	mi := &file_common_proto_game_game_proto_msgTypes[1]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
-func (x *CreateLobbyAck) String() string {
+func (x *CreateLobbyResponse) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*CreateLobbyAck) ProtoMessage() {}
+func (*CreateLobbyResponse) ProtoMessage() {}
 
-func (x *CreateLobbyAck) ProtoReflect() protoreflect.Message {
-	mi := &file_common_proto_game_game_proto_msgTypes[3]
+func (x *CreateLobbyResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_common_proto_game_game_proto_msgTypes[1]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -274,27 +106,13 @@ func (x *CreateLobbyAck) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use CreateLobbyAck.ProtoReflect.Descriptor instead.
-func (*CreateLobbyAck) Descriptor() ([]byte, []int) {
-	return file_common_proto_game_game_proto_rawDescGZIP(), []int{3}
-}
-
-func (x *CreateLobbyAck) GetSuccess() bool {
-	if x != nil {
-		return x.Success
-	}
-	return false
-}
-
-func (x *CreateLobbyAck) GetMessage() string {
-	if x != nil {
-		return x.Message
-	}
-	return ""
+// Deprecated: Use CreateLobbyResponse.ProtoReflect.Descriptor instead.
+func (*CreateLobbyResponse) Descriptor() ([]byte, []int) {
+	return file_common_proto_game_game_proto_rawDescGZIP(), []int{1}
 }
 
 // Messages for joining a lobby.
-type JoinLobby struct {
+type JoinLobbyRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	LobbyId       string                 `protobuf:"bytes,1,opt,name=lobby_id,json=lobbyId,proto3" json:"lobby_id,omitempty"`
 	PlayerName    string                 `protobuf:"bytes,2,opt,name=player_name,json=playerName,proto3" json:"player_name,omitempty"`
@@ -302,21 +120,21 @@ type JoinLobby struct {
 	sizeCache     protoimpl.SizeCache
 }
 
-func (x *JoinLobby) Reset() {
-	*x = JoinLobby{}
-	mi := &file_common_proto_game_game_proto_msgTypes[4]
+func (x *JoinLobbyRequest) Reset() {
+	*x = JoinLobbyRequest{}
+	mi := &file_common_proto_game_game_proto_msgTypes[2]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
-func (x *JoinLobby) String() string {
+func (x *JoinLobbyRequest) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*JoinLobby) ProtoMessage() {}
+func (*JoinLobbyRequest) ProtoMessage() {}
 
-func (x *JoinLobby) ProtoReflect() protoreflect.Message {
-	mi := &file_common_proto_game_game_proto_msgTypes[4]
+func (x *JoinLobbyRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_common_proto_game_game_proto_msgTypes[2]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -327,19 +145,19 @@ func (x *JoinLobby) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use JoinLobby.ProtoReflect.Descriptor instead.
-func (*JoinLobby) Descriptor() ([]byte, []int) {
-	return file_common_proto_game_game_proto_rawDescGZIP(), []int{4}
+// Deprecated: Use JoinLobbyRequest.ProtoReflect.Descriptor instead.
+func (*JoinLobbyRequest) Descriptor() ([]byte, []int) {
+	return file_common_proto_game_game_proto_rawDescGZIP(), []int{2}
 }
 
-func (x *JoinLobby) GetLobbyId() string {
+func (x *JoinLobbyRequest) GetLobbyId() string {
 	if x != nil {
 		return x.LobbyId
 	}
 	return ""
 }
 
-func (x *JoinLobby) GetPlayerName() string {
+func (x *JoinLobbyRequest) GetPlayerName() string {
 	if x != nil {
 		return x.PlayerName
 	}
@@ -347,27 +165,27 @@ func (x *JoinLobby) GetPlayerName() string {
 }
 
 // Acknowledgment for joining a lobby.
-type JoinLobbyAck struct {
+type JoinLobbyResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
-func (x *JoinLobbyAck) Reset() {
-	*x = JoinLobbyAck{}
-	mi := &file_common_proto_game_game_proto_msgTypes[5]
+func (x *JoinLobbyResponse) Reset() {
+	*x = JoinLobbyResponse{}
+	mi := &file_common_proto_game_game_proto_msgTypes[3]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
-func (x *JoinLobbyAck) String() string {
+func (x *JoinLobbyResponse) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*JoinLobbyAck) ProtoMessage() {}
+func (*JoinLobbyResponse) ProtoMessage() {}
 
-func (x *JoinLobbyAck) ProtoReflect() protoreflect.Message {
-	mi := &file_common_proto_game_game_proto_msgTypes[5]
+func (x *JoinLobbyResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_common_proto_game_game_proto_msgTypes[3]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -378,39 +196,28 @@ func (x *JoinLobbyAck) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use JoinLobbyAck.ProtoReflect.Descriptor instead.
-func (*JoinLobbyAck) Descriptor() ([]byte, []int) {
-	return file_common_proto_game_game_proto_rawDescGZIP(), []int{5}
+// Deprecated: Use JoinLobbyResponse.ProtoReflect.Descriptor instead.
+func (*JoinLobbyResponse) Descriptor() ([]byte, []int) {
+	return file_common_proto_game_game_proto_rawDescGZIP(), []int{3}
 }
 
 var File_common_proto_game_game_proto protoreflect.FileDescriptor
 
 const file_common_proto_game_game_proto_rawDesc = "" +
 	"\n" +
-	"\x1ccommon/proto/game/game.proto\x12\x04game\"o\n" +
-	"\x0eServerEnvelope\x12+\n" +
-	"\x06create\x18\x01 \x01(\v2\x11.game.CreateLobbyH\x00R\x06create\x12%\n" +
-	"\x04join\x18\x02 \x01(\v2\x0f.game.JoinLobbyH\x00R\x04joinB\t\n" +
-	"\apayload\"\x83\x01\n" +
-	"\x0eClientEnvelope\x125\n" +
-	"\n" +
-	"create_ack\x18\x01 \x01(\v2\x14.game.CreateLobbyAckH\x00R\tcreateAck\x12/\n" +
-	"\bjoin_ack\x18\x02 \x01(\v2\x12.game.JoinLobbyAckH\x00R\ajoinAckB\t\n" +
-	"\apayload\"I\n" +
-	"\vCreateLobby\x12\x19\n" +
+	"\x1ccommon/proto/game/game.proto\x12\x04game\"P\n" +
+	"\x12CreateLobbyRequest\x12\x19\n" +
 	"\blobby_id\x18\x01 \x01(\tR\alobbyId\x12\x1f\n" +
 	"\vplayer_name\x18\x02 \x01(\tR\n" +
-	"playerName\"D\n" +
-	"\x0eCreateLobbyAck\x12\x18\n" +
-	"\asuccess\x18\x01 \x01(\bR\asuccess\x12\x18\n" +
-	"\amessage\x18\x02 \x01(\tR\amessage\"G\n" +
-	"\tJoinLobby\x12\x19\n" +
+	"playerName\"\x15\n" +
+	"\x13CreateLobbyResponse\"N\n" +
+	"\x10JoinLobbyRequest\x12\x19\n" +
 	"\blobby_id\x18\x01 \x01(\tR\alobbyId\x12\x1f\n" +
 	"\vplayer_name\x18\x02 \x01(\tR\n" +
-	"playerName\"\x0e\n" +
-	"\fJoinLobbyAck2G\n" +
-	"\vGameService\x128\n" +
-	"\x06Manage\x12\x14.game.ServerEnvelope\x1a\x14.game.ClientEnvelope(\x010\x01B.Z,github.com/sceredi/co-type/common/proto/gameb\x06proto3"
+	"playerName\"\x13\n" +
+	"\x11JoinLobbyResponse2Q\n" +
+	"\vGameService\x12B\n" +
+	"\vCreateLobby\x12\x18.game.CreateLobbyRequest\x1a\x19.game.CreateLobbyResponseB.Z,github.com/sceredi/co-type/common/proto/gameb\x06proto3"
 
 var (
 	file_common_proto_game_game_proto_rawDescOnce sync.Once
@@ -424,27 +231,21 @@ func file_common_proto_game_game_proto_rawDescGZIP() []byte {
 	return file_common_proto_game_game_proto_rawDescData
 }
 
-var file_common_proto_game_game_proto_msgTypes = make([]protoimpl.MessageInfo, 6)
+var file_common_proto_game_game_proto_msgTypes = make([]protoimpl.MessageInfo, 4)
 var file_common_proto_game_game_proto_goTypes = []any{
-	(*ServerEnvelope)(nil), // 0: game.ServerEnvelope
-	(*ClientEnvelope)(nil), // 1: game.ClientEnvelope
-	(*CreateLobby)(nil),    // 2: game.CreateLobby
-	(*CreateLobbyAck)(nil), // 3: game.CreateLobbyAck
-	(*JoinLobby)(nil),      // 4: game.JoinLobby
-	(*JoinLobbyAck)(nil),   // 5: game.JoinLobbyAck
+	(*CreateLobbyRequest)(nil),  // 0: game.CreateLobbyRequest
+	(*CreateLobbyResponse)(nil), // 1: game.CreateLobbyResponse
+	(*JoinLobbyRequest)(nil),    // 2: game.JoinLobbyRequest
+	(*JoinLobbyResponse)(nil),   // 3: game.JoinLobbyResponse
 }
 var file_common_proto_game_game_proto_depIdxs = []int32{
-	2, // 0: game.ServerEnvelope.create:type_name -> game.CreateLobby
-	4, // 1: game.ServerEnvelope.join:type_name -> game.JoinLobby
-	3, // 2: game.ClientEnvelope.create_ack:type_name -> game.CreateLobbyAck
-	5, // 3: game.ClientEnvelope.join_ack:type_name -> game.JoinLobbyAck
-	0, // 4: game.GameService.Manage:input_type -> game.ServerEnvelope
-	1, // 5: game.GameService.Manage:output_type -> game.ClientEnvelope
-	5, // [5:6] is the sub-list for method output_type
-	4, // [4:5] is the sub-list for method input_type
-	4, // [4:4] is the sub-list for extension type_name
-	4, // [4:4] is the sub-list for extension extendee
-	0, // [0:4] is the sub-list for field type_name
+	0, // 0: game.GameService.CreateLobby:input_type -> game.CreateLobbyRequest
+	1, // 1: game.GameService.CreateLobby:output_type -> game.CreateLobbyResponse
+	1, // [1:2] is the sub-list for method output_type
+	0, // [0:1] is the sub-list for method input_type
+	0, // [0:0] is the sub-list for extension type_name
+	0, // [0:0] is the sub-list for extension extendee
+	0, // [0:0] is the sub-list for field type_name
 }
 
 func init() { file_common_proto_game_game_proto_init() }
@@ -452,21 +253,13 @@ func file_common_proto_game_game_proto_init() {
 	if File_common_proto_game_game_proto != nil {
 		return
 	}
-	file_common_proto_game_game_proto_msgTypes[0].OneofWrappers = []any{
-		(*ServerEnvelope_Create)(nil),
-		(*ServerEnvelope_Join)(nil),
-	}
-	file_common_proto_game_game_proto_msgTypes[1].OneofWrappers = []any{
-		(*ClientEnvelope_CreateAck)(nil),
-		(*ClientEnvelope_JoinAck)(nil),
-	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_common_proto_game_game_proto_rawDesc), len(file_common_proto_game_game_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   6,
+			NumMessages:   4,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

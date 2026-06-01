@@ -12,9 +12,9 @@ import (
 )
 
 // JoinLobbyMsg is a message that is sent when the user wants to join a lobby.
-// It contains the ID of the lobby to join.
 type JoinLobbyMsg struct {
-	Lobby domain.Lobby
+	Lobby  *domain.Lobby
+	Server *domain.Server
 }
 
 // JoinLobbyErrorMsg is a message that is sent when there is an error joining a lobby.
@@ -26,7 +26,10 @@ type JoinLobbyErrorMsg struct {
 func NewCreateLobbyCmd(ds service.DiscoveryService, lobbyCode string, playerName string) tea.Cmd {
 	return func() tea.Msg {
 		// TODO: use the server returned
-		_, err := ds.GetAvailableServer()
+		s, err := ds.GetAvailableServer()
+		slog.InfoContext(context.Background(), "got server",
+			slog.Any("server", s),
+		)
 		if err != nil {
 			slog.ErrorContext(context.Background(), "unable to get server",
 				slog.String("err", err.Error()),
@@ -42,8 +45,8 @@ func NewCreateLobbyCmd(ds service.DiscoveryService, lobbyCode string, playerName
 		}
 		// TODO: actually create the lobby
 		player := domain.NewPlayer(playerName)
-		lobby := domain.NewLobby(lobbyCode, &player)
-		return JoinLobbyMsg{Lobby: lobby}
+		lobby := domain.NewLobby(lobbyCode, player)
+		return JoinLobbyMsg{Lobby: lobby, Server: s}
 	}
 }
 

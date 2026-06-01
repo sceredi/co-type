@@ -15,11 +15,11 @@ func NewLobbyRepository() repository.LobbyRepository {
 	return &lobbyRepository{lobbies: make(map[string]*domain.Lobby)}
 }
 
-func (r *lobbyRepository) Create(lobby domain.Lobby) (*domain.Lobby, error) {
+func (r *lobbyRepository) Create(lobby *domain.Lobby) (*domain.Lobby, error) {
 	_, ok := r.lobbies[lobby.ID]
 	if ok {
 		return nil, domain.ErrLobbyAlreadyExists
 	}
-	r.lobbies[lobby.ID] = &lobby
-	return &lobby, nil
+	r.lobbies[lobby.ID] = lobby
+	return lobby, nil
 }
