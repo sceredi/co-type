@@ -16,3 +16,9 @@ func CreateDiscoveryService(conn *grpc.ClientConn) service.DiscoveryService {
 	gtw := gateway.NewDiscoveryGateway(context.Background(), c)
 	return service.NewDiscoveryService(gtw)
 }
+
+// CreateLobbyService creates a new LobbyService using a new LobbyGateway.
+func CreateLobbyService() service.LobbyService {
+	gtw := gateway.NewLobbyGateway(context.Background())
+	return service.NewLobbyService(gtw)
+}

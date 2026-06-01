@@ -3,6 +3,7 @@ package gateway
 
 import (
 	"context"
+	"log/slog"
 
 	"github.com/sceredi/co-type/common/domain"
 	"github.com/sceredi/co-type/common/grpc"
@@ -28,6 +29,7 @@ func NewDiscoveryGateway(ctx context.Context, conn discovery.DiscoveryServiceCli
 func (g *discoveryGateway) AvailableServer() (*domain.Server, error) {
 	req := &discovery.AvailableServerRequest{}
 	srv, err := g.conn.AvailableServer(g.ctx, req)
+	slog.Info("Requested available server", "request", req, "response", srv)
 	if err != nil {
 		return nil, grpc.FromGRPCError(err)
 	}

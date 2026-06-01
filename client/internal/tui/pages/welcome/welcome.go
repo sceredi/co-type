@@ -32,10 +32,11 @@ type Model struct {
 	error string
 
 	ds service.DiscoveryService
+	ls service.LobbyService
 }
 
 // New creates a new welcome model.
-func New(ds service.DiscoveryService) Model {
+func New(ds service.DiscoveryService, ls service.LobbyService) Model {
 	tn := common.NewTextinput("Choose your username", "")
 	tn.Focus()
 	tc := common.NewTextinput("CT2026", "")
@@ -47,6 +48,7 @@ func New(ds service.DiscoveryService) Model {
 		codeTi: tc,
 
 		ds: ds,
+		ls: ls,
 	}
 }
 
@@ -90,7 +92,7 @@ func (m Model) Update(msg tea.Msg) (Model, tea.Cmd) {
 				m.updateFocus()
 			case focusCreate:
 				// TODO: create new lobby
-				cmds = append(cmds, welcome_messages.NewCreateLobbyCmd(m.ds, m.codeTi.Value(), m.nameTi.Value()))
+				cmds = append(cmds, welcome_messages.NewCreateLobbyCmd(m.ds, m.ls, m.codeTi.Value(), m.nameTi.Value()))
 			case focusJoin:
 				// TODO: join the lobby
 				cmds = append(cmds, welcome_messages.NewJoinLobbyCmd(m.codeTi.Value(), m.nameTi.Value()))

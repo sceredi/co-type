@@ -59,8 +59,9 @@ func main() {
 		}
 	}()
 	ds := config.CreateDiscoveryService(conn)
+	ls := config.CreateLobbyService()
 
-	m := tui.New(ds)
+	m := tui.New(ds, ls)
 
 	p := tea.NewProgram(m)
 

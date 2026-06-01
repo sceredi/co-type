@@ -20,6 +20,22 @@ func newMockDiscoveryService() *mockDiscoveryService {
 	return &mockDiscoveryService{}
 }
 
+// mockLobbyService is a mock implementation of LobbyService for testing
+type mockLobbyService struct{}
+
+func (m *mockLobbyService) Create(id, hostName string) (*domain.Lobby, error) {
+	host := &domain.Player{Name: hostName}
+	return &domain.Lobby{ID: id, Host: host, Players: []*domain.Player{host}}, nil
+}
+
+func (m *mockLobbyService) Connect(target *domain.Server) error {
+	return nil
+}
+
+func newMockLobbyService() *mockLobbyService {
+	return &mockLobbyService{}
+}
+
 func TestJoinLobbyMsgSwitchesToLobbyPage(t *testing.T) {
 	host := &domain.Player{Name: "Host"}
 	lobby := &domain.Lobby{
@@ -27,9 +43,8 @@ func TestJoinLobbyMsgSwitchesToLobbyPage(t *testing.T) {
 		Host:    host,
 		Players: []*domain.Player{host},
 	}
-
-	m := New(newMockDiscoveryService())
-	updated, _ := m.Update(welcome_messages.JoinLobbyMsg{Lobby: lobby})
+	m := New(newMockDiscoveryService(), newMockLobbyService())
+	updated, _ := m.Update(welcome_messages.JoinedLobbyMsg{Lobby: lobby})
 	got := updated.(Model)
 
 	if got.page != lobbyPage {
@@ -45,8 +60,8 @@ func TestLeaveMessageReturnsToWelcomePage(t *testing.T) {
 		Players: []*domain.Player{host},
 	}
 
-	m := New(newMockDiscoveryService())
-	updated, _ := m.Update(welcome_messages.JoinLobbyMsg{Lobby: lobby})
+	m := New(newMockDiscoveryService(), newMockLobbyService())
+	updated, _ := m.Update(welcome_messages.JoinedLobbyMsg{Lobby: lobby})
 	m = updated.(Model)
 
 	updated, _ = m.Update(lobby_messages.LeaveMsg{})
@@ -58,7 +73,7 @@ func TestLeaveMessageReturnsToWelcomePage(t *testing.T) {
 }
 
 func TestCtrlCReturnsQuitCommand(t *testing.T) {
-	m := New(newMockDiscoveryService())
+	m := New(newMockDiscoveryService(), newMockLobbyService())
 
 	_, cmd := m.Update(tea.KeyPressMsg{Text: "ctrl+c"})
 	if cmd == nil {
