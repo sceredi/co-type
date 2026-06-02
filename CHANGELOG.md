@@ -1,3 +1,46 @@
+## [0.3.0](https://github.com/sceredi/co-type/compare/v0.2.0...v0.3.0) (2026-06-02)
+
+### Features
+
+* add client broker discovery upon lobby creation ([ce43e71](https://github.com/sceredi/co-type/commit/ce43e710224bcab11611f34428bae708d23c7242))
+* **client:** create and connect to lobby ([892a3df](https://github.com/sceredi/co-type/commit/892a3dfb26a83eb18f658023be150ff9196b549b))
+* **client:** get best server from broker ([e4d2834](https://github.com/sceredi/co-type/commit/e4d28343e8c9a7bd27ee46d8584f390be0b9d5c9))
+* containerize application ([30dd523](https://github.com/sceredi/co-type/commit/30dd523727f16e9824d870dc81bb862bb34add6a))
+* **server:** add lobby creation ([e547ee6](https://github.com/sceredi/co-type/commit/e547ee622a8f346d7a8797e2be2de9984e14a0e9))
+* **server:** split lobby creation and event subscription ([3f53b37](https://github.com/sceredi/co-type/commit/3f53b37305e4a2b163fff572b43e8205cee29da0))
+
+### Dependency updates
+
+* **deps:** update module google.golang.org/grpc to v1.81.0 ([eceff25](https://github.com/sceredi/co-type/commit/eceff259515b5f103efb5aed691bdb1f40d3dbd9))
+* **deps:** update module google.golang.org/grpc to v1.81.1 ([d7853e7](https://github.com/sceredi/co-type/commit/d7853e79142840d097aa3c41e9f19a17b2721b18))
+* **deps:** update node.js to 24.16 ([f661da8](https://github.com/sceredi/co-type/commit/f661da87b5cfcfd977f87e7ad8275add89cf2559))
+
+### Bug Fixes
+
+* correctly handle subscribe errors ([2c8fd8d](https://github.com/sceredi/co-type/commit/2c8fd8d6eec5b57cdb1025cb2421a930fed12016))
+
+### Tests
+
+* **client:** update gateway tests ([b84167c](https://github.com/sceredi/co-type/commit/b84167c4c6ced5cfc1f701bfb87e8bea3008f703))
+
+### Build and continuous integration
+
+* **deps:** update docker/build-push-action action to v7.2.0 ([a38d051](https://github.com/sceredi/co-type/commit/a38d0513efd2bff76bea8e5d3139420ed9d9c81b))
+* **deps:** update docker/login-action action to v4.2.0 ([cab4e9b](https://github.com/sceredi/co-type/commit/cab4e9b20f47bbf1a0054d5ed13f0a355c769fc8))
+* **deps:** update docker/setup-buildx-action action to v4.1.0 ([da188dc](https://github.com/sceredi/co-type/commit/da188dc2e67de7fa445c22cd6875da5e693985dc))
+* **deps:** update golangci/golangci-lint-action action to v9.2.1 ([3dcff8c](https://github.com/sceredi/co-type/commit/3dcff8c77a9853acd360bf2cd1743fc0c4c51b40))
+
+### General maintenance
+
+* **broker:** move handlers to handler package ([30893dc](https://github.com/sceredi/co-type/commit/30893dc09e364fa0380976197155000b5d5d95e7))
+* **client:** move gateway to its own package ([5be646b](https://github.com/sceredi/co-type/commit/5be646b42cb05785af11e15210b1bac18a809ae1))
+* fix typo ([effefb8](https://github.com/sceredi/co-type/commit/effefb8905321bb2f05af78a9daa4432b1fc9422))
+* move from k3s to kind ([ffd3482](https://github.com/sceredi/co-type/commit/ffd34823c5d10d1c5792859cc77fb7e7fa5079dc))
+
+### Refactoring
+
+* use int64 instead of 32 ([19b51d5](https://github.com/sceredi/co-type/commit/19b51d5565931619396ec998366fc0b8b734a2a9))
+
 ## [0.2.0](https://github.com/sceredi/co-type/compare/v0.1.0...v0.2.0) (2026-04-29)
 
 ### Features
