@@ -27,7 +27,7 @@ func CreateListener(grpcServer *grpc.Server, serviceName string) {
 	}
 	slog.InfoContext(context.Background(), "broker listening",
 		slog.String("service", serviceName),
-		slog.String("port", addr),
+		slog.String("addr", addr),
 	)
 	go func() {
 		err := grpcServer.Serve(lis)
