@@ -36,11 +36,11 @@ func (h *LobbyHandler) Subscribe(req *lobby.SubscribeRequest, stream lobby.Lobby
 	ctx := stream.Context()
 	lobby := h.lobbySvc.Get(req.LobbyId)
 	if lobby == nil {
-		return domain.ErrLobbyNotFound
+		return grpc_utils.ToGRPCError(domain.ErrLobbyNotFound)
 	}
 	eventCh, ok := lobby.Subs[req.PlayerName]
 	if !ok {
-		return domain.ErrPlayerNotInLobby
+		return grpc_utils.ToGRPCError(domain.ErrPlayerNotInLobby)
 	}
 	for {
 		select {
