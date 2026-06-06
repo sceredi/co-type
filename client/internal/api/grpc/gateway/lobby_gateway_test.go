@@ -24,7 +24,14 @@ func (m *mockLobbyClient) Subscribe(ctx context.Context, in *lobbypb.SubscribeRe
 }
 
 func TestCreateLobby_Success(t *testing.T) {
-	mock := &mockLobbyClient{resp: &lobbypb.CreateLobbyResponse{}}
+	mock := &mockLobbyClient{resp: &lobbypb.CreateLobbyResponse{
+		Lobby: &lobbypb.Lobby{
+			Id: "ABCD",
+			Host: &lobbypb.Player{
+				Name: "Host",
+			},
+		},
+	}}
 	g := &lobbyGateway{ctx: context.Background(), conn: mock}
 
 	l, err := g.Create("ABCD", "Host")

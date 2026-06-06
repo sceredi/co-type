@@ -1,6 +1,10 @@
 package domain
 
-import "errors"
+import (
+	"errors"
+
+	"github.com/sceredi/co-type/common/proto/lobby"
+)
 
 // ErrLobbyAlreadyExists is returned when a lobby with the same ID already exists.
 var ErrLobbyAlreadyExists = errors.New("lobby already exists")
@@ -29,41 +33,59 @@ func NewLobby(id string, host *Player) *Lobby {
 	}
 }
 
+// NewLobbyFromGRPC converts a gRPC Lobby message to the Lobby struct.
+func NewLobbyFromGRPC(l *lobby.Lobby) *Lobby {
+	players := make([]*Player, len(l.Players))
+	for i, p := range l.Players {
+		players[i] = &Player{
+			Name:              p.Name,
+			IsReady:           p.IsReady,
+			AllowedCharacters: p.AllowedCharacters,
+			BlockedCharacters: p.BlockedCharacters,
+			CanDelete:         p.CanDelete,
+		}
+	}
+	return &Lobby{
+		ID:      l.Id,
+		Players: players,
+		Host: &Player{
+			Name:              l.Host.Name,
+			IsReady:           l.Host.IsReady,
+			AllowedCharacters: l.Host.AllowedCharacters,
+			BlockedCharacters: l.Host.BlockedCharacters,
+			CanDelete:         l.Host.CanDelete,
+		},
+		Snippet: l.Snippet,
+	}
+}
+
 // AddPlayers adds the given players to the lobby.
 func (l *Lobby) AddPlayers(players ...*Player) {
 	l.Players = append(l.Players, players...)
 }
 
-// LobbyEvent represents an event that can occur in the lobby.
-type LobbyEvent interface {
-	isLobbyEvent()
+// ToGRPCLobby converts the Lobby struct to its gRPC representation.
+func (l *Lobby) ToGRPCLobby() *lobby.Lobby {
+	players := make([]*lobby.Player, len(l.Players))
+	for i, p := range l.Players {
+		players[i] = &lobby.Player{
+			Name:              p.Name,
+			IsReady:           p.IsReady,
+			AllowedCharacters: p.AllowedCharacters,
+			BlockedCharacters: p.BlockedCharacters,
+			CanDelete:         p.CanDelete,
+		}
+	}
+	return &lobby.Lobby{
+		Id:      l.ID,
+		Players: players,
+		Host: &lobby.Player{
+			Name:              l.Host.Name,
+			IsReady:           l.Host.IsReady,
+			AllowedCharacters: l.Host.AllowedCharacters,
+			BlockedCharacters: l.Host.BlockedCharacters,
+			CanDelete:         l.Host.CanDelete,
+		},
+		Snippet: l.Snippet,
+	}
 }
-
-// PlayerJoin represents an event where a player joins the lobby.
-type PlayerJoin struct {
-	PlayerName string
-}
-
-// PlayerLeave represents an event where a player leaves the lobby.
-type PlayerLeave struct {
-	PlayerName string
-}
-
-// PlayerReady represents an event where a player changes their ready status in the lobby.
-type PlayerReady struct {
-	PlayerName string
-	IsReady    bool
-}
-
-// PlayerEdit represents an event where a player edits their allowed/blocked characters or delete permission in the lobby.
-type PlayerEdit struct {
-	PlayerName        string
-	AllowedCharacters string
-	BlockedCharacters string
-	CanDelete         bool
-}
-
-func (PlayerJoin) isLobbyEvent()  {}
-func (PlayerLeave) isLobbyEvent() {}
-func (PlayerReady) isLobbyEvent() {}
-func (PlayerEdit) isLobbyEvent()  {}

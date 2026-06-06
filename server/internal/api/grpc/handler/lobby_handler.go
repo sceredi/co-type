@@ -24,11 +24,13 @@ func NewLobbyHandler(lobbySvc service.LobbyService) *LobbyHandler {
 
 // CreateLobby handles the gRPC request to create a new game lobby.
 func (h *LobbyHandler) CreateLobby(_ context.Context, req *lobby.CreateLobbyRequest) (*lobby.CreateLobbyResponse, error) {
-	_, err := h.lobbySvc.Create(req.LobbyId, req.PlayerName)
+	l, err := h.lobbySvc.Create(req.LobbyId, req.PlayerName)
 	if err != nil {
 		return nil, grpc_utils.ToGRPCError(err)
 	}
-	return &lobby.CreateLobbyResponse{}, nil
+	return &lobby.CreateLobbyResponse{
+		Lobby: l.Base.ToGRPCLobby(),
+	}, nil
 }
 
 // Subscribe handles the gRPC subscription to lobby events.
@@ -46,56 +48,19 @@ func (h *LobbyHandler) Subscribe(req *lobby.SubscribeRequest, stream lobby.Lobby
 		select {
 		case <-ctx.Done():
 			return status.FromContextError(ctx.Err()).Err()
-		case ev, ok := <-eventCh:
+		case l, ok := <-eventCh:
 			if !ok {
 				return nil
 			}
-			if err := stream.Send(toProtoEvent(ev)); err != nil {
+			if err := stream.Send(newLobbyEvent(l.Base)); err != nil {
 				return err
 			}
 		}
 	}
 }
 
-func toProtoEvent(e domain.LobbyEvent) *lobby.LobbyEvent {
-	switch e := e.(type) {
-	case domain.PlayerJoin:
-		return &lobby.LobbyEvent{
-			Event: &lobby.LobbyEvent_PlayerJoin{
-				PlayerJoin: &lobby.PlayerJoin{
-					PlayerName: e.PlayerName,
-				},
-			},
-		}
-	case domain.PlayerLeave:
-		return &lobby.LobbyEvent{
-			Event: &lobby.LobbyEvent_PlayerLeave{
-				PlayerLeave: &lobby.PlayerLeave{
-					PlayerName: e.PlayerName,
-				},
-			},
-		}
-	case domain.PlayerReady:
-		return &lobby.LobbyEvent{
-			Event: &lobby.LobbyEvent_PlayerReady{
-				PlayerReady: &lobby.PlayerReady{
-					PlayerName: e.PlayerName,
-					IsReady:    e.IsReady,
-				},
-			},
-		}
-	case domain.PlayerEdit:
-		return &lobby.LobbyEvent{
-			Event: &lobby.LobbyEvent_PlayerEdit{
-				PlayerEdit: &lobby.PlayerEdit{
-					PlayerName:        e.PlayerName,
-					AllowedCharacters: e.AllowedCharacters,
-					BlockedCharacters: e.BlockedCharacters,
-					CanDelete:         e.CanDelete,
-				},
-			},
-		}
-	default:
-		return nil
+func newLobbyEvent(l *domain.Lobby) *lobby.LobbyEvent {
+	return &lobby.LobbyEvent{
+		Lobby: l.ToGRPCLobby(),
 	}
 }

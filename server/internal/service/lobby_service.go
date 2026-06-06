@@ -35,7 +35,7 @@ func (s *lobbyService) Create(id, userName string) (*domain.Lobby, error) {
 	if err != nil {
 		return nil, err
 	}
-	ch := make(chan commondomain.LobbyEvent, 64)
+	ch := make(chan *domain.Lobby, 64)
 	lobby.Subs[userName] = ch
 	return lobby, nil
 }

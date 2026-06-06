@@ -34,11 +34,11 @@ func (g *lobbyGateway) Create(id, hostName string) (*domain.Lobby, error) {
 		LobbyId:    id,
 		PlayerName: hostName,
 	}
-	_, err := g.conn.CreateLobby(g.ctx, req)
+	res, err := g.conn.CreateLobby(g.ctx, req)
 	if err != nil {
 		return nil, commongrpc.FromGRPCError(err)
 	}
-	return domain.NewLobby(id, domain.NewPlayer(hostName)), nil
+	return domain.NewLobbyFromGRPC(res.GetLobby()), nil
 }
 
 func (g *lobbyGateway) Connect(target *domain.Server) error {
