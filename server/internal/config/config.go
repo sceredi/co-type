@@ -4,49 +4,59 @@ package config
 import (
 	"context"
 	"log"
-	"time"
-
-	"github.com/sceredi/co-type/common/config"
-	"github.com/sceredi/co-type/common/proto/control"
-	"github.com/sceredi/co-type/common/proto/lobby"
-	"github.com/sceredi/co-type/server/internal/api/grpc/gateway"
-	"github.com/sceredi/co-type/server/internal/api/grpc/handler"
-	"github.com/sceredi/co-type/server/internal/repository/memory"
-	"github.com/sceredi/co-type/server/internal/service"
-	"google.golang.org/grpc"
-	"google.golang.org/grpc/keepalive"
-	"google.golang.org/grpc/reflection"
+	"log/slog"
+	"os"
+	"strconv"
+	"sync"
 )
 
-// CreateDiscoveryService creates a new instance of DiscoveryService using the provided gRPC connection.
-func CreateDiscoveryService(conn *grpc.ClientConn) service.DiscoveryService {
-	c := control.NewControlServiceClient(conn)
-	stream, err := c.Manage(context.Background())
-	if err != nil {
-		log.Fatalf("Error creating gRPC stream: %v", err)
-	}
-	gtw := gateway.NewControlGateway(stream)
-	return service.NewDiscoveryService(gtw)
+// Config holds the configuration settings for the server application.
+type Config struct {
+	Name        string
+	Addr        string
+	Port        int
+	ControlAddr string
+	ControlPort int
 }
 
-// CreateListeners creates and starts the gRPC servers.
-func CreateListeners() *grpc.Server {
-	lobbyRepo := memory.NewLobbyRepository()
-	lobbySvc := service.NewLobbyService(lobbyRepo)
+var (
+	globalCfg *Config
+	once      sync.Once
+)
 
-	lobbyHandler := handler.NewLobbyHandler(lobbySvc)
+// Get returns the global configuration instance, loading it if it hasn't been loaded yet.
+func Get() *Config {
+	once.Do(load)
+	return globalCfg
+}
 
-	grpcServer := grpc.NewServer(
-		grpc.KeepaliveParams(keepalive.ServerParameters{
-			Time:    3 * time.Second,
-			Timeout: 3 * time.Second,
-		}),
+func load() {
+	serverName := os.Getenv("SERVER_NAME")
+	serverAddr := os.Getenv("SERVER_ADDR")
+	serverPortStr := os.Getenv("SERVER_PORT")
+	serverPort, err := strconv.Atoi(serverPortStr)
+	if err != nil {
+		log.Fatalf("Error parsing server port: %v", err)
+	}
+	idx := serverName[len(serverName)-1] - '0'
+	serverPort = serverPort + int(idx)
+	slog.InfoContext(context.Background(), "Server info",
+		slog.String("serverName", serverName),
+		slog.String("serverAddr", serverAddr),
+		slog.Int("idx", int(idx)),
+		slog.Int("serverPort", serverPort),
 	)
-
-	lobby.RegisterLobbyServiceServer(grpcServer, lobbyHandler)
-
-	reflection.Register(grpcServer)
-
-	config.CreateListener(grpcServer, "game")
-	return grpcServer
+	controlAddr := os.Getenv("CONTROL_ADDR")
+	controlPortStr := os.Getenv("CONTROL_PORT")
+	controlPort, err := strconv.Atoi(controlPortStr)
+	if err != nil {
+		log.Fatalf("Error parsing control port: %v", err)
+	}
+	globalCfg = &Config{
+		Name:        serverName,
+		Addr:        serverAddr,
+		Port:        serverPort,
+		ControlAddr: controlAddr,
+		ControlPort: controlPort,
+	}
 }

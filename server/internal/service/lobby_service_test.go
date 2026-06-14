@@ -31,8 +31,24 @@ func (m *mockLobbyRepository) Get(id string) *serverdomain.Lobby {
 	return m.getResp
 }
 
+type mockControlGateway struct {
+	receivedLobbyID    string
+	receivedServerName string
+	err                error
+}
+
+func (m *mockControlGateway) RegisterServer(name, host string, port int) error {
+	return nil
+}
+
+func (m *mockControlGateway) RegisterLobby(lobbyID, serverName string) error {
+	m.receivedLobbyID = lobbyID
+	m.receivedServerName = serverName
+	return m.err
+}
+
 func TestNewLobbyService(t *testing.T) {
-	svc := service.NewLobbyService(&mockLobbyRepository{})
+	svc := service.NewLobbyService("test-server", &mockControlGateway{}, &mockLobbyRepository{})
 	if svc == nil {
 		t.Fatal("NewLobbyService() returned nil")
 	}
@@ -40,20 +56,24 @@ func TestNewLobbyService(t *testing.T) {
 
 func TestLobbyService_Create(t *testing.T) {
 	repoErr := errors.New("repository create failed")
+	gatewayErr := errors.New("gateway register failed")
 	repoLobby := serverdomain.NewLobby("repo-lobby", playerPtr("repo-host"))
+	serverName := "test-server"
 
 	tests := []struct {
 		name     string
 		id       string
 		userName string
 		repo     *mockLobbyRepository
+		gtw      *mockControlGateway
 		wantErr  error
 	}{
 		{
-			name:     "creates lobby and delegates to repository",
+			name:     "creates lobby and delegates to repository and gateway",
 			id:       "lobby-1",
 			userName: "alice",
 			repo:     &mockLobbyRepository{toReturn: repoLobby},
+			gtw:      &mockControlGateway{},
 			wantErr:  nil,
 		},
 		{
@@ -61,13 +81,22 @@ func TestLobbyService_Create(t *testing.T) {
 			id:       "lobby-1",
 			userName: "alice",
 			repo:     &mockLobbyRepository{err: repoErr},
+			gtw:      &mockControlGateway{},
 			wantErr:  repoErr,
+		},
+		{
+			name:     "returns gateway error",
+			id:       "lobby-1",
+			userName: "alice",
+			repo:     &mockLobbyRepository{toReturn: repoLobby},
+			gtw:      &mockControlGateway{err: gatewayErr},
+			wantErr:  gatewayErr,
 		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			svc := service.NewLobbyService(tt.repo)
+			svc := service.NewLobbyService(serverName, tt.gtw, tt.repo)
 
 			got, err := svc.Create(tt.id, tt.userName)
 			if !errors.Is(err, tt.wantErr) {
@@ -77,6 +106,7 @@ func TestLobbyService_Create(t *testing.T) {
 			if tt.repo.received == nil {
 				t.Fatal("Create() repository was not called")
 			}
+			// ... existing checks ...
 			if tt.repo.received.Base == nil {
 				t.Fatal("Create() received nil Base, want non-nil base lobby")
 			}
@@ -88,6 +118,16 @@ func TestLobbyService_Create(t *testing.T) {
 			}
 			if len(tt.repo.received.Base.Players) != 1 || tt.repo.received.Base.Players[0] != tt.repo.received.Base.Host {
 				t.Fatalf("Create() received players = %+v, want one host player", tt.repo.received.Base.Players)
+			}
+
+			if err == nil || errors.Is(err, gatewayErr) {
+				// Search for repository calls only if repository should have been called
+				if tt.gtw.receivedLobbyID != tt.id {
+					t.Fatalf("Create() gateway received id = %q, want %q", tt.gtw.receivedLobbyID, tt.id)
+				}
+				if tt.gtw.receivedServerName != serverName {
+					t.Fatalf("Create() gateway received serverName = %q, want %q", tt.gtw.receivedServerName, serverName)
+				}
 			}
 
 			if err != nil {
@@ -119,7 +159,7 @@ func TestLobbyService_Create(t *testing.T) {
 func TestLobbyService_Get(t *testing.T) {
 	want := serverdomain.NewLobby("lobby-1", playerPtr("alice"))
 	repo := &mockLobbyRepository{getResp: want}
-	svc := service.NewLobbyService(repo)
+	svc := service.NewLobbyService("test-server", &mockControlGateway{}, repo)
 
 	got := svc.Get("lobby-1")
 	if got != want {

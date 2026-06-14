@@ -17,6 +17,8 @@ type ServerService interface {
 	Create(name, addr string, port int) (*domain.Server, error)
 	// LowestLoad finds the server with the lowest load. It returns it or an error if there are no available servers.
 	LowestLoad() (*domain.Server, error)
+	// GetByName retrieves a server by its name. It returns the server or an error if the server is not found or if the operation fails.
+	GetByName(name string) (*domain.Server, error)
 }
 
 type serverService struct {
@@ -54,4 +56,17 @@ func (s *serverService) LowestLoad() (*domain.Server, error) {
 		}
 	}
 	return lowest, nil
+}
+
+func (s *serverService) GetByName(name string) (*domain.Server, error) {
+	slog.DebugContext(context.Background(), "Retrieving server by name",
+		slog.String("name", name),
+	)
+	svs := s.serverRepo.List()
+	for _, server := range svs {
+		if server.Name == name {
+			return server, nil
+		}
+	}
+	return nil, domain.ErrServerNotFound
 }

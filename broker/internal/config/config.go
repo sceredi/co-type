@@ -7,7 +7,7 @@ import (
 	"github.com/sceredi/co-type/broker/internal/api/grpc/handler"
 	"github.com/sceredi/co-type/broker/internal/repository/memory"
 	"github.com/sceredi/co-type/broker/internal/service"
-	"github.com/sceredi/co-type/common/config"
+	"github.com/sceredi/co-type/common/app"
 	"github.com/sceredi/co-type/common/proto/control"
 	"github.com/sceredi/co-type/common/proto/discovery"
 	"google.golang.org/grpc"
@@ -19,8 +19,10 @@ import (
 func CreateListeners() *grpc.Server {
 	serverRepo := memory.NewServerRepository()
 	serverSvc := service.NewServerService(serverRepo)
+	lobbyRepo := memory.NewLobbyRepository()
+	lobbySvc := service.NewLobbyService(lobbyRepo, serverSvc)
 
-	controlHandler := handler.NewControlHandler(serverSvc)
+	controlHandler := handler.NewControlHandler(serverSvc, lobbySvc)
 	discoveryHandler := handler.NewDiscoveryHandler(serverSvc)
 
 	grpcServer := grpc.NewServer(
@@ -35,7 +37,7 @@ func CreateListeners() *grpc.Server {
 
 	reflection.Register(grpcServer)
 
-	config.CreateListener(grpcServer, "control")
-	config.CreateListener(grpcServer, "discovery")
+	app.CreateListener(grpcServer, "control")
+	app.CreateListener(grpcServer, "discovery")
 	return grpcServer
 }
