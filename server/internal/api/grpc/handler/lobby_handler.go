@@ -33,6 +33,17 @@ func (h *LobbyHandler) CreateLobby(_ context.Context, req *lobby.CreateLobbyRequ
 	}, nil
 }
 
+// JoinLobby handles the gRPC request to join an existing game lobby.
+func (h *LobbyHandler) JoinLobby(_ context.Context, req *lobby.JoinLobbyRequest) (*lobby.JoinLobbyResponse, error) {
+	l, err := h.lobbySvc.Join(req.LobbyId, req.PlayerName)
+	if err != nil {
+		return nil, grpc_utils.ToGRPCError(err)
+	}
+	return &lobby.JoinLobbyResponse{
+		Lobby: l.Base.ToGRPCLobby(),
+	}, nil
+}
+
 // Subscribe handles the gRPC subscription to lobby events.
 func (h *LobbyHandler) Subscribe(req *lobby.SubscribeRequest, stream lobby.LobbyService_SubscribeServer) error {
 	ctx := stream.Context()

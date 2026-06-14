@@ -13,6 +13,7 @@ import (
 // LobbyService defines the interface for managing lobbies in the server service.
 type LobbyService interface {
 	Create(id, userName string) (*domain.Lobby, error)
+	Join(id, userName string) (*domain.Lobby, error)
 	Get(id string) *domain.Lobby
 }
 
@@ -43,6 +44,23 @@ func (s *lobbyService) Create(id, userName string) (*domain.Lobby, error) {
 	if err != nil {
 		return nil, err
 	}
+
+	ch := make(chan *domain.Lobby, 64)
+	lobby.Subs[userName] = ch
+	return lobby, nil
+}
+
+func (s *lobbyService) Join(id, userName string) (*domain.Lobby, error) {
+	slog.DebugContext(context.Background(), "Joining lobby",
+		slog.String("id", id),
+		slog.String("userName", userName),
+	)
+	lobby := s.lobbyRepo.Get(id)
+	if lobby == nil {
+		return nil, commondomain.ErrLobbyNotFound
+	}
+	player := commondomain.NewPlayer(userName)
+	lobby.Base.AddPlayers(player)
 
 	ch := make(chan *domain.Lobby, 64)
 	lobby.Subs[userName] = ch

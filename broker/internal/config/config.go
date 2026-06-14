@@ -2,42 +2,23 @@
 package config
 
 import (
-	"time"
-
-	"github.com/sceredi/co-type/broker/internal/api/grpc/handler"
-	"github.com/sceredi/co-type/broker/internal/repository/memory"
-	"github.com/sceredi/co-type/broker/internal/service"
-	"github.com/sceredi/co-type/common/app"
-	"github.com/sceredi/co-type/common/proto/control"
-	"github.com/sceredi/co-type/common/proto/discovery"
-	"google.golang.org/grpc"
-	"google.golang.org/grpc/keepalive"
-	"google.golang.org/grpc/reflection"
+	"sync"
 )
 
-// CreateListeners creates and starts the gRPC servers.
-func CreateListeners() *grpc.Server {
-	serverRepo := memory.NewServerRepository()
-	serverSvc := service.NewServerService(serverRepo)
-	lobbyRepo := memory.NewLobbyRepository()
-	lobbySvc := service.NewLobbyService(lobbyRepo, serverSvc)
+// Config holds the configuration settings for the broker application.
+type Config struct{}
 
-	controlHandler := handler.NewControlHandler(serverSvc, lobbySvc)
-	discoveryHandler := handler.NewDiscoveryHandler(serverSvc)
+var (
+	globalCfg *Config
+	once      sync.Once
+)
 
-	grpcServer := grpc.NewServer(
-		grpc.KeepaliveParams(keepalive.ServerParameters{
-			Time:    3 * time.Second,
-			Timeout: 3 * time.Second,
-		}),
-	)
+// Get returns the global configuration instance, loading it if it hasn't been loaded yet.
+func Get() *Config {
+	once.Do(load)
+	return globalCfg
+}
 
-	control.RegisterControlServiceServer(grpcServer, controlHandler)
-	discovery.RegisterDiscoveryServiceServer(grpcServer, discoveryHandler)
-
-	reflection.Register(grpcServer)
-
-	app.CreateListener(grpcServer, "control")
-	app.CreateListener(grpcServer, "discovery")
-	return grpcServer
+func load() {
+	globalCfg = &Config{}
 }

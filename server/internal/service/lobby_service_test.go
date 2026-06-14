@@ -156,6 +156,60 @@ func TestLobbyService_Create(t *testing.T) {
 	}
 }
 
+func TestLobbyService_Join(t *testing.T) {
+	serverName := "test-server"
+	lobbyID := "lobby-1"
+	userName := "bob"
+	existingLobby := serverdomain.NewLobby(lobbyID, playerPtr("alice"))
+
+	tests := []struct {
+		name    string
+		repo    *mockLobbyRepository
+		wantErr error
+	}{
+		{
+			name:    "joins existing lobby successfully",
+			repo:    &mockLobbyRepository{getResp: existingLobby},
+			wantErr: nil,
+		},
+		{
+			name:    "returns error if lobby not found",
+			repo:    &mockLobbyRepository{getResp: nil},
+			wantErr: domain.ErrLobbyNotFound,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			svc := service.NewLobbyService(serverName, &mockControlGateway{}, tt.repo)
+			lobby, err := svc.Join(lobbyID, userName)
+
+			if !errors.Is(err, tt.wantErr) {
+				t.Fatalf("Join() error = %v, want %v", err, tt.wantErr)
+			}
+
+			if tt.wantErr == nil {
+				if lobby == nil {
+					t.Fatal("expected lobby, got nil")
+				}
+				found := false
+				for _, p := range lobby.Base.Players {
+					if p.Name == userName {
+						found = true
+						break
+					}
+				}
+				if !found {
+					t.Errorf("expected player %s in lobby players", userName)
+				}
+				if _, ok := lobby.Subs[userName]; !ok {
+					t.Error("expected subscription channel for player")
+				}
+			}
+		})
+	}
+}
+
 func TestLobbyService_Get(t *testing.T) {
 	want := serverdomain.NewLobby("lobby-1", playerPtr("alice"))
 	repo := &mockLobbyRepository{getResp: want}

@@ -9,6 +9,7 @@ import (
 // DiscoveryService defines the interface for managing server discovery.
 type DiscoveryService interface {
 	GetAvailableServer() (*domain.Server, error)
+	GetHostByLobby(lobbyCode string) (*domain.Server, error)
 }
 
 type discoveryService struct {
@@ -22,4 +23,8 @@ func NewDiscoveryService(gtw gateway.DiscoveryGateway) DiscoveryService {
 
 func (s *discoveryService) GetAvailableServer() (*domain.Server, error) {
 	return s.gtw.AvailableServer()
+}
+
+func (s *discoveryService) GetHostByLobby(lobbyCode string) (*domain.Server, error) {
+	return s.gtw.HostByLobby(lobbyCode)
 }

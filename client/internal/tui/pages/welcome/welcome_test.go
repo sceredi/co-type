@@ -16,6 +16,10 @@ func (m *mockDiscoveryService) GetAvailableServer() (*domain.Server, error) {
 	return nil, nil
 }
 
+func (m *mockDiscoveryService) GetHostByLobby(lobbyCode string) (*domain.Server, error) {
+	return nil, nil
+}
+
 func newMockDiscoveryService() *mockDiscoveryService {
 	return &mockDiscoveryService{}
 }
@@ -26,6 +30,11 @@ type mockLobbyService struct{}
 func (m *mockLobbyService) Create(id, hostName string) (*domain.Lobby, error) {
 	host := &domain.Player{Name: hostName}
 	return &domain.Lobby{ID: id, Host: host, Players: []*domain.Player{host}}, nil
+}
+
+func (m *mockLobbyService) Join(id, playerName string) (*domain.Lobby, error) {
+	player := &domain.Player{Name: playerName}
+	return &domain.Lobby{ID: id, Players: []*domain.Player{player}}, nil
 }
 
 func (m *mockLobbyService) Connect(target *domain.Server) error {

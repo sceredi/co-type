@@ -20,6 +20,7 @@ const _ = grpc.SupportPackageIsVersion9
 
 const (
 	LobbyService_CreateLobby_FullMethodName = "/lobby.LobbyService/CreateLobby"
+	LobbyService_JoinLobby_FullMethodName   = "/lobby.LobbyService/JoinLobby"
 	LobbyService_Subscribe_FullMethodName   = "/lobby.LobbyService/Subscribe"
 )
 
@@ -30,6 +31,7 @@ const (
 // The game service definition.
 type LobbyServiceClient interface {
 	CreateLobby(ctx context.Context, in *CreateLobbyRequest, opts ...grpc.CallOption) (*CreateLobbyResponse, error)
+	JoinLobby(ctx context.Context, in *JoinLobbyRequest, opts ...grpc.CallOption) (*JoinLobbyResponse, error)
 	Subscribe(ctx context.Context, in *SubscribeRequest, opts ...grpc.CallOption) (grpc.ServerStreamingClient[LobbyEvent], error)
 }
 
@@ -45,6 +47,16 @@ func (c *lobbyServiceClient) CreateLobby(ctx context.Context, in *CreateLobbyReq
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(CreateLobbyResponse)
 	err := c.cc.Invoke(ctx, LobbyService_CreateLobby_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *lobbyServiceClient) JoinLobby(ctx context.Context, in *JoinLobbyRequest, opts ...grpc.CallOption) (*JoinLobbyResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(JoinLobbyResponse)
+	err := c.cc.Invoke(ctx, LobbyService_JoinLobby_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -77,6 +89,7 @@ type LobbyService_SubscribeClient = grpc.ServerStreamingClient[LobbyEvent]
 // The game service definition.
 type LobbyServiceServer interface {
 	CreateLobby(context.Context, *CreateLobbyRequest) (*CreateLobbyResponse, error)
+	JoinLobby(context.Context, *JoinLobbyRequest) (*JoinLobbyResponse, error)
 	Subscribe(*SubscribeRequest, grpc.ServerStreamingServer[LobbyEvent]) error
 	mustEmbedUnimplementedLobbyServiceServer()
 }
@@ -90,6 +103,9 @@ type UnimplementedLobbyServiceServer struct{}
 
 func (UnimplementedLobbyServiceServer) CreateLobby(context.Context, *CreateLobbyRequest) (*CreateLobbyResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method CreateLobby not implemented")
+}
+func (UnimplementedLobbyServiceServer) JoinLobby(context.Context, *JoinLobbyRequest) (*JoinLobbyResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method JoinLobby not implemented")
 }
 func (UnimplementedLobbyServiceServer) Subscribe(*SubscribeRequest, grpc.ServerStreamingServer[LobbyEvent]) error {
 	return status.Error(codes.Unimplemented, "method Subscribe not implemented")
@@ -133,6 +149,24 @@ func _LobbyService_CreateLobby_Handler(srv interface{}, ctx context.Context, dec
 	return interceptor(ctx, in, info, handler)
 }
 
+func _LobbyService_JoinLobby_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(JoinLobbyRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(LobbyServiceServer).JoinLobby(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: LobbyService_JoinLobby_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(LobbyServiceServer).JoinLobby(ctx, req.(*JoinLobbyRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _LobbyService_Subscribe_Handler(srv interface{}, stream grpc.ServerStream) error {
 	m := new(SubscribeRequest)
 	if err := stream.RecvMsg(m); err != nil {
@@ -154,6 +188,10 @@ var LobbyService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "CreateLobby",
 			Handler:    _LobbyService_CreateLobby_Handler,
+		},
+		{
+			MethodName: "JoinLobby",
+			Handler:    _LobbyService_JoinLobby_Handler,
 		},
 	},
 	Streams: []grpc.StreamDesc{

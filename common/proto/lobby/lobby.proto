@@ -7,17 +7,8 @@ option go_package = "github.com/sceredi/co-type/common/proto/lobby";
 // The game service definition.
 service LobbyService {
   rpc CreateLobby(CreateLobbyRequest) returns (CreateLobbyResponse);
+  rpc JoinLobby(JoinLobbyRequest) returns (JoinLobbyResponse);
   rpc Subscribe(SubscribeRequest) returns (stream LobbyEvent);
-}
-
-// Messages for lobby management.
-message CreateLobbyRequest {
-  string lobby_id = 1;
-  string player_name = 2;
-}
-
-message CreateLobbyResponse {
-  Lobby lobby = 1;
 }
 
 message Lobby {
@@ -33,6 +24,25 @@ message Player {
   string allowed_characters = 3;
   string blocked_characters = 4;
   bool can_delete = 5;
+}
+
+// Messages for lobby management.
+message CreateLobbyRequest {
+  string lobby_id = 1;
+  string player_name = 2;
+}
+
+message CreateLobbyResponse {
+  Lobby lobby = 1;
+}
+
+message JoinLobbyRequest {
+  string lobby_id = 1;
+  string player_name = 2;
+}
+
+message JoinLobbyResponse {
+  Lobby lobby = 1;
 }
 
 message SubscribeRequest {

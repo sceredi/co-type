@@ -16,6 +16,7 @@ import (
 type LobbyGateway interface {
 	// Create creates a new lobby with the given ID and host name.
 	Create(id, hostName string) (*domain.Lobby, error)
+	Join(id, playerName string) (*domain.Lobby, error)
 	Connect(target *domain.Server) error
 }
 
@@ -35,6 +36,18 @@ func (g *lobbyGateway) Create(id, hostName string) (*domain.Lobby, error) {
 		PlayerName: hostName,
 	}
 	res, err := g.conn.CreateLobby(g.ctx, req)
+	if err != nil {
+		return nil, commongrpc.FromGRPCError(err)
+	}
+	return domain.NewLobbyFromGRPC(res.GetLobby()), nil
+}
+
+func (g *lobbyGateway) Join(id, playerName string) (*domain.Lobby, error) {
+	req := &lobby.JoinLobbyRequest{
+		LobbyId:    id,
+		PlayerName: playerName,
+	}
+	res, err := g.conn.JoinLobby(g.ctx, req)
 	if err != nil {
 		return nil, commongrpc.FromGRPCError(err)
 	}

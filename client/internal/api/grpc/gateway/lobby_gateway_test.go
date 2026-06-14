@@ -9,14 +9,21 @@ import (
 )
 
 type mockLobbyClient struct {
-	lastReq *lobbypb.CreateLobbyRequest
-	resp    *lobbypb.CreateLobbyResponse
-	err     error
+	lastCreateReq *lobbypb.CreateLobbyRequest
+	lastJoinReq   *lobbypb.JoinLobbyRequest
+	createResp    *lobbypb.CreateLobbyResponse
+	joinResp      *lobbypb.JoinLobbyResponse
+	err           error
 }
 
 func (m *mockLobbyClient) CreateLobby(ctx context.Context, in *lobbypb.CreateLobbyRequest, opts ...grpcpkg.CallOption) (*lobbypb.CreateLobbyResponse, error) {
-	m.lastReq = in
-	return m.resp, m.err
+	m.lastCreateReq = in
+	return m.createResp, m.err
+}
+
+func (m *mockLobbyClient) JoinLobby(ctx context.Context, in *lobbypb.JoinLobbyRequest, opts ...grpcpkg.CallOption) (*lobbypb.JoinLobbyResponse, error) {
+	m.lastJoinReq = in
+	return m.joinResp, m.err
 }
 
 func (m *mockLobbyClient) Subscribe(ctx context.Context, in *lobbypb.SubscribeRequest, opts ...grpcpkg.CallOption) (grpcpkg.ServerStreamingClient[lobbypb.LobbyEvent], error) {
@@ -24,7 +31,7 @@ func (m *mockLobbyClient) Subscribe(ctx context.Context, in *lobbypb.SubscribeRe
 }
 
 func TestCreateLobby_Success(t *testing.T) {
-	mock := &mockLobbyClient{resp: &lobbypb.CreateLobbyResponse{
+	mock := &mockLobbyClient{createResp: &lobbypb.CreateLobbyResponse{
 		Lobby: &lobbypb.Lobby{
 			Id: "ABCD",
 			Host: &lobbypb.Player{
@@ -47,7 +54,38 @@ func TestCreateLobby_Success(t *testing.T) {
 	if l.Host.Name != "Host" {
 		t.Fatalf("expected host Host, got %q", l.Host.Name)
 	}
-	if mock.lastReq == nil || mock.lastReq.GetLobbyId() != "ABCD" {
-		t.Fatalf("expected CreateLobby called with lobby id ABCD, got %+v", mock.lastReq)
+	if mock.lastCreateReq == nil || mock.lastCreateReq.GetLobbyId() != "ABCD" {
+		t.Fatalf("expected CreateLobby called with lobby id ABCD, got %+v", mock.lastCreateReq)
+	}
+}
+
+func TestJoinLobby_Success(t *testing.T) {
+	mock := &mockLobbyClient{joinResp: &lobbypb.JoinLobbyResponse{
+		Lobby: &lobbypb.Lobby{
+			Id: "ABCD",
+			Players: []*lobbypb.Player{
+				{Name: "Host"},
+				{Name: "Player2"},
+			},
+			Host: &lobbypb.Player{Name: "Host"},
+		},
+	}}
+	g := &lobbyGateway{ctx: context.Background(), conn: mock}
+
+	l, err := g.Join("ABCD", "Player2")
+	if err != nil {
+		t.Fatalf("expected no error, got %v", err)
+	}
+	if l == nil {
+		t.Fatal("expected lobby, got nil")
+	}
+	if l.ID != "ABCD" {
+		t.Fatalf("expected id ABCD, got %q", l.ID)
+	}
+	if len(l.Players) != 2 {
+		t.Fatalf("expected 2 players, got %d", len(l.Players))
+	}
+	if mock.lastJoinReq == nil || mock.lastJoinReq.GetLobbyId() != "ABCD" {
+		t.Fatalf("expected JoinLobby called with lobby id ABCD, got %+v", mock.lastJoinReq)
 	}
 }

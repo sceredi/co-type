@@ -29,7 +29,6 @@ func NewCreateLobbyCmd(ds service.DiscoveryService, ls service.LobbyService, lob
 				Error: "Lobby code and username must not be empty",
 			}
 		}
-		// TODO: use the server returned
 		server, err := ds.GetAvailableServer()
 		slog.InfoContext(context.Background(), "got server",
 			slog.Any("server", server),
@@ -51,7 +50,6 @@ func NewCreateLobbyCmd(ds service.DiscoveryService, ls service.LobbyService, lob
 				Error: fmt.Sprintf("Unable to connect to game server:\n%s", err.Error()),
 			}
 		}
-		// TODO: actually create the lobby
 		lobby, err := ls.Create(lobbyCode, playerName)
 		if err != nil {
 			slog.ErrorContext(context.Background(), "unable to create lobby",
@@ -66,7 +64,7 @@ func NewCreateLobbyCmd(ds service.DiscoveryService, ls service.LobbyService, lob
 }
 
 // NewJoinLobbyCmd creates a new command to join a lobby with the given ID.
-func NewJoinLobbyCmd(lobbyCode string, playerName string) tea.Cmd {
+func NewJoinLobbyCmd(ds service.DiscoveryService, ls service.LobbyService, lobbyCode string, playerName string) tea.Cmd {
 	return func() tea.Msg {
 		// TODO: try to join, then based on the response join or return an error
 		if lobbyCode == "" || playerName == "" {
@@ -74,8 +72,37 @@ func NewJoinLobbyCmd(lobbyCode string, playerName string) tea.Cmd {
 				Error: "Lobby code and username must not be empty",
 			}
 		}
-		slog.Debug("Joining lobby %s as %s", lobbyCode, playerName)
-		return JoinLobbyErrorMsg{Error: fmt.Sprintf("Unable to join lobby \"%s\"", lobbyCode)}
+		server, err := ds.GetHostByLobby(lobbyCode)
+		slog.InfoContext(context.Background(), "got server",
+			slog.Any("server", server),
+		)
+		if err != nil {
+			slog.ErrorContext(context.Background(), "unable to get server",
+				slog.String("err", err.Error()),
+			)
+			return JoinLobbyErrorMsg{
+				Error: fmt.Sprintf("Unable to get a game server:\n%s", err.Error()),
+			}
+		}
+		err = ls.Connect(server)
+		if err != nil {
+			slog.ErrorContext(context.Background(), "unable to connect to gameserver",
+				slog.String("err", err.Error()),
+			)
+			return JoinLobbyErrorMsg{
+				Error: fmt.Sprintf("Unable to connect to game server:\n%s", err.Error()),
+			}
+		}
+		lobby, err := ls.Join(lobbyCode, playerName)
+		if err != nil {
+			slog.ErrorContext(context.Background(), "unable to join lobby",
+				slog.String("err", err.Error()),
+			)
+			return JoinLobbyErrorMsg{
+				Error: fmt.Sprintf("Unable to join lobby:\n%s", err.Error()),
+			}
+		}
+		return JoinedLobbyMsg{Lobby: lobby}
 	}
 }
 
