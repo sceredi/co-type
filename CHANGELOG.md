@@ -1,3 +1,33 @@
+## [0.4.0](https://github.com/sceredi/co-type/compare/v0.3.0...v0.4.0) (2026-06-19)
+
+### Features
+
+* add lobby join ([d76f461](https://github.com/sceredi/co-type/commit/d76f4616fa6e736ba37e9c219dbda637bfb5f89b))
+* **lobby:** keep members up to date with lobby state ([ab12243](https://github.com/sceredi/co-type/commit/ab12243636786c8a5bef6ae376afb35a07d0c50a))
+* register created lobbies to broker ([0b4a43e](https://github.com/sceredi/co-type/commit/0b4a43e4586f4c99fd63f1df1a4c8144d1dfe58f))
+
+### Dependency updates
+
+* **deps:** update alpine docker tag to v3.24 ([a9d6f35](https://github.com/sceredi/co-type/commit/a9d6f356c3c795ed852f2ecfc6f7a20dbd066211))
+* **deps:** update module charm.land/bubbletea/v2 to v2.0.7 ([8b446f4](https://github.com/sceredi/co-type/commit/8b446f4b4094294f4d877c778aca0b667419b0e4))
+* **deps:** update module charm.land/lipgloss/v2 to v2.0.4 ([b29b8fc](https://github.com/sceredi/co-type/commit/b29b8fc0a30782938a156789782f6e739b563397))
+* **deps:** update node.js to 24.17 ([ddb3ced](https://github.com/sceredi/co-type/commit/ddb3ced21f76be8551f90a2d8cd8ecc949aea986))
+
+### Bug Fixes
+
+* avoid 2 players with the same name joining the same lobby ([713a7b3](https://github.com/sceredi/co-type/commit/713a7b3b4824fa1e9f95bedae11004567932af82))
+* delete lobby if unable to register it on broker ([85e3477](https://github.com/sceredi/co-type/commit/85e3477a8153376d0bc6a0e279ccf881e33f53bf))
+
+### Build and continuous integration
+
+* **deps:** update actions/checkout action to v6.0.3 ([89ad0c0](https://github.com/sceredi/co-type/commit/89ad0c01705eebafe280aadf79e0a184aacb8b8c))
+* **deps:** update actions/checkout action to v7 ([2a25549](https://github.com/sceredi/co-type/commit/2a25549985dc27cde375d8bae3a8b6839efc36fe))
+* **deps:** update danysk/action-checkout action to v0.2.29 ([2d04191](https://github.com/sceredi/co-type/commit/2d04191e13f7168dd311e55741163299c0802b6f))
+
+### General maintenance
+
+* **lobby-creation:** simplify message values ([2e8ed1f](https://github.com/sceredi/co-type/commit/2e8ed1f0ec44f9e55ae4ca6e3943bdf81419e1b1))
+
 ## [0.3.0](https://github.com/sceredi/co-type/compare/v0.2.0...v0.3.0) (2026-06-02)
 
 ### Features
