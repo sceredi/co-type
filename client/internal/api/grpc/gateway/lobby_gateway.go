@@ -17,6 +17,7 @@ type LobbyGateway interface {
 	// Create creates a new lobby with the given ID and host name.
 	Create(id, hostName string) (*domain.Lobby, error)
 	Join(id, playerName string) (*domain.Lobby, error)
+	Leave(id, playerName string) error
 	Connect(target *domain.Server) error
 	// Subscribe subscribes to lobby events and returns a channel that receives updated lobby state.
 	Subscribe(lobbyID, playerName string) (<-chan *domain.Lobby, error)
@@ -54,6 +55,18 @@ func (g *lobbyGateway) Join(id, playerName string) (*domain.Lobby, error) {
 		return nil, commongrpc.FromGRPCError(err)
 	}
 	return domain.NewLobbyFromGRPC(res.GetLobby()), nil
+}
+
+func (g *lobbyGateway) Leave(id, playerName string) error {
+	req := &lobby.LeaveLobbyRequest{
+		LobbyId:    id,
+		PlayerName: playerName,
+	}
+	_, err := g.conn.LeaveLobby(g.ctx, req)
+	if err != nil {
+		return commongrpc.FromGRPCError(err)
+	}
+	return nil
 }
 
 func (g *lobbyGateway) Connect(target *domain.Server) error {

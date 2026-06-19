@@ -37,6 +37,10 @@ func (m *mockLobbyService) Join(id, playerName string) (*domain.Lobby, error) {
 	return &domain.Lobby{ID: id, Players: []*domain.Player{player}}, nil
 }
 
+func (m *mockLobbyService) Leave(id, playerName string) error {
+	return nil
+}
+
 func (m *mockLobbyService) Connect(target *domain.Server) error {
 	return nil
 }

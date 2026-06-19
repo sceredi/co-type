@@ -37,6 +37,10 @@ func (m *mockLobbyService) Join(id, playerName string) (*domain.Lobby, error) {
 	return &domain.Lobby{ID: id, Players: []*domain.Player{player}}, nil
 }
 
+func (m *mockLobbyService) Leave(id, playerName string) error {
+	return nil
+}
+
 func (m *mockLobbyService) Connect(target *domain.Server) error {
 	return nil
 }
@@ -57,7 +61,7 @@ func TestJoinLobbyMsgSwitchesToLobbyPage(t *testing.T) {
 		Players: []*domain.Player{host},
 	}
 	m := New(newMockDiscoveryService(), newMockLobbyService())
-	updated, _ := m.Update(welcome_messages.JoinedLobbyMsg{Lobby: lobby})
+	updated, _ := m.Update(welcome_messages.JoinedLobbyMsg{Lobby: lobby, PlayerName: "Host"})
 	got := updated.(Model)
 
 	if got.page != lobbyPage {
@@ -74,7 +78,7 @@ func TestLeaveMessageReturnsToWelcomePage(t *testing.T) {
 	}
 
 	m := New(newMockDiscoveryService(), newMockLobbyService())
-	updated, _ := m.Update(welcome_messages.JoinedLobbyMsg{Lobby: lobby})
+	updated, _ := m.Update(welcome_messages.JoinedLobbyMsg{Lobby: lobby, PlayerName: "Host"})
 	m = updated.(Model)
 
 	updated, _ = m.Update(lobby_messages.LeaveMsg{})
