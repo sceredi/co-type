@@ -68,6 +68,20 @@ func NewUpdatePlayerCmd(player *domain.Player, allowedCharacters, blockedCharact
 	}
 }
 
+// NewEditPlayerCmd returns a command that calls the lobby service to edit a player's settings.
+func NewEditPlayerCmd(ls service.LobbyService, lobbyID, playerName string, isReady bool, allowedCharacters, blockedCharacters string, canDelete bool) tea.Cmd {
+	return func() tea.Msg {
+		if _, err := ls.EditPlayer(lobbyID, playerName, isReady, allowedCharacters, blockedCharacters, canDelete); err != nil {
+			slog.ErrorContext(context.Background(), "Failed to edit player",
+				slog.String("lobby_id", lobbyID),
+				slog.String("player_name", playerName),
+				slog.String("error", err.Error()),
+			)
+		}
+		return nil
+	}
+}
+
 // CloseSettingsMsg is a message that indicates that the settings modal should be closed.
 type CloseSettingsMsg struct{}
 

@@ -21,6 +21,9 @@ type LobbyService interface {
 	// Leave leaves the lobby with the given id for the given player name. It returns an error if something goes wrong.
 	Leave(id, playerName string) error
 
+	// EditPlayer edits the settings of the player with the given name in the lobby. It returns the updated lobby or an error if something goes wrong.
+	EditPlayer(lobbyID, playerName string, isReady bool, allowedCharacters, blockedCharacters string, canDelete bool) (*domain.Lobby, error)
+
 	// Connect connects to the given server. It returns an error if the connection fails.
 	Connect(target *domain.Server) error
 
@@ -56,6 +59,13 @@ func (s *lobbyService) Leave(id, playerName string) error {
 		return ErrLobbyGatewayNotSet
 	}
 	return s.gtw.Leave(id, playerName)
+}
+
+func (s *lobbyService) EditPlayer(lobbyID, playerName string, isReady bool, allowedCharacters, blockedCharacters string, canDelete bool) (*domain.Lobby, error) {
+	if s.gtw == nil {
+		return nil, ErrLobbyGatewayNotSet
+	}
+	return s.gtw.EditPlayer(lobbyID, playerName, isReady, allowedCharacters, blockedCharacters, canDelete)
 }
 
 func (s *lobbyService) Connect(target *domain.Server) error {

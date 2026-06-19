@@ -75,6 +75,15 @@ func (m Model) Update(msg tea.Msg) (Model, tea.Cmd) {
 		msg.Player.AllowedCharacters = msg.AllowedCharacters
 		msg.Player.BlockedCharacters = msg.BlockedCharacters
 		msg.Player.CanDelete = msg.BackspaceAllowed
+		cmds = append(cmds, lobby_messages.NewEditPlayerCmd(
+			m.ls,
+			m.lobby.ID,
+			msg.Player.Name,
+			msg.Player.IsReady,
+			msg.AllowedCharacters,
+			msg.BlockedCharacters,
+			msg.BackspaceAllowed,
+		))
 	case lobby_messages.CloseSettingsMsg:
 		m.focus = focusPlayersList
 	case lobby_messages.LobbyUpdatedMsg:
