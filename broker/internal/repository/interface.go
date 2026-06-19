@@ -24,4 +24,6 @@ type LobbyRepository interface {
 	Create(lobbyID LobbyID, serverName ServerName) error
 	// Get retrieves a lobby by its ID from the repository. It returns the server name managing the lobby or an error if the lobby is not found or if the operation fails.
 	Get(id LobbyID) (ServerName, error)
+	// Delete removes a lobby by its ID from the repository. It returns an error if the lobby is not found or if the operation fails.
+	Delete(id LobbyID) error
 }

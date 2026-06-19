@@ -39,3 +39,15 @@ func (r *lobbyRepository) Get(id repository.LobbyID) (repository.ServerName, err
 	}
 	return serverName, nil
 }
+
+func (r *lobbyRepository) Delete(id repository.LobbyID) error {
+	slog.DebugContext(context.Background(), "Deleting lobby from memory",
+		slog.String("lobby_id", string(id)),
+	)
+	_, ok := r.lobbies[id]
+	if !ok {
+		return domain.ErrLobbyNotFound
+	}
+	delete(r.lobbies, id)
+	return nil
+}

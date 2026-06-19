@@ -11,7 +11,9 @@ import (
 type mockLobbyRepository struct {
 	lobbyID    repository.LobbyID
 	serverName repository.ServerName
+	deletedID  repository.LobbyID
 	err        error
+	deleteErr  error
 }
 
 func (m *mockLobbyRepository) Create(lobbyID repository.LobbyID, serverName repository.ServerName) error {
@@ -25,6 +27,11 @@ func (m *mockLobbyRepository) Get(lobbyID repository.LobbyID) (repository.Server
 		return "", m.err
 	}
 	return m.serverName, nil
+}
+
+func (m *mockLobbyRepository) Delete(lobbyID repository.LobbyID) error {
+	m.deletedID = lobbyID
+	return m.deleteErr
 }
 
 type mockServerService struct {
@@ -83,5 +90,29 @@ func TestLobbyService_Get_Error(t *testing.T) {
 	_, err := svc.Get("lobby1")
 	if !errors.Is(err, repoErr) {
 		t.Fatalf("expected %v, got %v", repoErr, err)
+	}
+}
+
+func TestLobbyService_Delete(t *testing.T) {
+	repo := &mockLobbyRepository{}
+	svc := NewLobbyService(repo, &mockServerService{})
+
+	err := svc.Delete("lobby1")
+	if err != nil {
+		t.Fatalf("expected no error, got %v", err)
+	}
+	if repo.deletedID != "lobby1" {
+		t.Fatalf("expected deleted id lobby1, got %s", repo.deletedID)
+	}
+}
+
+func TestLobbyService_Delete_Error(t *testing.T) {
+	deleteErr := errors.New("delete failed")
+	repo := &mockLobbyRepository{deleteErr: deleteErr}
+	svc := NewLobbyService(repo, &mockServerService{})
+
+	err := svc.Delete("lobby1")
+	if !errors.Is(err, deleteErr) {
+		t.Fatalf("expected %v, got %v", deleteErr, err)
 	}
 }
