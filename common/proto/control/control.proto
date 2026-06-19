@@ -8,6 +8,7 @@ option go_package = "github.com/sceredi/co-type/common/proto/control";
 service ControlService {
   rpc RegisterServer(RegisterServerRequest) returns (RegisterServerResponse);
   rpc RegisterLobby(RegisterLobbyRequest) returns (RegisterLobbyResponse);
+  rpc UnregisterLobby(UnregisterLobbyRequest) returns (UnregisterLobbyResponse);
 }
 
 // Messages for server registration.
@@ -31,6 +32,17 @@ message RegisterLobbyRequest {
 
 // Response for lobby registration.
 message RegisterLobbyResponse {
+  bool success = 1;
+  string message = 2;
+}
+
+// Request to unregister a lobby from the broker.
+message UnregisterLobbyRequest {
+  string lobby_id = 1;
+}
+
+// Response for lobby unregistration.
+message UnregisterLobbyResponse {
   bool success = 1;
   string message = 2;
 }
