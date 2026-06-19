@@ -30,6 +30,10 @@ func (m *mockDiscoveryGateway) RegisterLobby(lobbyID, serverName string) error {
 	return m.err
 }
 
+func (m *mockDiscoveryGateway) UnregisterLobby(lobbyID string) error {
+	return m.err
+}
+
 var _ gateway.ControlGateway = (*mockDiscoveryGateway)(nil)
 
 func TestNewDiscoveryService(t *testing.T) {

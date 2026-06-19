@@ -15,6 +15,8 @@ type ControlGateway interface {
 	RegisterServer(name, host string, port int) error
 
 	RegisterLobby(lobbyID, serverName string) error
+
+	UnregisterLobby(lobbyID string) error
 }
 
 type controlGateway struct {
@@ -54,6 +56,20 @@ func (g *controlGateway) RegisterLobby(lobbyID, serverName string) error {
 	}
 	if !res.Success {
 		return errors.New("failed to register lobby: " + res.Message)
+	}
+	return nil
+}
+
+func (g *controlGateway) UnregisterLobby(lobbyID string) error {
+	req := &control.UnregisterLobbyRequest{
+		LobbyId: lobbyID,
+	}
+	res, err := g.conn.UnregisterLobby(g.ctx, req)
+	if err != nil {
+		return commongrpc.FromGRPCError(err)
+	}
+	if !res.Success {
+		return errors.New("failed to unregister lobby: " + res.Message)
 	}
 	return nil
 }

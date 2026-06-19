@@ -14,6 +14,7 @@ import (
 type LobbyService interface {
 	Create(id, userName string) (*domain.Lobby, error)
 	Join(id, userName string) (*domain.Lobby, error)
+	Leave(id, userName string) error
 	Get(id string) *domain.Lobby
 }
 
@@ -84,4 +85,45 @@ func (s *lobbyService) Join(id, userName string) (*domain.Lobby, error) {
 
 func (s *lobbyService) Get(id string) *domain.Lobby {
 	return s.lobbyRepo.Get(id)
+}
+
+func (s *lobbyService) Leave(id, userName string) error {
+	slog.DebugContext(context.Background(), "Leaving lobby",
+		slog.String("id", id),
+		slog.String("userName", userName),
+	)
+	lobby := s.lobbyRepo.Get(id)
+	if lobby == nil {
+		return commondomain.ErrLobbyNotFound
+	}
+	removed := lobby.Base.RemovePlayer(userName)
+	if !removed {
+		return commondomain.ErrPlayerNotInLobby
+	}
+
+	if ch, ok := lobby.Subs[userName]; ok {
+		close(ch)
+		delete(lobby.Subs, userName)
+	}
+
+	if len(lobby.Base.Players) == 0 {
+		if err := s.lobbyRepo.Delete(id); err != nil {
+			slog.ErrorContext(context.Background(), "Failed to delete empty lobby from repository",
+				slog.String("id", id),
+				slog.String("error", err.Error()),
+			)
+		}
+		if err := s.controlGtw.UnregisterLobby(id); err != nil {
+			slog.ErrorContext(context.Background(), "Failed to unregister empty lobby from broker",
+				slog.String("id", id),
+				slog.String("error", err.Error()),
+			)
+		}
+		return nil
+	}
+
+	for _, ch := range lobby.Subs {
+		ch <- lobby
+	}
+	return nil
 }

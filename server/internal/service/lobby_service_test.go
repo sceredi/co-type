@@ -41,6 +41,7 @@ func (m *mockLobbyRepository) Delete(id string) error {
 type mockControlGateway struct {
 	receivedLobbyID    string
 	receivedServerName string
+	unregisteredID     string
 	err                error
 }
 
@@ -51,6 +52,11 @@ func (m *mockControlGateway) RegisterServer(name, host string, port int) error {
 func (m *mockControlGateway) RegisterLobby(lobbyID, serverName string) error {
 	m.receivedLobbyID = lobbyID
 	m.receivedServerName = serverName
+	return m.err
+}
+
+func (m *mockControlGateway) UnregisterLobby(lobbyID string) error {
+	m.unregisteredID = lobbyID
 	return m.err
 }
 
@@ -281,4 +287,79 @@ func TestLobbyService_Get(t *testing.T) {
 func playerPtr(name string) *domain.Player {
 	p := domain.NewPlayer(name)
 	return p
+}
+
+func TestLobbyService_Leave(t *testing.T) {
+	serverName := "test-server"
+	lobbyID := "lobby-1"
+
+	tests := []struct {
+		name           string
+		userName       string
+		repo           *mockLobbyRepository
+		gtw            *mockControlGateway
+		wantErr        error
+		wantUnregister bool
+		wantDeletedID  string
+	}{
+		{
+			name:     "returns error if lobby not found",
+			userName: "alice",
+			repo:     &mockLobbyRepository{getResp: nil},
+			gtw:      &mockControlGateway{},
+			wantErr:  domain.ErrLobbyNotFound,
+		},
+		{
+			name:     "returns error if player not in lobby",
+			userName: "charlie",
+			repo:     &mockLobbyRepository{getResp: serverdomain.NewLobby(lobbyID, playerPtr("alice"))},
+			gtw:      &mockControlGateway{},
+			wantErr:  domain.ErrPlayerNotInLobby,
+		},
+		{
+			name:           "removes player and notifies remaining players",
+			userName:       "bob",
+			repo:           &mockLobbyRepository{getResp: buildLobbyWithTwo(lobbyID, "alice", "bob")},
+			gtw:            &mockControlGateway{},
+			wantErr:        nil,
+			wantUnregister: false,
+		},
+		{
+			name:           "deletes and unregisters lobby when last player leaves",
+			userName:       "alice",
+			repo:           &mockLobbyRepository{getResp: serverdomain.NewLobby(lobbyID, playerPtr("alice"))},
+			gtw:            &mockControlGateway{},
+			wantErr:        nil,
+			wantUnregister: true,
+			wantDeletedID:  lobbyID,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			svc := service.NewLobbyService(serverName, tt.gtw, tt.repo)
+			err := svc.Leave(lobbyID, tt.userName)
+
+			if !errors.Is(err, tt.wantErr) {
+				t.Fatalf("Leave() error = %v, want %v", err, tt.wantErr)
+			}
+			if tt.wantUnregister && tt.gtw.unregisteredID != lobbyID {
+				t.Fatalf("Leave() expected UnregisterLobby to be called with %q, got %q", lobbyID, tt.gtw.unregisteredID)
+			}
+			if !tt.wantUnregister && tt.gtw.unregisteredID != "" {
+				t.Fatalf("Leave() expected UnregisterLobby not to be called, but got %q", tt.gtw.unregisteredID)
+			}
+			if tt.wantDeletedID != "" && tt.repo.deletedID != tt.wantDeletedID {
+				t.Fatalf("Leave() expected repo.Delete(%q), got %q", tt.wantDeletedID, tt.repo.deletedID)
+			}
+		})
+	}
+}
+
+func buildLobbyWithTwo(id, host, other string) *serverdomain.Lobby {
+	l := serverdomain.NewLobby(id, playerPtr(host))
+	otherPlayer := domain.NewPlayer(other)
+	l.Base.AddPlayers(otherPlayer)
+	l.Subs[other] = make(chan *serverdomain.Lobby, 64)
+	return l
 }

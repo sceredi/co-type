@@ -44,6 +44,18 @@ func (h *LobbyHandler) JoinLobby(_ context.Context, req *lobby.JoinLobbyRequest)
 	}, nil
 }
 
+// LeaveLobby handles the gRPC request to leave a game lobby.
+func (h *LobbyHandler) LeaveLobby(_ context.Context, req *lobby.LeaveLobbyRequest) (*lobby.LeaveLobbyResponse, error) {
+	err := h.lobbySvc.Leave(req.LobbyId, req.PlayerName)
+	if err != nil {
+		return nil, grpc_utils.ToGRPCError(err)
+	}
+	return &lobby.LeaveLobbyResponse{
+		Success: true,
+		Message: "Left lobby successfully",
+	}, nil
+}
+
 // Subscribe handles the gRPC subscription to lobby events.
 func (h *LobbyHandler) Subscribe(req *lobby.SubscribeRequest, stream lobby.LobbyService_SubscribeServer) error {
 	ctx := stream.Context()
