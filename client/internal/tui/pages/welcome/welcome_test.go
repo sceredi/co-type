@@ -41,6 +41,10 @@ func (m *mockLobbyService) Leave(id, playerName string) error {
 	return nil
 }
 
+func (m *mockLobbyService) EditPlayer(lobbyID, playerName string, isReady bool, allowedCharacters, blockedCharacters string, canDelete bool) (*domain.Lobby, error) {
+	return nil, nil
+}
+
 func (m *mockLobbyService) Connect(target *domain.Server) error {
 	return nil
 }

@@ -18,6 +18,7 @@ type LobbyGateway interface {
 	Create(id, hostName string) (*domain.Lobby, error)
 	Join(id, playerName string) (*domain.Lobby, error)
 	Leave(id, playerName string) error
+	EditPlayer(lobbyID, playerName string, isReady bool, allowedCharacters, blockedCharacters string, canDelete bool) (*domain.Lobby, error)
 	Connect(target *domain.Server) error
 	// Subscribe subscribes to lobby events and returns a channel that receives updated lobby state.
 	Subscribe(lobbyID, playerName string) (<-chan *domain.Lobby, error)
@@ -67,6 +68,22 @@ func (g *lobbyGateway) Leave(id, playerName string) error {
 		return commongrpc.FromGRPCError(err)
 	}
 	return nil
+}
+
+func (g *lobbyGateway) EditPlayer(lobbyID, playerName string, isReady bool, allowedCharacters, blockedCharacters string, canDelete bool) (*domain.Lobby, error) {
+	req := &lobby.EditPlayerRequest{
+		LobbyId:           lobbyID,
+		PlayerName:        playerName,
+		IsReady:           isReady,
+		AllowedCharacters: allowedCharacters,
+		BlockedCharacters: blockedCharacters,
+		CanDelete:         canDelete,
+	}
+	res, err := g.conn.EditPlayer(g.ctx, req)
+	if err != nil {
+		return nil, commongrpc.FromGRPCError(err)
+	}
+	return domain.NewLobbyFromGRPC(res.GetLobby()), nil
 }
 
 func (g *lobbyGateway) Connect(target *domain.Server) error {
