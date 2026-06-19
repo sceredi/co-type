@@ -10,10 +10,12 @@ import (
 )
 
 type mockLobbyRepository struct {
-	received *serverdomain.Lobby
-	toReturn *serverdomain.Lobby
-	getResp  *serverdomain.Lobby
-	err      error
+	received  *serverdomain.Lobby
+	toReturn  *serverdomain.Lobby
+	getResp   *serverdomain.Lobby
+	err       error
+	deleteErr error
+	deletedID string
 }
 
 func (m *mockLobbyRepository) Create(lobby *serverdomain.Lobby) (*serverdomain.Lobby, error) {
@@ -29,6 +31,11 @@ func (m *mockLobbyRepository) Create(lobby *serverdomain.Lobby) (*serverdomain.L
 
 func (m *mockLobbyRepository) Get(id string) *serverdomain.Lobby {
 	return m.getResp
+}
+
+func (m *mockLobbyRepository) Delete(id string) error {
+	m.deletedID = id
+	return m.deleteErr
 }
 
 type mockControlGateway struct {
@@ -151,6 +158,51 @@ func TestLobbyService_Create(t *testing.T) {
 			}
 			if got.Subs[tt.userName] == nil {
 				t.Fatalf("Create() expected subscription channel for user %q", tt.userName)
+			}
+		})
+	}
+}
+
+func TestLobbyService_Create_DeleteOnGatewayError(t *testing.T) {
+	gatewayErr := errors.New("gateway register failed")
+	deleteErr := errors.New("delete failed")
+	repoLobby := serverdomain.NewLobby("lobby-1", playerPtr("alice"))
+	serverName := "test-server"
+	lobbyID := "lobby-1"
+
+	tests := []struct {
+		name          string
+		repo          *mockLobbyRepository
+		gtw           *mockControlGateway
+		wantDeletedID string
+	}{
+		{
+			name:          "calls Delete when gateway registration fails",
+			repo:          &mockLobbyRepository{toReturn: repoLobby},
+			gtw:           &mockControlGateway{err: gatewayErr},
+			wantDeletedID: lobbyID,
+		},
+		{
+			name:          "calls Delete when gateway fails even if Delete itself errors",
+			repo:          &mockLobbyRepository{toReturn: repoLobby, deleteErr: deleteErr},
+			gtw:           &mockControlGateway{err: gatewayErr},
+			wantDeletedID: lobbyID,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			svc := service.NewLobbyService(serverName, tt.gtw, tt.repo)
+
+			got, err := svc.Create(lobbyID, "alice")
+			if !errors.Is(err, gatewayErr) {
+				t.Fatalf("Create() error = %v, want %v", err, gatewayErr)
+			}
+			if got != nil {
+				t.Fatalf("Create() got = %v, want nil", got)
+			}
+			if tt.repo.deletedID != tt.wantDeletedID {
+				t.Fatalf("Create() deleted id = %q, want %q", tt.repo.deletedID, tt.wantDeletedID)
 			}
 		})
 	}

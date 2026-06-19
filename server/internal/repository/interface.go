@@ -9,4 +9,6 @@ type LobbyRepository interface {
 	Create(lobby *domain.Lobby) (*domain.Lobby, error)
 	// Get retrieves a lobby by its ID from the repository. It returns the lobby if found, or nil if no lobby with the given ID exists.
 	Get(id string) *domain.Lobby
+	// Delete removes a lobby by its ID from the repository. It returns an error if the operation fails.
+	Delete(id string) error
 }

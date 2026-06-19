@@ -42,6 +42,12 @@ func (s *lobbyService) Create(id, userName string) (*domain.Lobby, error) {
 
 	err = s.controlGtw.RegisterLobby(id, s.serverName)
 	if err != nil {
+		if deleteErr := s.lobbyRepo.Delete(id); deleteErr != nil {
+			slog.ErrorContext(context.Background(), "Failed to delete lobby after control gateway registration failure",
+				slog.String("id", id),
+				slog.String("error", deleteErr.Error()),
+			)
+		}
 		return nil, err
 	}
 
