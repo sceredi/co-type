@@ -1,3 +1,16 @@
+## [0.5.0](https://github.com/sceredi/co-type/compare/v0.4.0...v0.5.0) (2026-06-19)
+
+### Features
+
+* **broker:** add unregister lobby ([0c7e61c](https://github.com/sceredi/co-type/commit/0c7e61c644ccbfab9635c776dc4980d742a3d14c))
+* **client:** add lobby leave ([85e4b2a](https://github.com/sceredi/co-type/commit/85e4b2afb02080708d4259ad57ed9d03e017cc06))
+* **server:** add lobby user remove ([3ae9c02](https://github.com/sceredi/co-type/commit/3ae9c022704309ef378fc0550ec95d395450b21c))
+
+### General maintenance
+
+* add broker lobby unregister proto ([335e110](https://github.com/sceredi/co-type/commit/335e1106dc2bfcbd2cdaa688db5661e613b7a55d))
+* add lobby service user remove ([997949e](https://github.com/sceredi/co-type/commit/997949ed142897f7529c41446cccc1b43df40e59))
+
 ## [0.4.0](https://github.com/sceredi/co-type/compare/v0.3.0...v0.4.0) (2026-06-19)
 
 ### Features
