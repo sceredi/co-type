@@ -177,6 +177,11 @@ func TestLobbyService_Join(t *testing.T) {
 			repo:    &mockLobbyRepository{getResp: nil},
 			wantErr: domain.ErrLobbyNotFound,
 		},
+		{
+			name:    "returns error if player name already in lobby",
+			repo:    &mockLobbyRepository{getResp: serverdomain.NewLobby(lobbyID, playerPtr(userName))},
+			wantErr: domain.ErrPlayerAlreadyInLobby,
+		},
 	}
 
 	for _, tt := range tests {

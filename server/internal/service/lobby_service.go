@@ -60,6 +60,11 @@ func (s *lobbyService) Join(id, userName string) (*domain.Lobby, error) {
 		return nil, commondomain.ErrLobbyNotFound
 	}
 	player := commondomain.NewPlayer(userName)
+	for _, p := range lobby.Base.Players {
+		if p.Name == userName {
+			return nil, commondomain.ErrPlayerAlreadyInLobby
+		}
+	}
 	lobby.Base.AddPlayers(player)
 
 	for _, ch := range lobby.Subs {

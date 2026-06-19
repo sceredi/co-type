@@ -15,6 +15,9 @@ var ErrLobbyNotFound = errors.New("lobby not found")
 // ErrPlayerNotInLobby is returned when a player is not in the lobby.
 var ErrPlayerNotInLobby = errors.New("player not in lobby")
 
+// ErrPlayerAlreadyInLobby is returned when a player with the same name is already in the lobby.
+var ErrPlayerAlreadyInLobby = errors.New("player already in lobby")
+
 // Lobby represents the state of the lobby.
 type Lobby struct {
 	ID      string
