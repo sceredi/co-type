@@ -67,6 +67,17 @@ func (l *Lobby) AddPlayers(players ...*Player) {
 	l.Players = append(l.Players, players...)
 }
 
+// RemovePlayer removes the player with the given name from the lobby. Returns true if the player was found and removed.
+func (l *Lobby) RemovePlayer(name string) bool {
+	for i, p := range l.Players {
+		if p.Name == name {
+			l.Players = append(l.Players[:i], l.Players[i+1:]...)
+			return true
+		}
+	}
+	return false
+}
+
 // ToGRPCLobby converts the Lobby struct to its gRPC representation.
 func (l *Lobby) ToGRPCLobby() *lobby.Lobby {
 	players := make([]*lobby.Player, len(l.Players))

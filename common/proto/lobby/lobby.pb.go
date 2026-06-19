@@ -358,6 +358,110 @@ func (x *JoinLobbyResponse) GetLobby() *Lobby {
 	return nil
 }
 
+type LeaveLobbyRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	LobbyId       string                 `protobuf:"bytes,1,opt,name=lobby_id,json=lobbyId,proto3" json:"lobby_id,omitempty"`
+	PlayerName    string                 `protobuf:"bytes,2,opt,name=player_name,json=playerName,proto3" json:"player_name,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *LeaveLobbyRequest) Reset() {
+	*x = LeaveLobbyRequest{}
+	mi := &file_common_proto_lobby_lobby_proto_msgTypes[6]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *LeaveLobbyRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*LeaveLobbyRequest) ProtoMessage() {}
+
+func (x *LeaveLobbyRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_common_proto_lobby_lobby_proto_msgTypes[6]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use LeaveLobbyRequest.ProtoReflect.Descriptor instead.
+func (*LeaveLobbyRequest) Descriptor() ([]byte, []int) {
+	return file_common_proto_lobby_lobby_proto_rawDescGZIP(), []int{6}
+}
+
+func (x *LeaveLobbyRequest) GetLobbyId() string {
+	if x != nil {
+		return x.LobbyId
+	}
+	return ""
+}
+
+func (x *LeaveLobbyRequest) GetPlayerName() string {
+	if x != nil {
+		return x.PlayerName
+	}
+	return ""
+}
+
+type LeaveLobbyResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Success       bool                   `protobuf:"varint,1,opt,name=success,proto3" json:"success,omitempty"`
+	Message       string                 `protobuf:"bytes,2,opt,name=message,proto3" json:"message,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *LeaveLobbyResponse) Reset() {
+	*x = LeaveLobbyResponse{}
+	mi := &file_common_proto_lobby_lobby_proto_msgTypes[7]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *LeaveLobbyResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*LeaveLobbyResponse) ProtoMessage() {}
+
+func (x *LeaveLobbyResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_common_proto_lobby_lobby_proto_msgTypes[7]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use LeaveLobbyResponse.ProtoReflect.Descriptor instead.
+func (*LeaveLobbyResponse) Descriptor() ([]byte, []int) {
+	return file_common_proto_lobby_lobby_proto_rawDescGZIP(), []int{7}
+}
+
+func (x *LeaveLobbyResponse) GetSuccess() bool {
+	if x != nil {
+		return x.Success
+	}
+	return false
+}
+
+func (x *LeaveLobbyResponse) GetMessage() string {
+	if x != nil {
+		return x.Message
+	}
+	return ""
+}
+
 type SubscribeRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	LobbyId       string                 `protobuf:"bytes,1,opt,name=lobby_id,json=lobbyId,proto3" json:"lobby_id,omitempty"`
@@ -368,7 +472,7 @@ type SubscribeRequest struct {
 
 func (x *SubscribeRequest) Reset() {
 	*x = SubscribeRequest{}
-	mi := &file_common_proto_lobby_lobby_proto_msgTypes[6]
+	mi := &file_common_proto_lobby_lobby_proto_msgTypes[8]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -380,7 +484,7 @@ func (x *SubscribeRequest) String() string {
 func (*SubscribeRequest) ProtoMessage() {}
 
 func (x *SubscribeRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_common_proto_lobby_lobby_proto_msgTypes[6]
+	mi := &file_common_proto_lobby_lobby_proto_msgTypes[8]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -393,7 +497,7 @@ func (x *SubscribeRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SubscribeRequest.ProtoReflect.Descriptor instead.
 func (*SubscribeRequest) Descriptor() ([]byte, []int) {
-	return file_common_proto_lobby_lobby_proto_rawDescGZIP(), []int{6}
+	return file_common_proto_lobby_lobby_proto_rawDescGZIP(), []int{8}
 }
 
 func (x *SubscribeRequest) GetLobbyId() string {
@@ -419,7 +523,7 @@ type LobbyEvent struct {
 
 func (x *LobbyEvent) Reset() {
 	*x = LobbyEvent{}
-	mi := &file_common_proto_lobby_lobby_proto_msgTypes[7]
+	mi := &file_common_proto_lobby_lobby_proto_msgTypes[9]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -431,7 +535,7 @@ func (x *LobbyEvent) String() string {
 func (*LobbyEvent) ProtoMessage() {}
 
 func (x *LobbyEvent) ProtoReflect() protoreflect.Message {
-	mi := &file_common_proto_lobby_lobby_proto_msgTypes[7]
+	mi := &file_common_proto_lobby_lobby_proto_msgTypes[9]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -444,7 +548,7 @@ func (x *LobbyEvent) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use LobbyEvent.ProtoReflect.Descriptor instead.
 func (*LobbyEvent) Descriptor() ([]byte, []int) {
-	return file_common_proto_lobby_lobby_proto_rawDescGZIP(), []int{7}
+	return file_common_proto_lobby_lobby_proto_rawDescGZIP(), []int{9}
 }
 
 func (x *LobbyEvent) GetLobby() *Lobby {
@@ -482,17 +586,26 @@ const file_common_proto_lobby_lobby_proto_rawDesc = "" +
 	"\vplayer_name\x18\x02 \x01(\tR\n" +
 	"playerName\"7\n" +
 	"\x11JoinLobbyResponse\x12\"\n" +
-	"\x05lobby\x18\x01 \x01(\v2\f.lobby.LobbyR\x05lobby\"N\n" +
+	"\x05lobby\x18\x01 \x01(\v2\f.lobby.LobbyR\x05lobby\"O\n" +
+	"\x11LeaveLobbyRequest\x12\x19\n" +
+	"\blobby_id\x18\x01 \x01(\tR\alobbyId\x12\x1f\n" +
+	"\vplayer_name\x18\x02 \x01(\tR\n" +
+	"playerName\"H\n" +
+	"\x12LeaveLobbyResponse\x12\x18\n" +
+	"\asuccess\x18\x01 \x01(\bR\asuccess\x12\x18\n" +
+	"\amessage\x18\x02 \x01(\tR\amessage\"N\n" +
 	"\x10SubscribeRequest\x12\x19\n" +
 	"\blobby_id\x18\x01 \x01(\tR\alobbyId\x12\x1f\n" +
 	"\vplayer_name\x18\x02 \x01(\tR\n" +
 	"playerName\"0\n" +
 	"\n" +
 	"LobbyEvent\x12\"\n" +
-	"\x05lobby\x18\x01 \x01(\v2\f.lobby.LobbyR\x05lobby2\xcf\x01\n" +
+	"\x05lobby\x18\x01 \x01(\v2\f.lobby.LobbyR\x05lobby2\x92\x02\n" +
 	"\fLobbyService\x12D\n" +
 	"\vCreateLobby\x12\x19.lobby.CreateLobbyRequest\x1a\x1a.lobby.CreateLobbyResponse\x12>\n" +
-	"\tJoinLobby\x12\x17.lobby.JoinLobbyRequest\x1a\x18.lobby.JoinLobbyResponse\x129\n" +
+	"\tJoinLobby\x12\x17.lobby.JoinLobbyRequest\x1a\x18.lobby.JoinLobbyResponse\x12A\n" +
+	"\n" +
+	"LeaveLobby\x12\x18.lobby.LeaveLobbyRequest\x1a\x19.lobby.LeaveLobbyResponse\x129\n" +
 	"\tSubscribe\x12\x17.lobby.SubscribeRequest\x1a\x11.lobby.LobbyEvent0\x01B/Z-github.com/sceredi/co-type/common/proto/lobbyb\x06proto3"
 
 var (
@@ -507,7 +620,7 @@ func file_common_proto_lobby_lobby_proto_rawDescGZIP() []byte {
 	return file_common_proto_lobby_lobby_proto_rawDescData
 }
 
-var file_common_proto_lobby_lobby_proto_msgTypes = make([]protoimpl.MessageInfo, 8)
+var file_common_proto_lobby_lobby_proto_msgTypes = make([]protoimpl.MessageInfo, 10)
 var file_common_proto_lobby_lobby_proto_goTypes = []any{
 	(*Lobby)(nil),               // 0: lobby.Lobby
 	(*Player)(nil),              // 1: lobby.Player
@@ -515,8 +628,10 @@ var file_common_proto_lobby_lobby_proto_goTypes = []any{
 	(*CreateLobbyResponse)(nil), // 3: lobby.CreateLobbyResponse
 	(*JoinLobbyRequest)(nil),    // 4: lobby.JoinLobbyRequest
 	(*JoinLobbyResponse)(nil),   // 5: lobby.JoinLobbyResponse
-	(*SubscribeRequest)(nil),    // 6: lobby.SubscribeRequest
-	(*LobbyEvent)(nil),          // 7: lobby.LobbyEvent
+	(*LeaveLobbyRequest)(nil),   // 6: lobby.LeaveLobbyRequest
+	(*LeaveLobbyResponse)(nil),  // 7: lobby.LeaveLobbyResponse
+	(*SubscribeRequest)(nil),    // 8: lobby.SubscribeRequest
+	(*LobbyEvent)(nil),          // 9: lobby.LobbyEvent
 }
 var file_common_proto_lobby_lobby_proto_depIdxs = []int32{
 	1, // 0: lobby.Lobby.players:type_name -> lobby.Player
@@ -526,12 +641,14 @@ var file_common_proto_lobby_lobby_proto_depIdxs = []int32{
 	0, // 4: lobby.LobbyEvent.lobby:type_name -> lobby.Lobby
 	2, // 5: lobby.LobbyService.CreateLobby:input_type -> lobby.CreateLobbyRequest
 	4, // 6: lobby.LobbyService.JoinLobby:input_type -> lobby.JoinLobbyRequest
-	6, // 7: lobby.LobbyService.Subscribe:input_type -> lobby.SubscribeRequest
-	3, // 8: lobby.LobbyService.CreateLobby:output_type -> lobby.CreateLobbyResponse
-	5, // 9: lobby.LobbyService.JoinLobby:output_type -> lobby.JoinLobbyResponse
-	7, // 10: lobby.LobbyService.Subscribe:output_type -> lobby.LobbyEvent
-	8, // [8:11] is the sub-list for method output_type
-	5, // [5:8] is the sub-list for method input_type
+	6, // 7: lobby.LobbyService.LeaveLobby:input_type -> lobby.LeaveLobbyRequest
+	8, // 8: lobby.LobbyService.Subscribe:input_type -> lobby.SubscribeRequest
+	3, // 9: lobby.LobbyService.CreateLobby:output_type -> lobby.CreateLobbyResponse
+	5, // 10: lobby.LobbyService.JoinLobby:output_type -> lobby.JoinLobbyResponse
+	7, // 11: lobby.LobbyService.LeaveLobby:output_type -> lobby.LeaveLobbyResponse
+	9, // 12: lobby.LobbyService.Subscribe:output_type -> lobby.LobbyEvent
+	9, // [9:13] is the sub-list for method output_type
+	5, // [5:9] is the sub-list for method input_type
 	5, // [5:5] is the sub-list for extension type_name
 	5, // [5:5] is the sub-list for extension extendee
 	0, // [0:5] is the sub-list for field type_name
@@ -548,7 +665,7 @@ func file_common_proto_lobby_lobby_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_common_proto_lobby_lobby_proto_rawDesc), len(file_common_proto_lobby_lobby_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   8,
+			NumMessages:   10,
 			NumExtensions: 0,
 			NumServices:   1,
 		},
