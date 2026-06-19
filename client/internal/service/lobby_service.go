@@ -15,8 +15,14 @@ type LobbyService interface {
 	// Create creates a new lobby with the given id and host name. It returns the created lobby or an error if something goes wrong.
 	Create(id, hostName string) (*domain.Lobby, error)
 
+	// Join tries to join the lobby with the given id and player name. It returns the joined lobby or an error if something goes wrong.
+	Join(id, playerName string) (*domain.Lobby, error)
+
 	// Connect connects to the given server. It returns an error if the connection fails.
 	Connect(target *domain.Server) error
+
+	// Subscribe subscribes to lobby events and returns a channel that receives updated lobby state.
+	Subscribe(lobbyID, playerName string) (<-chan *domain.Lobby, error)
 }
 
 type lobbyService struct {
@@ -35,6 +41,20 @@ func (s *lobbyService) Create(id, hostName string) (*domain.Lobby, error) {
 	return s.gtw.Create(id, hostName)
 }
 
+func (s *lobbyService) Join(id, playerName string) (*domain.Lobby, error) {
+	if s.gtw == nil {
+		return nil, ErrLobbyGatewayNotSet
+	}
+	return s.gtw.Join(id, playerName)
+}
+
 func (s *lobbyService) Connect(target *domain.Server) error {
 	return s.gtw.Connect(target)
+}
+
+func (s *lobbyService) Subscribe(lobbyID, playerName string) (<-chan *domain.Lobby, error) {
+	if s.gtw == nil {
+		return nil, ErrLobbyGatewayNotSet
+	}
+	return s.gtw.Subscribe(lobbyID, playerName)
 }

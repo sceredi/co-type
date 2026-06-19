@@ -9,16 +9,24 @@ import (
 )
 
 type mockDiscoveryGateway struct {
-	name string
-	host string
-	port int
-	err  error
+	name       string
+	host       string
+	port       int
+	lobbyID    string
+	serverName string
+	err        error
 }
 
-func (m *mockDiscoveryGateway) Register(name, host string, port int) error {
+func (m *mockDiscoveryGateway) RegisterServer(name, host string, port int) error {
 	m.name = name
 	m.host = host
 	m.port = port
+	return m.err
+}
+
+func (m *mockDiscoveryGateway) RegisterLobby(lobbyID, serverName string) error {
+	m.lobbyID = lobbyID
+	m.serverName = serverName
 	return m.err
 }
 
@@ -77,6 +85,50 @@ func TestDiscoveryService_Register(t *testing.T) {
 			}
 			if tt.gateway.port != tt.port {
 				t.Fatalf("Register() gateway port = %d, want %d", tt.gateway.port, tt.port)
+			}
+		})
+	}
+}
+
+func TestDiscoveryService_RegisterLobby(t *testing.T) {
+	registerErr := errors.New("register lobby failed")
+	tests := []struct {
+		name       string
+		lobbyID    string
+		serverName string
+		gateway    *mockDiscoveryGateway
+		wantErr    error
+	}{
+		{
+			name:       "delegates register lobby to the gateway",
+			lobbyID:    "lobby-1",
+			serverName: "test-server",
+			gateway:    &mockDiscoveryGateway{},
+			wantErr:    nil,
+		},
+		{
+			name:       "returns gateway error",
+			lobbyID:    "lobby-1",
+			serverName: "test-server",
+			gateway:    &mockDiscoveryGateway{err: registerErr},
+			wantErr:    registerErr,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			svc := service.NewDiscoveryService(tt.gateway)
+
+			err := svc.RegisterLobby(tt.lobbyID, tt.serverName)
+			if !errors.Is(err, tt.wantErr) {
+				t.Fatalf("RegisterLobby() error = %v, want %v", err, tt.wantErr)
+			}
+
+			if tt.gateway.lobbyID != tt.lobbyID {
+				t.Fatalf("RegisterLobby() gateway lobbyID = %q, want %q", tt.gateway.lobbyID, tt.lobbyID)
+			}
+			if tt.gateway.serverName != tt.serverName {
+				t.Fatalf("RegisterLobby() gateway serverName = %q, want %q", tt.gateway.serverName, tt.serverName)
 			}
 		})
 	}

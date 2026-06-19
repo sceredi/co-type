@@ -78,3 +78,86 @@ func TestLobbyRepository_Create(t *testing.T) {
 		})
 	}
 }
+
+func TestLobbyRepository_Get(t *testing.T) {
+	tests := []struct {
+		name    string
+		seed    *serverdomain.Lobby
+		queryID string
+		wantNil bool
+	}{
+		{
+			name:    "returns existing lobby",
+			seed:    serverdomain.NewLobby("lobby-1", domain.NewPlayer("alice")),
+			queryID: "lobby-1",
+			wantNil: false,
+		},
+		{
+			name:    "returns nil for missing lobby",
+			queryID: "missing",
+			wantNil: true,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			repo := memory.NewLobbyRepository()
+			if tt.seed != nil {
+				if _, err := repo.Create(tt.seed); err != nil {
+					t.Fatalf("seed create failed: %v", err)
+				}
+			}
+
+			got := repo.Get(tt.queryID)
+			if tt.wantNil && got != nil {
+				t.Fatalf("Get() got = %v, want nil", got)
+			}
+			if !tt.wantNil && got == nil {
+				t.Fatal("Get() got nil, want non-nil lobby")
+			}
+		})
+	}
+}
+
+func TestLobbyRepository_Delete(t *testing.T) {
+	tests := []struct {
+		name    string
+		seed    *serverdomain.Lobby
+		queryID string
+		wantErr error
+	}{
+		{
+			name:    "deletes existing lobby",
+			seed:    serverdomain.NewLobby("lobby-1", domain.NewPlayer("alice")),
+			queryID: "lobby-1",
+			wantErr: nil,
+		},
+		{
+			name:    "returns ErrLobbyNotFound for missing lobby",
+			queryID: "missing",
+			wantErr: domain.ErrLobbyNotFound,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			repo := memory.NewLobbyRepository()
+			if tt.seed != nil {
+				if _, err := repo.Create(tt.seed); err != nil {
+					t.Fatalf("seed create failed: %v", err)
+				}
+			}
+
+			err := repo.Delete(tt.queryID)
+			if !errors.Is(err, tt.wantErr) {
+				t.Fatalf("Delete() error = %v, want %v", err, tt.wantErr)
+			}
+
+			if tt.wantErr == nil {
+				if got := repo.Get(tt.queryID); got != nil {
+					t.Fatalf("Delete() lobby still exists after deletion")
+				}
+			}
+		})
+	}
+}

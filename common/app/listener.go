@@ -1,4 +1,5 @@
-package config
+// Package app provides common utilities for setting up an application
+package app
 
 import (
 	"context"

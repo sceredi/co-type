@@ -60,6 +60,14 @@ func NewCloseSettingsCmd() tea.Cmd {
 	}
 }
 
+// LobbyUpdatedMsg is a message that carries an updated lobby state from the subscription stream.
+type LobbyUpdatedMsg struct {
+	Lobby *domain.Lobby
+}
+
+// LobbySubscriptionClosedMsg is a message that indicates the lobby subscription stream has closed.
+type LobbySubscriptionClosedMsg struct{}
+
 // StartGameMsg is a message that indicates that a game should be started.
 type StartGameMsg struct {
 	Game domain.Game

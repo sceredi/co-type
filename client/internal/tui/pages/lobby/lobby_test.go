@@ -19,7 +19,7 @@ func newTestLobbyModel() Model {
 		Players: []*domain.Player{host, guest, third},
 	}
 
-	return New(host, l)
+	return New(host, l, nil)
 }
 
 func TestDownMovesSelectionForward(t *testing.T) {

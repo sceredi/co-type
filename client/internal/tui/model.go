@@ -76,12 +76,15 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 	switch m.page {
 	case welcomePage:
+		var initCmd tea.Cmd
 		switch msg := msg.(type) {
 		case welcome_messages.JoinedLobbyMsg:
-			m.lobby = lobby.New(msg.Lobby.Host, msg.Lobby)
+			m.lobby = lobby.New(msg.Lobby.Host, msg.Lobby, msg.Updates)
 			m.page = lobbyPage
+			initCmd = m.lobby.Init()
 		}
 		m.welcome, cmd = m.welcome.Update(msg)
+		cmd = tea.Batch(cmd, initCmd)
 	case lobbyPage:
 		switch msg := msg.(type) {
 		case lobby_messages.LeaveMsg:

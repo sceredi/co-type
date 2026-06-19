@@ -21,6 +21,14 @@ func ToGRPCError(err error) error {
 		return status.Errorf(codes.NotFound, "%s", err.Error())
 	case errors.Is(err, domain.ErrNoAvailableServers):
 		return status.Errorf(codes.Unavailable, "%s", err.Error())
+	case errors.Is(err, domain.ErrLobbyAlreadyExists):
+		return status.Errorf(codes.AlreadyExists, "%s", err.Error())
+	case errors.Is(err, domain.ErrLobbyNotFound):
+		return status.Errorf(codes.NotFound, "%s", err.Error())
+	case errors.Is(err, domain.ErrPlayerNotInLobby):
+		return status.Errorf(codes.NotFound, "%s", err.Error())
+	case errors.Is(err, domain.ErrPlayerAlreadyInLobby):
+		return status.Errorf(codes.AlreadyExists, "%s", err.Error())
 	default:
 		log.Fatalf("unexpected error: %v", err)
 		return status.Errorf(codes.Internal, "internal server error")

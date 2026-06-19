@@ -19,7 +19,8 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	DiscoveryService_AvailableServer_FullMethodName = "/discovery.DiscoveryService/AvailableServer"
+	DiscoveryService_AvailableServer_FullMethodName    = "/discovery.DiscoveryService/AvailableServer"
+	DiscoveryService_ServerHostingLobby_FullMethodName = "/discovery.DiscoveryService/ServerHostingLobby"
 )
 
 // DiscoveryServiceClient is the client API for DiscoveryService service.
@@ -30,6 +31,8 @@ const (
 type DiscoveryServiceClient interface {
 	// RPC to get the available server information.
 	AvailableServer(ctx context.Context, in *AvailableServerRequest, opts ...grpc.CallOption) (*AvailableServerResponse, error)
+	// RPC to get the server hosting lobby information.
+	ServerHostingLobby(ctx context.Context, in *ServerHostingLobbyRequest, opts ...grpc.CallOption) (*ServerHostingLobbyResponse, error)
 }
 
 type discoveryServiceClient struct {
@@ -50,6 +53,16 @@ func (c *discoveryServiceClient) AvailableServer(ctx context.Context, in *Availa
 	return out, nil
 }
 
+func (c *discoveryServiceClient) ServerHostingLobby(ctx context.Context, in *ServerHostingLobbyRequest, opts ...grpc.CallOption) (*ServerHostingLobbyResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ServerHostingLobbyResponse)
+	err := c.cc.Invoke(ctx, DiscoveryService_ServerHostingLobby_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // DiscoveryServiceServer is the server API for DiscoveryService service.
 // All implementations must embed UnimplementedDiscoveryServiceServer
 // for forward compatibility.
@@ -58,6 +71,8 @@ func (c *discoveryServiceClient) AvailableServer(ctx context.Context, in *Availa
 type DiscoveryServiceServer interface {
 	// RPC to get the available server information.
 	AvailableServer(context.Context, *AvailableServerRequest) (*AvailableServerResponse, error)
+	// RPC to get the server hosting lobby information.
+	ServerHostingLobby(context.Context, *ServerHostingLobbyRequest) (*ServerHostingLobbyResponse, error)
 	mustEmbedUnimplementedDiscoveryServiceServer()
 }
 
@@ -70,6 +85,9 @@ type UnimplementedDiscoveryServiceServer struct{}
 
 func (UnimplementedDiscoveryServiceServer) AvailableServer(context.Context, *AvailableServerRequest) (*AvailableServerResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method AvailableServer not implemented")
+}
+func (UnimplementedDiscoveryServiceServer) ServerHostingLobby(context.Context, *ServerHostingLobbyRequest) (*ServerHostingLobbyResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method ServerHostingLobby not implemented")
 }
 func (UnimplementedDiscoveryServiceServer) mustEmbedUnimplementedDiscoveryServiceServer() {}
 func (UnimplementedDiscoveryServiceServer) testEmbeddedByValue()                          {}
@@ -110,6 +128,24 @@ func _DiscoveryService_AvailableServer_Handler(srv interface{}, ctx context.Cont
 	return interceptor(ctx, in, info, handler)
 }
 
+func _DiscoveryService_ServerHostingLobby_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ServerHostingLobbyRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(DiscoveryServiceServer).ServerHostingLobby(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: DiscoveryService_ServerHostingLobby_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(DiscoveryServiceServer).ServerHostingLobby(ctx, req.(*ServerHostingLobbyRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // DiscoveryService_ServiceDesc is the grpc.ServiceDesc for DiscoveryService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -120,6 +156,10 @@ var DiscoveryService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "AvailableServer",
 			Handler:    _DiscoveryService_AvailableServer_Handler,
+		},
+		{
+			MethodName: "ServerHostingLobby",
+			Handler:    _DiscoveryService_ServerHostingLobby_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

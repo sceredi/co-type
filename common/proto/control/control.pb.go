@@ -21,174 +21,8 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
-// Envelopes for communication between servers and the broker.
-type ServerEnvelope struct {
-	state protoimpl.MessageState `protogen:"open.v1"`
-	// Types that are valid to be assigned to Payload:
-	//
-	//	*ServerEnvelope_Register
-	//	*ServerEnvelope_HeartbeatAck
-	Payload       isServerEnvelope_Payload `protobuf_oneof:"payload"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *ServerEnvelope) Reset() {
-	*x = ServerEnvelope{}
-	mi := &file_common_proto_control_control_proto_msgTypes[0]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *ServerEnvelope) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*ServerEnvelope) ProtoMessage() {}
-
-func (x *ServerEnvelope) ProtoReflect() protoreflect.Message {
-	mi := &file_common_proto_control_control_proto_msgTypes[0]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use ServerEnvelope.ProtoReflect.Descriptor instead.
-func (*ServerEnvelope) Descriptor() ([]byte, []int) {
-	return file_common_proto_control_control_proto_rawDescGZIP(), []int{0}
-}
-
-func (x *ServerEnvelope) GetPayload() isServerEnvelope_Payload {
-	if x != nil {
-		return x.Payload
-	}
-	return nil
-}
-
-func (x *ServerEnvelope) GetRegister() *RegisterServer {
-	if x != nil {
-		if x, ok := x.Payload.(*ServerEnvelope_Register); ok {
-			return x.Register
-		}
-	}
-	return nil
-}
-
-func (x *ServerEnvelope) GetHeartbeatAck() *HeartbeatAck {
-	if x != nil {
-		if x, ok := x.Payload.(*ServerEnvelope_HeartbeatAck); ok {
-			return x.HeartbeatAck
-		}
-	}
-	return nil
-}
-
-type isServerEnvelope_Payload interface {
-	isServerEnvelope_Payload()
-}
-
-type ServerEnvelope_Register struct {
-	Register *RegisterServer `protobuf:"bytes,1,opt,name=register,proto3,oneof"`
-}
-
-type ServerEnvelope_HeartbeatAck struct {
-	HeartbeatAck *HeartbeatAck `protobuf:"bytes,2,opt,name=heartbeat_ack,json=heartbeatAck,proto3,oneof"`
-}
-
-func (*ServerEnvelope_Register) isServerEnvelope_Payload() {}
-
-func (*ServerEnvelope_HeartbeatAck) isServerEnvelope_Payload() {}
-
-// Envelopes for communication from the broker to servers.
-type BrokerEnvelope struct {
-	state protoimpl.MessageState `protogen:"open.v1"`
-	// Types that are valid to be assigned to Payload:
-	//
-	//	*BrokerEnvelope_RegisterAck
-	//	*BrokerEnvelope_Heartbeat
-	Payload       isBrokerEnvelope_Payload `protobuf_oneof:"payload"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *BrokerEnvelope) Reset() {
-	*x = BrokerEnvelope{}
-	mi := &file_common_proto_control_control_proto_msgTypes[1]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *BrokerEnvelope) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*BrokerEnvelope) ProtoMessage() {}
-
-func (x *BrokerEnvelope) ProtoReflect() protoreflect.Message {
-	mi := &file_common_proto_control_control_proto_msgTypes[1]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use BrokerEnvelope.ProtoReflect.Descriptor instead.
-func (*BrokerEnvelope) Descriptor() ([]byte, []int) {
-	return file_common_proto_control_control_proto_rawDescGZIP(), []int{1}
-}
-
-func (x *BrokerEnvelope) GetPayload() isBrokerEnvelope_Payload {
-	if x != nil {
-		return x.Payload
-	}
-	return nil
-}
-
-func (x *BrokerEnvelope) GetRegisterAck() *RegisterServerAck {
-	if x != nil {
-		if x, ok := x.Payload.(*BrokerEnvelope_RegisterAck); ok {
-			return x.RegisterAck
-		}
-	}
-	return nil
-}
-
-func (x *BrokerEnvelope) GetHeartbeat() *Heartbeat {
-	if x != nil {
-		if x, ok := x.Payload.(*BrokerEnvelope_Heartbeat); ok {
-			return x.Heartbeat
-		}
-	}
-	return nil
-}
-
-type isBrokerEnvelope_Payload interface {
-	isBrokerEnvelope_Payload()
-}
-
-type BrokerEnvelope_RegisterAck struct {
-	RegisterAck *RegisterServerAck `protobuf:"bytes,1,opt,name=register_ack,json=registerAck,proto3,oneof"`
-}
-
-type BrokerEnvelope_Heartbeat struct {
-	Heartbeat *Heartbeat `protobuf:"bytes,2,opt,name=heartbeat,proto3,oneof"`
-}
-
-func (*BrokerEnvelope_RegisterAck) isBrokerEnvelope_Payload() {}
-
-func (*BrokerEnvelope_Heartbeat) isBrokerEnvelope_Payload() {}
-
 // Messages for server registration.
-type RegisterServer struct {
+type RegisterServerRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Name          string                 `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	Host          string                 `protobuf:"bytes,2,opt,name=host,proto3" json:"host,omitempty"`
@@ -197,21 +31,21 @@ type RegisterServer struct {
 	sizeCache     protoimpl.SizeCache
 }
 
-func (x *RegisterServer) Reset() {
-	*x = RegisterServer{}
-	mi := &file_common_proto_control_control_proto_msgTypes[2]
+func (x *RegisterServerRequest) Reset() {
+	*x = RegisterServerRequest{}
+	mi := &file_common_proto_control_control_proto_msgTypes[0]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
-func (x *RegisterServer) String() string {
+func (x *RegisterServerRequest) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*RegisterServer) ProtoMessage() {}
+func (*RegisterServerRequest) ProtoMessage() {}
 
-func (x *RegisterServer) ProtoReflect() protoreflect.Message {
-	mi := &file_common_proto_control_control_proto_msgTypes[2]
+func (x *RegisterServerRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_common_proto_control_control_proto_msgTypes[0]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -222,26 +56,26 @@ func (x *RegisterServer) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use RegisterServer.ProtoReflect.Descriptor instead.
-func (*RegisterServer) Descriptor() ([]byte, []int) {
-	return file_common_proto_control_control_proto_rawDescGZIP(), []int{2}
+// Deprecated: Use RegisterServerRequest.ProtoReflect.Descriptor instead.
+func (*RegisterServerRequest) Descriptor() ([]byte, []int) {
+	return file_common_proto_control_control_proto_rawDescGZIP(), []int{0}
 }
 
-func (x *RegisterServer) GetName() string {
+func (x *RegisterServerRequest) GetName() string {
 	if x != nil {
 		return x.Name
 	}
 	return ""
 }
 
-func (x *RegisterServer) GetHost() string {
+func (x *RegisterServerRequest) GetHost() string {
 	if x != nil {
 		return x.Host
 	}
 	return ""
 }
 
-func (x *RegisterServer) GetPort() int64 {
+func (x *RegisterServerRequest) GetPort() int64 {
 	if x != nil {
 		return x.Port
 	}
@@ -249,7 +83,7 @@ func (x *RegisterServer) GetPort() int64 {
 }
 
 // Acknowledgment for server registration.
-type RegisterServerAck struct {
+type RegisterServerResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Success       bool                   `protobuf:"varint,1,opt,name=success,proto3" json:"success,omitempty"`
 	Message       string                 `protobuf:"bytes,2,opt,name=message,proto3" json:"message,omitempty"`
@@ -257,21 +91,21 @@ type RegisterServerAck struct {
 	sizeCache     protoimpl.SizeCache
 }
 
-func (x *RegisterServerAck) Reset() {
-	*x = RegisterServerAck{}
-	mi := &file_common_proto_control_control_proto_msgTypes[3]
+func (x *RegisterServerResponse) Reset() {
+	*x = RegisterServerResponse{}
+	mi := &file_common_proto_control_control_proto_msgTypes[1]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
-func (x *RegisterServerAck) String() string {
+func (x *RegisterServerResponse) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*RegisterServerAck) ProtoMessage() {}
+func (*RegisterServerResponse) ProtoMessage() {}
 
-func (x *RegisterServerAck) ProtoReflect() protoreflect.Message {
-	mi := &file_common_proto_control_control_proto_msgTypes[3]
+func (x *RegisterServerResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_common_proto_control_control_proto_msgTypes[1]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -282,47 +116,49 @@ func (x *RegisterServerAck) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use RegisterServerAck.ProtoReflect.Descriptor instead.
-func (*RegisterServerAck) Descriptor() ([]byte, []int) {
-	return file_common_proto_control_control_proto_rawDescGZIP(), []int{3}
+// Deprecated: Use RegisterServerResponse.ProtoReflect.Descriptor instead.
+func (*RegisterServerResponse) Descriptor() ([]byte, []int) {
+	return file_common_proto_control_control_proto_rawDescGZIP(), []int{1}
 }
 
-func (x *RegisterServerAck) GetSuccess() bool {
+func (x *RegisterServerResponse) GetSuccess() bool {
 	if x != nil {
 		return x.Success
 	}
 	return false
 }
 
-func (x *RegisterServerAck) GetMessage() string {
+func (x *RegisterServerResponse) GetMessage() string {
 	if x != nil {
 		return x.Message
 	}
 	return ""
 }
 
-// Messages for heartbeat to monitor server health.
-type Heartbeat struct {
+// Messages for lobby registration with the broker.
+type RegisterLobbyRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
+	LobbyId       string                 `protobuf:"bytes,1,opt,name=lobby_id,json=lobbyId,proto3" json:"lobby_id,omitempty"`
+	ServerName    string                 `protobuf:"bytes,2,opt,name=server_name,json=serverName,proto3" json:"server_name,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
-func (x *Heartbeat) Reset() {
-	*x = Heartbeat{}
-	mi := &file_common_proto_control_control_proto_msgTypes[4]
+func (x *RegisterLobbyRequest) Reset() {
+	*x = RegisterLobbyRequest{}
+	mi := &file_common_proto_control_control_proto_msgTypes[2]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
-func (x *Heartbeat) String() string {
+func (x *RegisterLobbyRequest) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*Heartbeat) ProtoMessage() {}
+func (*RegisterLobbyRequest) ProtoMessage() {}
 
-func (x *Heartbeat) ProtoReflect() protoreflect.Message {
-	mi := &file_common_proto_control_control_proto_msgTypes[4]
+func (x *RegisterLobbyRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_common_proto_control_control_proto_msgTypes[2]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -333,33 +169,49 @@ func (x *Heartbeat) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use Heartbeat.ProtoReflect.Descriptor instead.
-func (*Heartbeat) Descriptor() ([]byte, []int) {
-	return file_common_proto_control_control_proto_rawDescGZIP(), []int{4}
+// Deprecated: Use RegisterLobbyRequest.ProtoReflect.Descriptor instead.
+func (*RegisterLobbyRequest) Descriptor() ([]byte, []int) {
+	return file_common_proto_control_control_proto_rawDescGZIP(), []int{2}
 }
 
-// Acknowledgment for heartbeat.
-type HeartbeatAck struct {
+func (x *RegisterLobbyRequest) GetLobbyId() string {
+	if x != nil {
+		return x.LobbyId
+	}
+	return ""
+}
+
+func (x *RegisterLobbyRequest) GetServerName() string {
+	if x != nil {
+		return x.ServerName
+	}
+	return ""
+}
+
+// Response for lobby registration.
+type RegisterLobbyResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
+	Success       bool                   `protobuf:"varint,1,opt,name=success,proto3" json:"success,omitempty"`
+	Message       string                 `protobuf:"bytes,2,opt,name=message,proto3" json:"message,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
-func (x *HeartbeatAck) Reset() {
-	*x = HeartbeatAck{}
-	mi := &file_common_proto_control_control_proto_msgTypes[5]
+func (x *RegisterLobbyResponse) Reset() {
+	*x = RegisterLobbyResponse{}
+	mi := &file_common_proto_control_control_proto_msgTypes[3]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
-func (x *HeartbeatAck) String() string {
+func (x *RegisterLobbyResponse) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*HeartbeatAck) ProtoMessage() {}
+func (*RegisterLobbyResponse) ProtoMessage() {}
 
-func (x *HeartbeatAck) ProtoReflect() protoreflect.Message {
-	mi := &file_common_proto_control_control_proto_msgTypes[5]
+func (x *RegisterLobbyResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_common_proto_control_control_proto_msgTypes[3]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -370,35 +222,47 @@ func (x *HeartbeatAck) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use HeartbeatAck.ProtoReflect.Descriptor instead.
-func (*HeartbeatAck) Descriptor() ([]byte, []int) {
-	return file_common_proto_control_control_proto_rawDescGZIP(), []int{5}
+// Deprecated: Use RegisterLobbyResponse.ProtoReflect.Descriptor instead.
+func (*RegisterLobbyResponse) Descriptor() ([]byte, []int) {
+	return file_common_proto_control_control_proto_rawDescGZIP(), []int{3}
+}
+
+func (x *RegisterLobbyResponse) GetSuccess() bool {
+	if x != nil {
+		return x.Success
+	}
+	return false
+}
+
+func (x *RegisterLobbyResponse) GetMessage() string {
+	if x != nil {
+		return x.Message
+	}
+	return ""
 }
 
 var File_common_proto_control_control_proto protoreflect.FileDescriptor
 
 const file_common_proto_control_control_proto_rawDesc = "" +
 	"\n" +
-	"\"common/proto/control/control.proto\x12\acontrol\"\x90\x01\n" +
-	"\x0eServerEnvelope\x125\n" +
-	"\bregister\x18\x01 \x01(\v2\x17.control.RegisterServerH\x00R\bregister\x12<\n" +
-	"\rheartbeat_ack\x18\x02 \x01(\v2\x15.control.HeartbeatAckH\x00R\fheartbeatAckB\t\n" +
-	"\apayload\"\x90\x01\n" +
-	"\x0eBrokerEnvelope\x12?\n" +
-	"\fregister_ack\x18\x01 \x01(\v2\x1a.control.RegisterServerAckH\x00R\vregisterAck\x122\n" +
-	"\theartbeat\x18\x02 \x01(\v2\x12.control.HeartbeatH\x00R\theartbeatB\t\n" +
-	"\apayload\"L\n" +
-	"\x0eRegisterServer\x12\x12\n" +
+	"\"common/proto/control/control.proto\x12\acontrol\"S\n" +
+	"\x15RegisterServerRequest\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12\x12\n" +
 	"\x04host\x18\x02 \x01(\tR\x04host\x12\x12\n" +
-	"\x04port\x18\x03 \x01(\x03R\x04port\"G\n" +
-	"\x11RegisterServerAck\x12\x18\n" +
+	"\x04port\x18\x03 \x01(\x03R\x04port\"L\n" +
+	"\x16RegisterServerResponse\x12\x18\n" +
 	"\asuccess\x18\x01 \x01(\bR\asuccess\x12\x18\n" +
-	"\amessage\x18\x02 \x01(\tR\amessage\"\v\n" +
-	"\tHeartbeat\"\x0e\n" +
-	"\fHeartbeatAck2P\n" +
-	"\x0eControlService\x12>\n" +
-	"\x06Manage\x12\x17.control.ServerEnvelope\x1a\x17.control.BrokerEnvelope(\x010\x01B1Z/github.com/sceredi/co-type/common/proto/controlb\x06proto3"
+	"\amessage\x18\x02 \x01(\tR\amessage\"R\n" +
+	"\x14RegisterLobbyRequest\x12\x19\n" +
+	"\blobby_id\x18\x01 \x01(\tR\alobbyId\x12\x1f\n" +
+	"\vserver_name\x18\x02 \x01(\tR\n" +
+	"serverName\"K\n" +
+	"\x15RegisterLobbyResponse\x12\x18\n" +
+	"\asuccess\x18\x01 \x01(\bR\asuccess\x12\x18\n" +
+	"\amessage\x18\x02 \x01(\tR\amessage2\xb3\x01\n" +
+	"\x0eControlService\x12Q\n" +
+	"\x0eRegisterServer\x12\x1e.control.RegisterServerRequest\x1a\x1f.control.RegisterServerResponse\x12N\n" +
+	"\rRegisterLobby\x12\x1d.control.RegisterLobbyRequest\x1a\x1e.control.RegisterLobbyResponseB1Z/github.com/sceredi/co-type/common/proto/controlb\x06proto3"
 
 var (
 	file_common_proto_control_control_proto_rawDescOnce sync.Once
@@ -412,27 +276,23 @@ func file_common_proto_control_control_proto_rawDescGZIP() []byte {
 	return file_common_proto_control_control_proto_rawDescData
 }
 
-var file_common_proto_control_control_proto_msgTypes = make([]protoimpl.MessageInfo, 6)
+var file_common_proto_control_control_proto_msgTypes = make([]protoimpl.MessageInfo, 4)
 var file_common_proto_control_control_proto_goTypes = []any{
-	(*ServerEnvelope)(nil),    // 0: control.ServerEnvelope
-	(*BrokerEnvelope)(nil),    // 1: control.BrokerEnvelope
-	(*RegisterServer)(nil),    // 2: control.RegisterServer
-	(*RegisterServerAck)(nil), // 3: control.RegisterServerAck
-	(*Heartbeat)(nil),         // 4: control.Heartbeat
-	(*HeartbeatAck)(nil),      // 5: control.HeartbeatAck
+	(*RegisterServerRequest)(nil),  // 0: control.RegisterServerRequest
+	(*RegisterServerResponse)(nil), // 1: control.RegisterServerResponse
+	(*RegisterLobbyRequest)(nil),   // 2: control.RegisterLobbyRequest
+	(*RegisterLobbyResponse)(nil),  // 3: control.RegisterLobbyResponse
 }
 var file_common_proto_control_control_proto_depIdxs = []int32{
-	2, // 0: control.ServerEnvelope.register:type_name -> control.RegisterServer
-	5, // 1: control.ServerEnvelope.heartbeat_ack:type_name -> control.HeartbeatAck
-	3, // 2: control.BrokerEnvelope.register_ack:type_name -> control.RegisterServerAck
-	4, // 3: control.BrokerEnvelope.heartbeat:type_name -> control.Heartbeat
-	0, // 4: control.ControlService.Manage:input_type -> control.ServerEnvelope
-	1, // 5: control.ControlService.Manage:output_type -> control.BrokerEnvelope
-	5, // [5:6] is the sub-list for method output_type
-	4, // [4:5] is the sub-list for method input_type
-	4, // [4:4] is the sub-list for extension type_name
-	4, // [4:4] is the sub-list for extension extendee
-	0, // [0:4] is the sub-list for field type_name
+	0, // 0: control.ControlService.RegisterServer:input_type -> control.RegisterServerRequest
+	2, // 1: control.ControlService.RegisterLobby:input_type -> control.RegisterLobbyRequest
+	1, // 2: control.ControlService.RegisterServer:output_type -> control.RegisterServerResponse
+	3, // 3: control.ControlService.RegisterLobby:output_type -> control.RegisterLobbyResponse
+	2, // [2:4] is the sub-list for method output_type
+	0, // [0:2] is the sub-list for method input_type
+	0, // [0:0] is the sub-list for extension type_name
+	0, // [0:0] is the sub-list for extension extendee
+	0, // [0:0] is the sub-list for field type_name
 }
 
 func init() { file_common_proto_control_control_proto_init() }
@@ -440,21 +300,13 @@ func file_common_proto_control_control_proto_init() {
 	if File_common_proto_control_control_proto != nil {
 		return
 	}
-	file_common_proto_control_control_proto_msgTypes[0].OneofWrappers = []any{
-		(*ServerEnvelope_Register)(nil),
-		(*ServerEnvelope_HeartbeatAck)(nil),
-	}
-	file_common_proto_control_control_proto_msgTypes[1].OneofWrappers = []any{
-		(*BrokerEnvelope_RegisterAck)(nil),
-		(*BrokerEnvelope_Heartbeat)(nil),
-	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_common_proto_control_control_proto_rawDesc), len(file_common_proto_control_control_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   6,
+			NumMessages:   4,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

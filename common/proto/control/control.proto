@@ -6,41 +6,31 @@ option go_package = "github.com/sceredi/co-type/common/proto/control";
 
 // The control service definition.
 service ControlService {
-  // Bidirectional streaming RPC for managing servers.
-  rpc Manage(stream ServerEnvelope) returns (stream BrokerEnvelope);
-}
-
-// Envelopes for communication between servers and the broker.
-message ServerEnvelope {
-  oneof payload {
-    RegisterServer register = 1;
-    HeartbeatAck heartbeat_ack = 2;
-  }
-}
-
-// Envelopes for communication from the broker to servers.
-message BrokerEnvelope {
-  oneof payload {
-    RegisterServerAck register_ack = 1;
-    Heartbeat heartbeat = 2;
-  }
+  rpc RegisterServer(RegisterServerRequest) returns (RegisterServerResponse);
+  rpc RegisterLobby(RegisterLobbyRequest) returns (RegisterLobbyResponse);
 }
 
 // Messages for server registration.
-message RegisterServer {
+message RegisterServerRequest {
   string name = 1;
   string host = 2;
   int64 port = 3;
 }
 
 // Acknowledgment for server registration.
-message RegisterServerAck {
+message RegisterServerResponse {
   bool success = 1;
   string message = 2;
 }
 
-// Messages for heartbeat to monitor server health.
-message Heartbeat {}
+// Messages for lobby registration with the broker.
+message RegisterLobbyRequest {
+  string lobby_id = 1;
+  string server_name = 2;
+}
 
-// Acknowledgment for heartbeat.
-message HeartbeatAck {}
+// Response for lobby registration.
+message RegisterLobbyResponse {
+  bool success = 1;
+  string message = 2;
+}

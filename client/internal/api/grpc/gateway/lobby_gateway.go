@@ -16,7 +16,10 @@ import (
 type LobbyGateway interface {
 	// Create creates a new lobby with the given ID and host name.
 	Create(id, hostName string) (*domain.Lobby, error)
+	Join(id, playerName string) (*domain.Lobby, error)
 	Connect(target *domain.Server) error
+	// Subscribe subscribes to lobby events and returns a channel that receives updated lobby state.
+	Subscribe(lobbyID, playerName string) (<-chan *domain.Lobby, error)
 }
 
 type lobbyGateway struct {
@@ -34,11 +37,23 @@ func (g *lobbyGateway) Create(id, hostName string) (*domain.Lobby, error) {
 		LobbyId:    id,
 		PlayerName: hostName,
 	}
-	_, err := g.conn.CreateLobby(g.ctx, req)
+	res, err := g.conn.CreateLobby(g.ctx, req)
 	if err != nil {
 		return nil, commongrpc.FromGRPCError(err)
 	}
-	return domain.NewLobby(id, domain.NewPlayer(hostName)), nil
+	return domain.NewLobbyFromGRPC(res.GetLobby()), nil
+}
+
+func (g *lobbyGateway) Join(id, playerName string) (*domain.Lobby, error) {
+	req := &lobby.JoinLobbyRequest{
+		LobbyId:    id,
+		PlayerName: playerName,
+	}
+	res, err := g.conn.JoinLobby(g.ctx, req)
+	if err != nil {
+		return nil, commongrpc.FromGRPCError(err)
+	}
+	return domain.NewLobbyFromGRPC(res.GetLobby()), nil
 }
 
 func (g *lobbyGateway) Connect(target *domain.Server) error {
@@ -49,4 +64,27 @@ func (g *lobbyGateway) Connect(target *domain.Server) error {
 	}
 	g.conn = lobby.NewLobbyServiceClient(conn)
 	return nil
+}
+
+func (g *lobbyGateway) Subscribe(lobbyID, playerName string) (<-chan *domain.Lobby, error) {
+	req := &lobby.SubscribeRequest{
+		LobbyId:    lobbyID,
+		PlayerName: playerName,
+	}
+	stream, err := g.conn.Subscribe(g.ctx, req)
+	if err != nil {
+		return nil, commongrpc.FromGRPCError(err)
+	}
+	ch := make(chan *domain.Lobby, 64)
+	go func() {
+		defer close(ch)
+		for {
+			event, err := stream.Recv()
+			if err != nil {
+				return
+			}
+			ch <- domain.NewLobbyFromGRPC(event.GetLobby())
+		}
+	}()
+	return ch, nil
 }

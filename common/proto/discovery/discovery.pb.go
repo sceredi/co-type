@@ -119,6 +119,112 @@ func (x *AvailableServerResponse) GetPort() int64 {
 	return 0
 }
 
+// Request message for server hosting lobby information.
+type ServerHostingLobbyRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	LobbyId       string                 `protobuf:"bytes,1,opt,name=lobby_id,json=lobbyId,proto3" json:"lobby_id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ServerHostingLobbyRequest) Reset() {
+	*x = ServerHostingLobbyRequest{}
+	mi := &file_common_proto_discovery_discovery_proto_msgTypes[2]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ServerHostingLobbyRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ServerHostingLobbyRequest) ProtoMessage() {}
+
+func (x *ServerHostingLobbyRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_common_proto_discovery_discovery_proto_msgTypes[2]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ServerHostingLobbyRequest.ProtoReflect.Descriptor instead.
+func (*ServerHostingLobbyRequest) Descriptor() ([]byte, []int) {
+	return file_common_proto_discovery_discovery_proto_rawDescGZIP(), []int{2}
+}
+
+func (x *ServerHostingLobbyRequest) GetLobbyId() string {
+	if x != nil {
+		return x.LobbyId
+	}
+	return ""
+}
+
+// Response message containing server hosting lobby information.
+type ServerHostingLobbyResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Name          string                 `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	Addr          string                 `protobuf:"bytes,2,opt,name=addr,proto3" json:"addr,omitempty"`
+	Port          int64                  `protobuf:"varint,3,opt,name=port,proto3" json:"port,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ServerHostingLobbyResponse) Reset() {
+	*x = ServerHostingLobbyResponse{}
+	mi := &file_common_proto_discovery_discovery_proto_msgTypes[3]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ServerHostingLobbyResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ServerHostingLobbyResponse) ProtoMessage() {}
+
+func (x *ServerHostingLobbyResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_common_proto_discovery_discovery_proto_msgTypes[3]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ServerHostingLobbyResponse.ProtoReflect.Descriptor instead.
+func (*ServerHostingLobbyResponse) Descriptor() ([]byte, []int) {
+	return file_common_proto_discovery_discovery_proto_rawDescGZIP(), []int{3}
+}
+
+func (x *ServerHostingLobbyResponse) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
+func (x *ServerHostingLobbyResponse) GetAddr() string {
+	if x != nil {
+		return x.Addr
+	}
+	return ""
+}
+
+func (x *ServerHostingLobbyResponse) GetPort() int64 {
+	if x != nil {
+		return x.Port
+	}
+	return 0
+}
+
 var File_common_proto_discovery_discovery_proto protoreflect.FileDescriptor
 
 const file_common_proto_discovery_discovery_proto_rawDesc = "" +
@@ -128,9 +234,16 @@ const file_common_proto_discovery_discovery_proto_rawDesc = "" +
 	"\x17AvailableServerResponse\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12\x12\n" +
 	"\x04addr\x18\x02 \x01(\tR\x04addr\x12\x12\n" +
-	"\x04port\x18\x03 \x01(\x03R\x04port2l\n" +
+	"\x04port\x18\x03 \x01(\x03R\x04port\"6\n" +
+	"\x19ServerHostingLobbyRequest\x12\x19\n" +
+	"\blobby_id\x18\x01 \x01(\tR\alobbyId\"X\n" +
+	"\x1aServerHostingLobbyResponse\x12\x12\n" +
+	"\x04name\x18\x01 \x01(\tR\x04name\x12\x12\n" +
+	"\x04addr\x18\x02 \x01(\tR\x04addr\x12\x12\n" +
+	"\x04port\x18\x03 \x01(\x03R\x04port2\xcf\x01\n" +
 	"\x10DiscoveryService\x12X\n" +
-	"\x0fAvailableServer\x12!.discovery.AvailableServerRequest\x1a\".discovery.AvailableServerResponseB3Z1github.com/sceredi/co-type/common/proto/discoveryb\x06proto3"
+	"\x0fAvailableServer\x12!.discovery.AvailableServerRequest\x1a\".discovery.AvailableServerResponse\x12a\n" +
+	"\x12ServerHostingLobby\x12$.discovery.ServerHostingLobbyRequest\x1a%.discovery.ServerHostingLobbyResponseB3Z1github.com/sceredi/co-type/common/proto/discoveryb\x06proto3"
 
 var (
 	file_common_proto_discovery_discovery_proto_rawDescOnce sync.Once
@@ -144,16 +257,20 @@ func file_common_proto_discovery_discovery_proto_rawDescGZIP() []byte {
 	return file_common_proto_discovery_discovery_proto_rawDescData
 }
 
-var file_common_proto_discovery_discovery_proto_msgTypes = make([]protoimpl.MessageInfo, 2)
+var file_common_proto_discovery_discovery_proto_msgTypes = make([]protoimpl.MessageInfo, 4)
 var file_common_proto_discovery_discovery_proto_goTypes = []any{
-	(*AvailableServerRequest)(nil),  // 0: discovery.AvailableServerRequest
-	(*AvailableServerResponse)(nil), // 1: discovery.AvailableServerResponse
+	(*AvailableServerRequest)(nil),     // 0: discovery.AvailableServerRequest
+	(*AvailableServerResponse)(nil),    // 1: discovery.AvailableServerResponse
+	(*ServerHostingLobbyRequest)(nil),  // 2: discovery.ServerHostingLobbyRequest
+	(*ServerHostingLobbyResponse)(nil), // 3: discovery.ServerHostingLobbyResponse
 }
 var file_common_proto_discovery_discovery_proto_depIdxs = []int32{
 	0, // 0: discovery.DiscoveryService.AvailableServer:input_type -> discovery.AvailableServerRequest
-	1, // 1: discovery.DiscoveryService.AvailableServer:output_type -> discovery.AvailableServerResponse
-	1, // [1:2] is the sub-list for method output_type
-	0, // [0:1] is the sub-list for method input_type
+	2, // 1: discovery.DiscoveryService.ServerHostingLobby:input_type -> discovery.ServerHostingLobbyRequest
+	1, // 2: discovery.DiscoveryService.AvailableServer:output_type -> discovery.AvailableServerResponse
+	3, // 3: discovery.DiscoveryService.ServerHostingLobby:output_type -> discovery.ServerHostingLobbyResponse
+	2, // [2:4] is the sub-list for method output_type
+	0, // [0:2] is the sub-list for method input_type
 	0, // [0:0] is the sub-list for extension type_name
 	0, // [0:0] is the sub-list for extension extendee
 	0, // [0:0] is the sub-list for field type_name
@@ -170,7 +287,7 @@ func file_common_proto_discovery_discovery_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_common_proto_discovery_discovery_proto_rawDesc), len(file_common_proto_discovery_discovery_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   2,
+			NumMessages:   4,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

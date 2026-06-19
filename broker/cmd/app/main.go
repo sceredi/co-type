@@ -9,6 +9,7 @@ import (
 	"os/signal"
 	"syscall"
 
+	"github.com/sceredi/co-type/broker/internal/app"
 	"github.com/sceredi/co-type/broker/internal/config"
 	cfg_utils "github.com/sceredi/co-type/common/config"
 )
@@ -41,11 +42,15 @@ func main() {
 
 	cfg_utils.Setup()
 
-	grpcServer := config.CreateListeners()
+	cfg := config.Get()
+	app, err := app.New(cfg)
+	if err != nil {
+		log.Fatalf("Error creating app: %v", err)
+	}
 
 	quit := make(chan os.Signal, 1)
 	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
 	<-quit
 
-	grpcServer.GracefulStop()
+	app.Shutdown()
 }

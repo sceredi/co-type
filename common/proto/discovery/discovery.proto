@@ -8,6 +8,9 @@ option go_package = "github.com/sceredi/co-type/common/proto/discovery";
 service DiscoveryService {
   // RPC to get the available server information.
   rpc AvailableServer(AvailableServerRequest) returns (AvailableServerResponse);
+
+  // RPC to get the server hosting lobby information.
+  rpc ServerHostingLobby(ServerHostingLobbyRequest) returns (ServerHostingLobbyResponse);
 }
 
 // Request message for available server information.
@@ -15,6 +18,18 @@ message AvailableServerRequest{}
 
 // Response message containing available server information.
 message AvailableServerResponse {
+  string name = 1;
+  string addr = 2;
+  int64 port = 3;
+}
+
+// Request message for server hosting lobby information.
+message ServerHostingLobbyRequest {
+  string lobby_id = 1;
+}
+
+// Response message containing server hosting lobby information.
+message ServerHostingLobbyResponse {
   string name = 1;
   string addr = 2;
   int64 port = 3;

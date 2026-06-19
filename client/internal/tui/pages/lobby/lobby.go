@@ -26,24 +26,39 @@ type Model struct {
 	selectedPlayer int
 	player         *domain.Player
 	lobby          *domain.Lobby
+	updates        <-chan *domain.Lobby
 
 	settings settings.Model
 }
 
-// New creates a new lobby model for the given player and lobby.
-func New(player *domain.Player, lobby *domain.Lobby) Model {
+// New creates a new lobby model for the given player, lobby, and subscription channel.
+func New(player *domain.Player, lobby *domain.Lobby, updates <-chan *domain.Lobby) Model {
 	m := Model{
 		focus:          focusPlayersList,
 		selectedPlayer: 0,
 		player:         player,
 		lobby:          lobby,
+		updates:        updates,
 	}
 	return m
 }
 
-// Init initializes the model. In this case, it does nothing and returns nil.
+// Init initializes the model. It starts listening for lobby updates if a subscription is available.
 func (m Model) Init() tea.Cmd {
-	return nil
+	if m.updates == nil {
+		return nil
+	}
+	return waitForLobbyUpdate(m.updates)
+}
+
+func waitForLobbyUpdate(updates <-chan *domain.Lobby) tea.Cmd {
+	return func() tea.Msg {
+		l, ok := <-updates
+		if !ok {
+			return lobby_messages.LobbySubscriptionClosedMsg{}
+		}
+		return lobby_messages.LobbyUpdatedMsg{Lobby: l}
+	}
 }
 
 // Update updates the model based on the given message and returns the updated model and any commands to execute.
@@ -58,6 +73,11 @@ func (m Model) Update(msg tea.Msg) (Model, tea.Cmd) {
 		msg.Player.CanDelete = msg.BackspaceAllowed
 	case lobby_messages.CloseSettingsMsg:
 		m.focus = focusPlayersList
+	case lobby_messages.LobbyUpdatedMsg:
+		m.lobby = msg.Lobby
+		cmds = append(cmds, waitForLobbyUpdate(m.updates))
+	case lobby_messages.LobbySubscriptionClosedMsg:
+		// subscription ended, no further updates
 	}
 
 	if m.focus == focusPlayersList {

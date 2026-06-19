@@ -32,3 +32,12 @@ func (r *lobbyRepository) Get(id string) *domain.Lobby {
 	}
 	return lobby
 }
+
+func (r *lobbyRepository) Delete(id string) error {
+	_, ok := r.lobbies[id]
+	if !ok {
+		return commondomain.ErrLobbyNotFound
+	}
+	delete(r.lobbies, id)
+	return nil
+}

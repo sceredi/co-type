@@ -95,7 +95,7 @@ func (m Model) Update(msg tea.Msg) (Model, tea.Cmd) {
 				cmds = append(cmds, welcome_messages.NewCreateLobbyCmd(m.ds, m.ls, m.codeTi.Value(), m.nameTi.Value()))
 			case focusJoin:
 				// TODO: join the lobby
-				cmds = append(cmds, welcome_messages.NewJoinLobbyCmd(m.codeTi.Value(), m.nameTi.Value()))
+				cmds = append(cmds, welcome_messages.NewJoinLobbyCmd(m.ds, m.ls, m.codeTi.Value(), m.nameTi.Value()))
 			default:
 				log.Fatalf("welcome: unexpected focus value %d", m.focus)
 			}

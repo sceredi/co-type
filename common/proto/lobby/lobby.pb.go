@@ -21,6 +21,150 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
+type Lobby struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	Players       []*Player              `protobuf:"bytes,2,rep,name=players,proto3" json:"players,omitempty"`
+	Host          *Player                `protobuf:"bytes,3,opt,name=host,proto3" json:"host,omitempty"`
+	Snippet       string                 `protobuf:"bytes,4,opt,name=snippet,proto3" json:"snippet,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *Lobby) Reset() {
+	*x = Lobby{}
+	mi := &file_common_proto_lobby_lobby_proto_msgTypes[0]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *Lobby) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*Lobby) ProtoMessage() {}
+
+func (x *Lobby) ProtoReflect() protoreflect.Message {
+	mi := &file_common_proto_lobby_lobby_proto_msgTypes[0]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use Lobby.ProtoReflect.Descriptor instead.
+func (*Lobby) Descriptor() ([]byte, []int) {
+	return file_common_proto_lobby_lobby_proto_rawDescGZIP(), []int{0}
+}
+
+func (x *Lobby) GetId() string {
+	if x != nil {
+		return x.Id
+	}
+	return ""
+}
+
+func (x *Lobby) GetPlayers() []*Player {
+	if x != nil {
+		return x.Players
+	}
+	return nil
+}
+
+func (x *Lobby) GetHost() *Player {
+	if x != nil {
+		return x.Host
+	}
+	return nil
+}
+
+func (x *Lobby) GetSnippet() string {
+	if x != nil {
+		return x.Snippet
+	}
+	return ""
+}
+
+type Player struct {
+	state             protoimpl.MessageState `protogen:"open.v1"`
+	Name              string                 `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	IsReady           bool                   `protobuf:"varint,2,opt,name=is_ready,json=isReady,proto3" json:"is_ready,omitempty"`
+	AllowedCharacters string                 `protobuf:"bytes,3,opt,name=allowed_characters,json=allowedCharacters,proto3" json:"allowed_characters,omitempty"`
+	BlockedCharacters string                 `protobuf:"bytes,4,opt,name=blocked_characters,json=blockedCharacters,proto3" json:"blocked_characters,omitempty"`
+	CanDelete         bool                   `protobuf:"varint,5,opt,name=can_delete,json=canDelete,proto3" json:"can_delete,omitempty"`
+	unknownFields     protoimpl.UnknownFields
+	sizeCache         protoimpl.SizeCache
+}
+
+func (x *Player) Reset() {
+	*x = Player{}
+	mi := &file_common_proto_lobby_lobby_proto_msgTypes[1]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *Player) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*Player) ProtoMessage() {}
+
+func (x *Player) ProtoReflect() protoreflect.Message {
+	mi := &file_common_proto_lobby_lobby_proto_msgTypes[1]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use Player.ProtoReflect.Descriptor instead.
+func (*Player) Descriptor() ([]byte, []int) {
+	return file_common_proto_lobby_lobby_proto_rawDescGZIP(), []int{1}
+}
+
+func (x *Player) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
+func (x *Player) GetIsReady() bool {
+	if x != nil {
+		return x.IsReady
+	}
+	return false
+}
+
+func (x *Player) GetAllowedCharacters() string {
+	if x != nil {
+		return x.AllowedCharacters
+	}
+	return ""
+}
+
+func (x *Player) GetBlockedCharacters() string {
+	if x != nil {
+		return x.BlockedCharacters
+	}
+	return ""
+}
+
+func (x *Player) GetCanDelete() bool {
+	if x != nil {
+		return x.CanDelete
+	}
+	return false
+}
+
 // Messages for lobby management.
 type CreateLobbyRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
@@ -32,7 +176,7 @@ type CreateLobbyRequest struct {
 
 func (x *CreateLobbyRequest) Reset() {
 	*x = CreateLobbyRequest{}
-	mi := &file_common_proto_lobby_lobby_proto_msgTypes[0]
+	mi := &file_common_proto_lobby_lobby_proto_msgTypes[2]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -44,7 +188,7 @@ func (x *CreateLobbyRequest) String() string {
 func (*CreateLobbyRequest) ProtoMessage() {}
 
 func (x *CreateLobbyRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_common_proto_lobby_lobby_proto_msgTypes[0]
+	mi := &file_common_proto_lobby_lobby_proto_msgTypes[2]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -57,7 +201,7 @@ func (x *CreateLobbyRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreateLobbyRequest.ProtoReflect.Descriptor instead.
 func (*CreateLobbyRequest) Descriptor() ([]byte, []int) {
-	return file_common_proto_lobby_lobby_proto_rawDescGZIP(), []int{0}
+	return file_common_proto_lobby_lobby_proto_rawDescGZIP(), []int{2}
 }
 
 func (x *CreateLobbyRequest) GetLobbyId() string {
@@ -76,13 +220,14 @@ func (x *CreateLobbyRequest) GetPlayerName() string {
 
 type CreateLobbyResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
+	Lobby         *Lobby                 `protobuf:"bytes,1,opt,name=lobby,proto3" json:"lobby,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
 func (x *CreateLobbyResponse) Reset() {
 	*x = CreateLobbyResponse{}
-	mi := &file_common_proto_lobby_lobby_proto_msgTypes[1]
+	mi := &file_common_proto_lobby_lobby_proto_msgTypes[3]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -94,7 +239,7 @@ func (x *CreateLobbyResponse) String() string {
 func (*CreateLobbyResponse) ProtoMessage() {}
 
 func (x *CreateLobbyResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_common_proto_lobby_lobby_proto_msgTypes[1]
+	mi := &file_common_proto_lobby_lobby_proto_msgTypes[3]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -107,7 +252,110 @@ func (x *CreateLobbyResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreateLobbyResponse.ProtoReflect.Descriptor instead.
 func (*CreateLobbyResponse) Descriptor() ([]byte, []int) {
-	return file_common_proto_lobby_lobby_proto_rawDescGZIP(), []int{1}
+	return file_common_proto_lobby_lobby_proto_rawDescGZIP(), []int{3}
+}
+
+func (x *CreateLobbyResponse) GetLobby() *Lobby {
+	if x != nil {
+		return x.Lobby
+	}
+	return nil
+}
+
+type JoinLobbyRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	LobbyId       string                 `protobuf:"bytes,1,opt,name=lobby_id,json=lobbyId,proto3" json:"lobby_id,omitempty"`
+	PlayerName    string                 `protobuf:"bytes,2,opt,name=player_name,json=playerName,proto3" json:"player_name,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *JoinLobbyRequest) Reset() {
+	*x = JoinLobbyRequest{}
+	mi := &file_common_proto_lobby_lobby_proto_msgTypes[4]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *JoinLobbyRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*JoinLobbyRequest) ProtoMessage() {}
+
+func (x *JoinLobbyRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_common_proto_lobby_lobby_proto_msgTypes[4]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use JoinLobbyRequest.ProtoReflect.Descriptor instead.
+func (*JoinLobbyRequest) Descriptor() ([]byte, []int) {
+	return file_common_proto_lobby_lobby_proto_rawDescGZIP(), []int{4}
+}
+
+func (x *JoinLobbyRequest) GetLobbyId() string {
+	if x != nil {
+		return x.LobbyId
+	}
+	return ""
+}
+
+func (x *JoinLobbyRequest) GetPlayerName() string {
+	if x != nil {
+		return x.PlayerName
+	}
+	return ""
+}
+
+type JoinLobbyResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Lobby         *Lobby                 `protobuf:"bytes,1,opt,name=lobby,proto3" json:"lobby,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *JoinLobbyResponse) Reset() {
+	*x = JoinLobbyResponse{}
+	mi := &file_common_proto_lobby_lobby_proto_msgTypes[5]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *JoinLobbyResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*JoinLobbyResponse) ProtoMessage() {}
+
+func (x *JoinLobbyResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_common_proto_lobby_lobby_proto_msgTypes[5]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use JoinLobbyResponse.ProtoReflect.Descriptor instead.
+func (*JoinLobbyResponse) Descriptor() ([]byte, []int) {
+	return file_common_proto_lobby_lobby_proto_rawDescGZIP(), []int{5}
+}
+
+func (x *JoinLobbyResponse) GetLobby() *Lobby {
+	if x != nil {
+		return x.Lobby
+	}
+	return nil
 }
 
 type SubscribeRequest struct {
@@ -120,7 +368,7 @@ type SubscribeRequest struct {
 
 func (x *SubscribeRequest) Reset() {
 	*x = SubscribeRequest{}
-	mi := &file_common_proto_lobby_lobby_proto_msgTypes[2]
+	mi := &file_common_proto_lobby_lobby_proto_msgTypes[6]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -132,7 +380,7 @@ func (x *SubscribeRequest) String() string {
 func (*SubscribeRequest) ProtoMessage() {}
 
 func (x *SubscribeRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_common_proto_lobby_lobby_proto_msgTypes[2]
+	mi := &file_common_proto_lobby_lobby_proto_msgTypes[6]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -145,7 +393,7 @@ func (x *SubscribeRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SubscribeRequest.ProtoReflect.Descriptor instead.
 func (*SubscribeRequest) Descriptor() ([]byte, []int) {
-	return file_common_proto_lobby_lobby_proto_rawDescGZIP(), []int{2}
+	return file_common_proto_lobby_lobby_proto_rawDescGZIP(), []int{6}
 }
 
 func (x *SubscribeRequest) GetLobbyId() string {
@@ -163,21 +411,15 @@ func (x *SubscribeRequest) GetPlayerName() string {
 }
 
 type LobbyEvent struct {
-	state protoimpl.MessageState `protogen:"open.v1"`
-	// Types that are valid to be assigned to Event:
-	//
-	//	*LobbyEvent_PlayerJoin
-	//	*LobbyEvent_PlayerLeave
-	//	*LobbyEvent_PlayerReady
-	//	*LobbyEvent_PlayerEdit
-	Event         isLobbyEvent_Event `protobuf_oneof:"event"`
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Lobby         *Lobby                 `protobuf:"bytes,1,opt,name=lobby,proto3" json:"lobby,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
 func (x *LobbyEvent) Reset() {
 	*x = LobbyEvent{}
-	mi := &file_common_proto_lobby_lobby_proto_msgTypes[3]
+	mi := &file_common_proto_lobby_lobby_proto_msgTypes[7]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -189,7 +431,7 @@ func (x *LobbyEvent) String() string {
 func (*LobbyEvent) ProtoMessage() {}
 
 func (x *LobbyEvent) ProtoReflect() protoreflect.Message {
-	mi := &file_common_proto_lobby_lobby_proto_msgTypes[3]
+	mi := &file_common_proto_lobby_lobby_proto_msgTypes[7]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -202,427 +444,55 @@ func (x *LobbyEvent) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use LobbyEvent.ProtoReflect.Descriptor instead.
 func (*LobbyEvent) Descriptor() ([]byte, []int) {
-	return file_common_proto_lobby_lobby_proto_rawDescGZIP(), []int{3}
-}
-
-func (x *LobbyEvent) GetEvent() isLobbyEvent_Event {
-	if x != nil {
-		return x.Event
-	}
-	return nil
-}
-
-func (x *LobbyEvent) GetPlayerJoin() *PlayerJoin {
-	if x != nil {
-		if x, ok := x.Event.(*LobbyEvent_PlayerJoin); ok {
-			return x.PlayerJoin
-		}
-	}
-	return nil
-}
-
-func (x *LobbyEvent) GetPlayerLeave() *PlayerLeave {
-	if x != nil {
-		if x, ok := x.Event.(*LobbyEvent_PlayerLeave); ok {
-			return x.PlayerLeave
-		}
-	}
-	return nil
-}
-
-func (x *LobbyEvent) GetPlayerReady() *PlayerReady {
-	if x != nil {
-		if x, ok := x.Event.(*LobbyEvent_PlayerReady); ok {
-			return x.PlayerReady
-		}
-	}
-	return nil
-}
-
-func (x *LobbyEvent) GetPlayerEdit() *PlayerEdit {
-	if x != nil {
-		if x, ok := x.Event.(*LobbyEvent_PlayerEdit); ok {
-			return x.PlayerEdit
-		}
-	}
-	return nil
-}
-
-type isLobbyEvent_Event interface {
-	isLobbyEvent_Event()
-}
-
-type LobbyEvent_PlayerJoin struct {
-	PlayerJoin *PlayerJoin `protobuf:"bytes,1,opt,name=player_join,json=playerJoin,proto3,oneof"`
-}
-
-type LobbyEvent_PlayerLeave struct {
-	PlayerLeave *PlayerLeave `protobuf:"bytes,2,opt,name=player_leave,json=playerLeave,proto3,oneof"`
-}
-
-type LobbyEvent_PlayerReady struct {
-	PlayerReady *PlayerReady `protobuf:"bytes,3,opt,name=player_ready,json=playerReady,proto3,oneof"`
-}
-
-type LobbyEvent_PlayerEdit struct {
-	PlayerEdit *PlayerEdit `protobuf:"bytes,4,opt,name=player_edit,json=playerEdit,proto3,oneof"`
-}
-
-func (*LobbyEvent_PlayerJoin) isLobbyEvent_Event() {}
-
-func (*LobbyEvent_PlayerLeave) isLobbyEvent_Event() {}
-
-func (*LobbyEvent_PlayerReady) isLobbyEvent_Event() {}
-
-func (*LobbyEvent_PlayerEdit) isLobbyEvent_Event() {}
-
-type PlayerJoin struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	PlayerName    string                 `protobuf:"bytes,1,opt,name=player_name,json=playerName,proto3" json:"player_name,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *PlayerJoin) Reset() {
-	*x = PlayerJoin{}
-	mi := &file_common_proto_lobby_lobby_proto_msgTypes[4]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *PlayerJoin) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*PlayerJoin) ProtoMessage() {}
-
-func (x *PlayerJoin) ProtoReflect() protoreflect.Message {
-	mi := &file_common_proto_lobby_lobby_proto_msgTypes[4]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use PlayerJoin.ProtoReflect.Descriptor instead.
-func (*PlayerJoin) Descriptor() ([]byte, []int) {
-	return file_common_proto_lobby_lobby_proto_rawDescGZIP(), []int{4}
-}
-
-func (x *PlayerJoin) GetPlayerName() string {
-	if x != nil {
-		return x.PlayerName
-	}
-	return ""
-}
-
-type PlayerLeave struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	PlayerName    string                 `protobuf:"bytes,1,opt,name=player_name,json=playerName,proto3" json:"player_name,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *PlayerLeave) Reset() {
-	*x = PlayerLeave{}
-	mi := &file_common_proto_lobby_lobby_proto_msgTypes[5]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *PlayerLeave) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*PlayerLeave) ProtoMessage() {}
-
-func (x *PlayerLeave) ProtoReflect() protoreflect.Message {
-	mi := &file_common_proto_lobby_lobby_proto_msgTypes[5]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use PlayerLeave.ProtoReflect.Descriptor instead.
-func (*PlayerLeave) Descriptor() ([]byte, []int) {
-	return file_common_proto_lobby_lobby_proto_rawDescGZIP(), []int{5}
-}
-
-func (x *PlayerLeave) GetPlayerName() string {
-	if x != nil {
-		return x.PlayerName
-	}
-	return ""
-}
-
-type PlayerReady struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	PlayerName    string                 `protobuf:"bytes,1,opt,name=player_name,json=playerName,proto3" json:"player_name,omitempty"`
-	IsReady       bool                   `protobuf:"varint,2,opt,name=is_ready,json=isReady,proto3" json:"is_ready,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *PlayerReady) Reset() {
-	*x = PlayerReady{}
-	mi := &file_common_proto_lobby_lobby_proto_msgTypes[6]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *PlayerReady) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*PlayerReady) ProtoMessage() {}
-
-func (x *PlayerReady) ProtoReflect() protoreflect.Message {
-	mi := &file_common_proto_lobby_lobby_proto_msgTypes[6]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use PlayerReady.ProtoReflect.Descriptor instead.
-func (*PlayerReady) Descriptor() ([]byte, []int) {
-	return file_common_proto_lobby_lobby_proto_rawDescGZIP(), []int{6}
-}
-
-func (x *PlayerReady) GetPlayerName() string {
-	if x != nil {
-		return x.PlayerName
-	}
-	return ""
-}
-
-func (x *PlayerReady) GetIsReady() bool {
-	if x != nil {
-		return x.IsReady
-	}
-	return false
-}
-
-type PlayerEdit struct {
-	state             protoimpl.MessageState `protogen:"open.v1"`
-	PlayerName        string                 `protobuf:"bytes,1,opt,name=player_name,json=playerName,proto3" json:"player_name,omitempty"`
-	AllowedCharacters string                 `protobuf:"bytes,2,opt,name=allowed_characters,json=allowedCharacters,proto3" json:"allowed_characters,omitempty"`
-	BlockedCharacters string                 `protobuf:"bytes,3,opt,name=blocked_characters,json=blockedCharacters,proto3" json:"blocked_characters,omitempty"`
-	CanDelete         bool                   `protobuf:"varint,4,opt,name=can_delete,json=canDelete,proto3" json:"can_delete,omitempty"`
-	unknownFields     protoimpl.UnknownFields
-	sizeCache         protoimpl.SizeCache
-}
-
-func (x *PlayerEdit) Reset() {
-	*x = PlayerEdit{}
-	mi := &file_common_proto_lobby_lobby_proto_msgTypes[7]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *PlayerEdit) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*PlayerEdit) ProtoMessage() {}
-
-func (x *PlayerEdit) ProtoReflect() protoreflect.Message {
-	mi := &file_common_proto_lobby_lobby_proto_msgTypes[7]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use PlayerEdit.ProtoReflect.Descriptor instead.
-func (*PlayerEdit) Descriptor() ([]byte, []int) {
 	return file_common_proto_lobby_lobby_proto_rawDescGZIP(), []int{7}
 }
 
-func (x *PlayerEdit) GetPlayerName() string {
+func (x *LobbyEvent) GetLobby() *Lobby {
 	if x != nil {
-		return x.PlayerName
+		return x.Lobby
 	}
-	return ""
-}
-
-func (x *PlayerEdit) GetAllowedCharacters() string {
-	if x != nil {
-		return x.AllowedCharacters
-	}
-	return ""
-}
-
-func (x *PlayerEdit) GetBlockedCharacters() string {
-	if x != nil {
-		return x.BlockedCharacters
-	}
-	return ""
-}
-
-func (x *PlayerEdit) GetCanDelete() bool {
-	if x != nil {
-		return x.CanDelete
-	}
-	return false
-}
-
-// Messages for joining a lobby.
-type JoinLobbyRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	LobbyId       string                 `protobuf:"bytes,1,opt,name=lobby_id,json=lobbyId,proto3" json:"lobby_id,omitempty"`
-	PlayerName    string                 `protobuf:"bytes,2,opt,name=player_name,json=playerName,proto3" json:"player_name,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *JoinLobbyRequest) Reset() {
-	*x = JoinLobbyRequest{}
-	mi := &file_common_proto_lobby_lobby_proto_msgTypes[8]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *JoinLobbyRequest) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*JoinLobbyRequest) ProtoMessage() {}
-
-func (x *JoinLobbyRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_common_proto_lobby_lobby_proto_msgTypes[8]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use JoinLobbyRequest.ProtoReflect.Descriptor instead.
-func (*JoinLobbyRequest) Descriptor() ([]byte, []int) {
-	return file_common_proto_lobby_lobby_proto_rawDescGZIP(), []int{8}
-}
-
-func (x *JoinLobbyRequest) GetLobbyId() string {
-	if x != nil {
-		return x.LobbyId
-	}
-	return ""
-}
-
-func (x *JoinLobbyRequest) GetPlayerName() string {
-	if x != nil {
-		return x.PlayerName
-	}
-	return ""
-}
-
-// Acknowledgment for joining a lobby.
-type JoinLobbyResponse struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *JoinLobbyResponse) Reset() {
-	*x = JoinLobbyResponse{}
-	mi := &file_common_proto_lobby_lobby_proto_msgTypes[9]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *JoinLobbyResponse) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*JoinLobbyResponse) ProtoMessage() {}
-
-func (x *JoinLobbyResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_common_proto_lobby_lobby_proto_msgTypes[9]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use JoinLobbyResponse.ProtoReflect.Descriptor instead.
-func (*JoinLobbyResponse) Descriptor() ([]byte, []int) {
-	return file_common_proto_lobby_lobby_proto_rawDescGZIP(), []int{9}
+	return nil
 }
 
 var File_common_proto_lobby_lobby_proto protoreflect.FileDescriptor
 
 const file_common_proto_lobby_lobby_proto_rawDesc = "" +
 	"\n" +
-	"\x1ecommon/proto/lobby/lobby.proto\x12\x05lobby\"P\n" +
+	"\x1ecommon/proto/lobby/lobby.proto\x12\x05lobby\"}\n" +
+	"\x05Lobby\x12\x0e\n" +
+	"\x02id\x18\x01 \x01(\tR\x02id\x12'\n" +
+	"\aplayers\x18\x02 \x03(\v2\r.lobby.PlayerR\aplayers\x12!\n" +
+	"\x04host\x18\x03 \x01(\v2\r.lobby.PlayerR\x04host\x12\x18\n" +
+	"\asnippet\x18\x04 \x01(\tR\asnippet\"\xb4\x01\n" +
+	"\x06Player\x12\x12\n" +
+	"\x04name\x18\x01 \x01(\tR\x04name\x12\x19\n" +
+	"\bis_ready\x18\x02 \x01(\bR\aisReady\x12-\n" +
+	"\x12allowed_characters\x18\x03 \x01(\tR\x11allowedCharacters\x12-\n" +
+	"\x12blocked_characters\x18\x04 \x01(\tR\x11blockedCharacters\x12\x1d\n" +
+	"\n" +
+	"can_delete\x18\x05 \x01(\bR\tcanDelete\"P\n" +
 	"\x12CreateLobbyRequest\x12\x19\n" +
 	"\blobby_id\x18\x01 \x01(\tR\alobbyId\x12\x1f\n" +
 	"\vplayer_name\x18\x02 \x01(\tR\n" +
-	"playerName\"\x15\n" +
-	"\x13CreateLobbyResponse\"N\n" +
-	"\x10SubscribeRequest\x12\x19\n" +
-	"\blobby_id\x18\x01 \x01(\tR\alobbyId\x12\x1f\n" +
-	"\vplayer_name\x18\x02 \x01(\tR\n" +
-	"playerName\"\xf3\x01\n" +
-	"\n" +
-	"LobbyEvent\x124\n" +
-	"\vplayer_join\x18\x01 \x01(\v2\x11.lobby.PlayerJoinH\x00R\n" +
-	"playerJoin\x127\n" +
-	"\fplayer_leave\x18\x02 \x01(\v2\x12.lobby.PlayerLeaveH\x00R\vplayerLeave\x127\n" +
-	"\fplayer_ready\x18\x03 \x01(\v2\x12.lobby.PlayerReadyH\x00R\vplayerReady\x124\n" +
-	"\vplayer_edit\x18\x04 \x01(\v2\x11.lobby.PlayerEditH\x00R\n" +
-	"playerEditB\a\n" +
-	"\x05event\"-\n" +
-	"\n" +
-	"PlayerJoin\x12\x1f\n" +
-	"\vplayer_name\x18\x01 \x01(\tR\n" +
-	"playerName\".\n" +
-	"\vPlayerLeave\x12\x1f\n" +
-	"\vplayer_name\x18\x01 \x01(\tR\n" +
-	"playerName\"I\n" +
-	"\vPlayerReady\x12\x1f\n" +
-	"\vplayer_name\x18\x01 \x01(\tR\n" +
-	"playerName\x12\x19\n" +
-	"\bis_ready\x18\x02 \x01(\bR\aisReady\"\xaa\x01\n" +
-	"\n" +
-	"PlayerEdit\x12\x1f\n" +
-	"\vplayer_name\x18\x01 \x01(\tR\n" +
-	"playerName\x12-\n" +
-	"\x12allowed_characters\x18\x02 \x01(\tR\x11allowedCharacters\x12-\n" +
-	"\x12blocked_characters\x18\x03 \x01(\tR\x11blockedCharacters\x12\x1d\n" +
-	"\n" +
-	"can_delete\x18\x04 \x01(\bR\tcanDelete\"N\n" +
+	"playerName\"9\n" +
+	"\x13CreateLobbyResponse\x12\"\n" +
+	"\x05lobby\x18\x01 \x01(\v2\f.lobby.LobbyR\x05lobby\"N\n" +
 	"\x10JoinLobbyRequest\x12\x19\n" +
 	"\blobby_id\x18\x01 \x01(\tR\alobbyId\x12\x1f\n" +
 	"\vplayer_name\x18\x02 \x01(\tR\n" +
-	"playerName\"\x13\n" +
-	"\x11JoinLobbyResponse2\x8f\x01\n" +
+	"playerName\"7\n" +
+	"\x11JoinLobbyResponse\x12\"\n" +
+	"\x05lobby\x18\x01 \x01(\v2\f.lobby.LobbyR\x05lobby\"N\n" +
+	"\x10SubscribeRequest\x12\x19\n" +
+	"\blobby_id\x18\x01 \x01(\tR\alobbyId\x12\x1f\n" +
+	"\vplayer_name\x18\x02 \x01(\tR\n" +
+	"playerName\"0\n" +
+	"\n" +
+	"LobbyEvent\x12\"\n" +
+	"\x05lobby\x18\x01 \x01(\v2\f.lobby.LobbyR\x05lobby2\xcf\x01\n" +
 	"\fLobbyService\x12D\n" +
-	"\vCreateLobby\x12\x19.lobby.CreateLobbyRequest\x1a\x1a.lobby.CreateLobbyResponse\x129\n" +
+	"\vCreateLobby\x12\x19.lobby.CreateLobbyRequest\x1a\x1a.lobby.CreateLobbyResponse\x12>\n" +
+	"\tJoinLobby\x12\x17.lobby.JoinLobbyRequest\x1a\x18.lobby.JoinLobbyResponse\x129\n" +
 	"\tSubscribe\x12\x17.lobby.SubscribeRequest\x1a\x11.lobby.LobbyEvent0\x01B/Z-github.com/sceredi/co-type/common/proto/lobbyb\x06proto3"
 
 var (
@@ -637,33 +507,34 @@ func file_common_proto_lobby_lobby_proto_rawDescGZIP() []byte {
 	return file_common_proto_lobby_lobby_proto_rawDescData
 }
 
-var file_common_proto_lobby_lobby_proto_msgTypes = make([]protoimpl.MessageInfo, 10)
+var file_common_proto_lobby_lobby_proto_msgTypes = make([]protoimpl.MessageInfo, 8)
 var file_common_proto_lobby_lobby_proto_goTypes = []any{
-	(*CreateLobbyRequest)(nil),  // 0: lobby.CreateLobbyRequest
-	(*CreateLobbyResponse)(nil), // 1: lobby.CreateLobbyResponse
-	(*SubscribeRequest)(nil),    // 2: lobby.SubscribeRequest
-	(*LobbyEvent)(nil),          // 3: lobby.LobbyEvent
-	(*PlayerJoin)(nil),          // 4: lobby.PlayerJoin
-	(*PlayerLeave)(nil),         // 5: lobby.PlayerLeave
-	(*PlayerReady)(nil),         // 6: lobby.PlayerReady
-	(*PlayerEdit)(nil),          // 7: lobby.PlayerEdit
-	(*JoinLobbyRequest)(nil),    // 8: lobby.JoinLobbyRequest
-	(*JoinLobbyResponse)(nil),   // 9: lobby.JoinLobbyResponse
+	(*Lobby)(nil),               // 0: lobby.Lobby
+	(*Player)(nil),              // 1: lobby.Player
+	(*CreateLobbyRequest)(nil),  // 2: lobby.CreateLobbyRequest
+	(*CreateLobbyResponse)(nil), // 3: lobby.CreateLobbyResponse
+	(*JoinLobbyRequest)(nil),    // 4: lobby.JoinLobbyRequest
+	(*JoinLobbyResponse)(nil),   // 5: lobby.JoinLobbyResponse
+	(*SubscribeRequest)(nil),    // 6: lobby.SubscribeRequest
+	(*LobbyEvent)(nil),          // 7: lobby.LobbyEvent
 }
 var file_common_proto_lobby_lobby_proto_depIdxs = []int32{
-	4, // 0: lobby.LobbyEvent.player_join:type_name -> lobby.PlayerJoin
-	5, // 1: lobby.LobbyEvent.player_leave:type_name -> lobby.PlayerLeave
-	6, // 2: lobby.LobbyEvent.player_ready:type_name -> lobby.PlayerReady
-	7, // 3: lobby.LobbyEvent.player_edit:type_name -> lobby.PlayerEdit
-	0, // 4: lobby.LobbyService.CreateLobby:input_type -> lobby.CreateLobbyRequest
-	2, // 5: lobby.LobbyService.Subscribe:input_type -> lobby.SubscribeRequest
-	1, // 6: lobby.LobbyService.CreateLobby:output_type -> lobby.CreateLobbyResponse
-	3, // 7: lobby.LobbyService.Subscribe:output_type -> lobby.LobbyEvent
-	6, // [6:8] is the sub-list for method output_type
-	4, // [4:6] is the sub-list for method input_type
-	4, // [4:4] is the sub-list for extension type_name
-	4, // [4:4] is the sub-list for extension extendee
-	0, // [0:4] is the sub-list for field type_name
+	1, // 0: lobby.Lobby.players:type_name -> lobby.Player
+	1, // 1: lobby.Lobby.host:type_name -> lobby.Player
+	0, // 2: lobby.CreateLobbyResponse.lobby:type_name -> lobby.Lobby
+	0, // 3: lobby.JoinLobbyResponse.lobby:type_name -> lobby.Lobby
+	0, // 4: lobby.LobbyEvent.lobby:type_name -> lobby.Lobby
+	2, // 5: lobby.LobbyService.CreateLobby:input_type -> lobby.CreateLobbyRequest
+	4, // 6: lobby.LobbyService.JoinLobby:input_type -> lobby.JoinLobbyRequest
+	6, // 7: lobby.LobbyService.Subscribe:input_type -> lobby.SubscribeRequest
+	3, // 8: lobby.LobbyService.CreateLobby:output_type -> lobby.CreateLobbyResponse
+	5, // 9: lobby.LobbyService.JoinLobby:output_type -> lobby.JoinLobbyResponse
+	7, // 10: lobby.LobbyService.Subscribe:output_type -> lobby.LobbyEvent
+	8, // [8:11] is the sub-list for method output_type
+	5, // [5:8] is the sub-list for method input_type
+	5, // [5:5] is the sub-list for extension type_name
+	5, // [5:5] is the sub-list for extension extendee
+	0, // [0:5] is the sub-list for field type_name
 }
 
 func init() { file_common_proto_lobby_lobby_proto_init() }
@@ -671,19 +542,13 @@ func file_common_proto_lobby_lobby_proto_init() {
 	if File_common_proto_lobby_lobby_proto != nil {
 		return
 	}
-	file_common_proto_lobby_lobby_proto_msgTypes[3].OneofWrappers = []any{
-		(*LobbyEvent_PlayerJoin)(nil),
-		(*LobbyEvent_PlayerLeave)(nil),
-		(*LobbyEvent_PlayerReady)(nil),
-		(*LobbyEvent_PlayerEdit)(nil),
-	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_common_proto_lobby_lobby_proto_rawDesc), len(file_common_proto_lobby_lobby_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   10,
+			NumMessages:   8,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

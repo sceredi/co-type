@@ -11,6 +11,9 @@ import "github.com/sceredi/co-type/server/internal/api/grpc/gateway"
 type DiscoveryService interface {
 	// Register registers the server with the service discovery mechanism using the provided host and port.
 	Register(name, host string, port int) error
+
+	// RegisterLobby registers a lobby with the service discovery mechanism using the provided lobby ID and server name.
+	RegisterLobby(lobbyID, serverName string) error
 }
 
 type discoveryService struct {
@@ -23,5 +26,9 @@ func NewDiscoveryService(gtw gateway.ControlGateway) DiscoveryService {
 }
 
 func (s *discoveryService) Register(name, host string, port int) error {
-	return s.gtw.Register(name, host, port)
+	return s.gtw.RegisterServer(name, host, port)
+}
+
+func (s *discoveryService) RegisterLobby(lobbyID, serverName string) error {
+	return s.gtw.RegisterLobby(lobbyID, serverName)
 }
