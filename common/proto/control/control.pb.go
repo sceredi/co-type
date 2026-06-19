@@ -241,6 +241,104 @@ func (x *RegisterLobbyResponse) GetMessage() string {
 	return ""
 }
 
+// Request to unregister a lobby from the broker.
+type UnregisterLobbyRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	LobbyId       string                 `protobuf:"bytes,1,opt,name=lobby_id,json=lobbyId,proto3" json:"lobby_id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *UnregisterLobbyRequest) Reset() {
+	*x = UnregisterLobbyRequest{}
+	mi := &file_common_proto_control_control_proto_msgTypes[4]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *UnregisterLobbyRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*UnregisterLobbyRequest) ProtoMessage() {}
+
+func (x *UnregisterLobbyRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_common_proto_control_control_proto_msgTypes[4]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use UnregisterLobbyRequest.ProtoReflect.Descriptor instead.
+func (*UnregisterLobbyRequest) Descriptor() ([]byte, []int) {
+	return file_common_proto_control_control_proto_rawDescGZIP(), []int{4}
+}
+
+func (x *UnregisterLobbyRequest) GetLobbyId() string {
+	if x != nil {
+		return x.LobbyId
+	}
+	return ""
+}
+
+// Response for lobby unregistration.
+type UnregisterLobbyResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Success       bool                   `protobuf:"varint,1,opt,name=success,proto3" json:"success,omitempty"`
+	Message       string                 `protobuf:"bytes,2,opt,name=message,proto3" json:"message,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *UnregisterLobbyResponse) Reset() {
+	*x = UnregisterLobbyResponse{}
+	mi := &file_common_proto_control_control_proto_msgTypes[5]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *UnregisterLobbyResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*UnregisterLobbyResponse) ProtoMessage() {}
+
+func (x *UnregisterLobbyResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_common_proto_control_control_proto_msgTypes[5]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use UnregisterLobbyResponse.ProtoReflect.Descriptor instead.
+func (*UnregisterLobbyResponse) Descriptor() ([]byte, []int) {
+	return file_common_proto_control_control_proto_rawDescGZIP(), []int{5}
+}
+
+func (x *UnregisterLobbyResponse) GetSuccess() bool {
+	if x != nil {
+		return x.Success
+	}
+	return false
+}
+
+func (x *UnregisterLobbyResponse) GetMessage() string {
+	if x != nil {
+		return x.Message
+	}
+	return ""
+}
+
 var File_common_proto_control_control_proto protoreflect.FileDescriptor
 
 const file_common_proto_control_control_proto_rawDesc = "" +
@@ -259,10 +357,16 @@ const file_common_proto_control_control_proto_rawDesc = "" +
 	"serverName\"K\n" +
 	"\x15RegisterLobbyResponse\x12\x18\n" +
 	"\asuccess\x18\x01 \x01(\bR\asuccess\x12\x18\n" +
-	"\amessage\x18\x02 \x01(\tR\amessage2\xb3\x01\n" +
+	"\amessage\x18\x02 \x01(\tR\amessage\"3\n" +
+	"\x16UnregisterLobbyRequest\x12\x19\n" +
+	"\blobby_id\x18\x01 \x01(\tR\alobbyId\"M\n" +
+	"\x17UnregisterLobbyResponse\x12\x18\n" +
+	"\asuccess\x18\x01 \x01(\bR\asuccess\x12\x18\n" +
+	"\amessage\x18\x02 \x01(\tR\amessage2\x89\x02\n" +
 	"\x0eControlService\x12Q\n" +
 	"\x0eRegisterServer\x12\x1e.control.RegisterServerRequest\x1a\x1f.control.RegisterServerResponse\x12N\n" +
-	"\rRegisterLobby\x12\x1d.control.RegisterLobbyRequest\x1a\x1e.control.RegisterLobbyResponseB1Z/github.com/sceredi/co-type/common/proto/controlb\x06proto3"
+	"\rRegisterLobby\x12\x1d.control.RegisterLobbyRequest\x1a\x1e.control.RegisterLobbyResponse\x12T\n" +
+	"\x0fUnregisterLobby\x12\x1f.control.UnregisterLobbyRequest\x1a .control.UnregisterLobbyResponseB1Z/github.com/sceredi/co-type/common/proto/controlb\x06proto3"
 
 var (
 	file_common_proto_control_control_proto_rawDescOnce sync.Once
@@ -276,20 +380,24 @@ func file_common_proto_control_control_proto_rawDescGZIP() []byte {
 	return file_common_proto_control_control_proto_rawDescData
 }
 
-var file_common_proto_control_control_proto_msgTypes = make([]protoimpl.MessageInfo, 4)
+var file_common_proto_control_control_proto_msgTypes = make([]protoimpl.MessageInfo, 6)
 var file_common_proto_control_control_proto_goTypes = []any{
-	(*RegisterServerRequest)(nil),  // 0: control.RegisterServerRequest
-	(*RegisterServerResponse)(nil), // 1: control.RegisterServerResponse
-	(*RegisterLobbyRequest)(nil),   // 2: control.RegisterLobbyRequest
-	(*RegisterLobbyResponse)(nil),  // 3: control.RegisterLobbyResponse
+	(*RegisterServerRequest)(nil),   // 0: control.RegisterServerRequest
+	(*RegisterServerResponse)(nil),  // 1: control.RegisterServerResponse
+	(*RegisterLobbyRequest)(nil),    // 2: control.RegisterLobbyRequest
+	(*RegisterLobbyResponse)(nil),   // 3: control.RegisterLobbyResponse
+	(*UnregisterLobbyRequest)(nil),  // 4: control.UnregisterLobbyRequest
+	(*UnregisterLobbyResponse)(nil), // 5: control.UnregisterLobbyResponse
 }
 var file_common_proto_control_control_proto_depIdxs = []int32{
 	0, // 0: control.ControlService.RegisterServer:input_type -> control.RegisterServerRequest
 	2, // 1: control.ControlService.RegisterLobby:input_type -> control.RegisterLobbyRequest
-	1, // 2: control.ControlService.RegisterServer:output_type -> control.RegisterServerResponse
-	3, // 3: control.ControlService.RegisterLobby:output_type -> control.RegisterLobbyResponse
-	2, // [2:4] is the sub-list for method output_type
-	0, // [0:2] is the sub-list for method input_type
+	4, // 2: control.ControlService.UnregisterLobby:input_type -> control.UnregisterLobbyRequest
+	1, // 3: control.ControlService.RegisterServer:output_type -> control.RegisterServerResponse
+	3, // 4: control.ControlService.RegisterLobby:output_type -> control.RegisterLobbyResponse
+	5, // 5: control.ControlService.UnregisterLobby:output_type -> control.UnregisterLobbyResponse
+	3, // [3:6] is the sub-list for method output_type
+	0, // [0:3] is the sub-list for method input_type
 	0, // [0:0] is the sub-list for extension type_name
 	0, // [0:0] is the sub-list for extension extendee
 	0, // [0:0] is the sub-list for field type_name
@@ -306,7 +414,7 @@ func file_common_proto_control_control_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_common_proto_control_control_proto_rawDesc), len(file_common_proto_control_control_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   4,
+			NumMessages:   6,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

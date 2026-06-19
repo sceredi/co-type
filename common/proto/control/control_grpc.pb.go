@@ -19,8 +19,9 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	ControlService_RegisterServer_FullMethodName = "/control.ControlService/RegisterServer"
-	ControlService_RegisterLobby_FullMethodName  = "/control.ControlService/RegisterLobby"
+	ControlService_RegisterServer_FullMethodName  = "/control.ControlService/RegisterServer"
+	ControlService_RegisterLobby_FullMethodName   = "/control.ControlService/RegisterLobby"
+	ControlService_UnregisterLobby_FullMethodName = "/control.ControlService/UnregisterLobby"
 )
 
 // ControlServiceClient is the client API for ControlService service.
@@ -31,6 +32,7 @@ const (
 type ControlServiceClient interface {
 	RegisterServer(ctx context.Context, in *RegisterServerRequest, opts ...grpc.CallOption) (*RegisterServerResponse, error)
 	RegisterLobby(ctx context.Context, in *RegisterLobbyRequest, opts ...grpc.CallOption) (*RegisterLobbyResponse, error)
+	UnregisterLobby(ctx context.Context, in *UnregisterLobbyRequest, opts ...grpc.CallOption) (*UnregisterLobbyResponse, error)
 }
 
 type controlServiceClient struct {
@@ -61,6 +63,16 @@ func (c *controlServiceClient) RegisterLobby(ctx context.Context, in *RegisterLo
 	return out, nil
 }
 
+func (c *controlServiceClient) UnregisterLobby(ctx context.Context, in *UnregisterLobbyRequest, opts ...grpc.CallOption) (*UnregisterLobbyResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(UnregisterLobbyResponse)
+	err := c.cc.Invoke(ctx, ControlService_UnregisterLobby_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // ControlServiceServer is the server API for ControlService service.
 // All implementations must embed UnimplementedControlServiceServer
 // for forward compatibility.
@@ -69,6 +81,7 @@ func (c *controlServiceClient) RegisterLobby(ctx context.Context, in *RegisterLo
 type ControlServiceServer interface {
 	RegisterServer(context.Context, *RegisterServerRequest) (*RegisterServerResponse, error)
 	RegisterLobby(context.Context, *RegisterLobbyRequest) (*RegisterLobbyResponse, error)
+	UnregisterLobby(context.Context, *UnregisterLobbyRequest) (*UnregisterLobbyResponse, error)
 	mustEmbedUnimplementedControlServiceServer()
 }
 
@@ -84,6 +97,9 @@ func (UnimplementedControlServiceServer) RegisterServer(context.Context, *Regist
 }
 func (UnimplementedControlServiceServer) RegisterLobby(context.Context, *RegisterLobbyRequest) (*RegisterLobbyResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method RegisterLobby not implemented")
+}
+func (UnimplementedControlServiceServer) UnregisterLobby(context.Context, *UnregisterLobbyRequest) (*UnregisterLobbyResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method UnregisterLobby not implemented")
 }
 func (UnimplementedControlServiceServer) mustEmbedUnimplementedControlServiceServer() {}
 func (UnimplementedControlServiceServer) testEmbeddedByValue()                        {}
@@ -142,6 +158,24 @@ func _ControlService_RegisterLobby_Handler(srv interface{}, ctx context.Context,
 	return interceptor(ctx, in, info, handler)
 }
 
+func _ControlService_UnregisterLobby_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UnregisterLobbyRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ControlServiceServer).UnregisterLobby(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ControlService_UnregisterLobby_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ControlServiceServer).UnregisterLobby(ctx, req.(*UnregisterLobbyRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // ControlService_ServiceDesc is the grpc.ServiceDesc for ControlService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -156,6 +190,10 @@ var ControlService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "RegisterLobby",
 			Handler:    _ControlService_RegisterLobby_Handler,
+		},
+		{
+			MethodName: "UnregisterLobby",
+			Handler:    _ControlService_UnregisterLobby_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
