@@ -57,3 +57,19 @@ func (h *ControlHandler) RegisterLobby(_ context.Context, req *control.RegisterL
 		Message: "Lobby registered successfully",
 	}, nil
 }
+
+// UnregisterLobby handles incoming gRPC requests to unregister a lobby. It validates the request and attempts to delete the lobby entry using the LobbyService.
+func (h *ControlHandler) UnregisterLobby(_ context.Context, req *control.UnregisterLobbyRequest) (*control.UnregisterLobbyResponse, error) {
+	err := h.lobbySvc.Delete(repository.LobbyID(req.GetLobbyId()))
+	if err != nil {
+		slog.Error("Failed to unregister lobby",
+			slog.String("lobby_id", req.GetLobbyId()),
+			slog.String("error", err.Error()),
+		)
+		return nil, grpc_utils.ToGRPCError(err)
+	}
+	return &control.UnregisterLobbyResponse{
+		Success: true,
+		Message: "Lobby unregistered successfully",
+	}, nil
+}

@@ -11,6 +11,8 @@ type LobbyService interface {
 	Create(lobbyID repository.LobbyID, serverName repository.ServerName) error
 	// Get retrieves a lobby by its ID from the broker service. It returns the server managing the lobby or an error if the lobby is not found or if the operation fails.
 	Get(lobbyID repository.LobbyID) (*domain.Server, error)
+	// Delete removes a lobby by its ID from the broker service. It returns an error if the lobby is not found or if the operation fails.
+	Delete(lobbyID repository.LobbyID) error
 }
 
 type lobbyService struct {
@@ -40,4 +42,8 @@ func (s *lobbyService) Get(lobbyID repository.LobbyID) (*domain.Server, error) {
 		return nil, err
 	}
 	return server, nil
+}
+
+func (s *lobbyService) Delete(lobbyID repository.LobbyID) error {
+	return s.lobbyRepo.Delete(lobbyID)
 }
