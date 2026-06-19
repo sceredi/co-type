@@ -13,8 +13,9 @@ import (
 
 // JoinedLobbyMsg is a message that is sent when the user wants to join a lobby.
 type JoinedLobbyMsg struct {
-	Lobby   *domain.Lobby
-	Updates <-chan *domain.Lobby
+	Lobby      *domain.Lobby
+	Updates    <-chan *domain.Lobby
+	PlayerName string
 }
 
 // JoinLobbyErrorMsg is a message that is sent when there is an error joining a lobby.
@@ -66,7 +67,7 @@ func NewCreateLobbyCmd(ds service.DiscoveryService, ls service.LobbyService, lob
 				slog.String("err", err.Error()),
 			)
 		}
-		return JoinedLobbyMsg{Lobby: lobby, Updates: updates}
+		return JoinedLobbyMsg{Lobby: lobby, Updates: updates, PlayerName: playerName}
 	}
 }
 
@@ -115,7 +116,7 @@ func NewJoinLobbyCmd(ds service.DiscoveryService, ls service.LobbyService, lobby
 				slog.String("err", err.Error()),
 			)
 		}
-		return JoinedLobbyMsg{Lobby: lobby, Updates: updates}
+		return JoinedLobbyMsg{Lobby: lobby, Updates: updates, PlayerName: playerName}
 	}
 }
 

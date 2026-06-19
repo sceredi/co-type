@@ -18,6 +18,9 @@ type LobbyService interface {
 	// Join tries to join the lobby with the given id and player name. It returns the joined lobby or an error if something goes wrong.
 	Join(id, playerName string) (*domain.Lobby, error)
 
+	// Leave leaves the lobby with the given id for the given player name. It returns an error if something goes wrong.
+	Leave(id, playerName string) error
+
 	// Connect connects to the given server. It returns an error if the connection fails.
 	Connect(target *domain.Server) error
 
@@ -46,6 +49,13 @@ func (s *lobbyService) Join(id, playerName string) (*domain.Lobby, error) {
 		return nil, ErrLobbyGatewayNotSet
 	}
 	return s.gtw.Join(id, playerName)
+}
+
+func (s *lobbyService) Leave(id, playerName string) error {
+	if s.gtw == nil {
+		return ErrLobbyGatewayNotSet
+	}
+	return s.gtw.Leave(id, playerName)
 }
 
 func (s *lobbyService) Connect(target *domain.Server) error {

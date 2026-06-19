@@ -16,6 +16,7 @@ import (
 	lobby_messages "github.com/sceredi/co-type/client/internal/tui/pages/lobby/messages"
 	"github.com/sceredi/co-type/client/internal/tui/pages/welcome"
 	welcome_messages "github.com/sceredi/co-type/client/internal/tui/pages/welcome/messages"
+	"github.com/sceredi/co-type/common/domain"
 )
 
 type page int
@@ -79,7 +80,14 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		var initCmd tea.Cmd
 		switch msg := msg.(type) {
 		case welcome_messages.JoinedLobbyMsg:
-			m.lobby = lobby.New(msg.Lobby.Host, msg.Lobby, msg.Updates)
+			var player *domain.Player
+			for _, p := range msg.Lobby.Players {
+				if p.Name == msg.PlayerName {
+					player = p
+					break
+				}
+			}
+			m.lobby = lobby.New(player, msg.Lobby, msg.Updates, m.ls)
 			m.page = lobbyPage
 			initCmd = m.lobby.Init()
 		}

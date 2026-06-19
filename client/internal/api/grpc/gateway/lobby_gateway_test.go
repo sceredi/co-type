@@ -11,8 +11,10 @@ import (
 type mockLobbyClient struct {
 	lastCreateReq *lobbypb.CreateLobbyRequest
 	lastJoinReq   *lobbypb.JoinLobbyRequest
+	lastLeaveReq  *lobbypb.LeaveLobbyRequest
 	createResp    *lobbypb.CreateLobbyResponse
 	joinResp      *lobbypb.JoinLobbyResponse
+	leaveResp     *lobbypb.LeaveLobbyResponse
 	err           error
 }
 
@@ -24,6 +26,11 @@ func (m *mockLobbyClient) CreateLobby(ctx context.Context, in *lobbypb.CreateLob
 func (m *mockLobbyClient) JoinLobby(ctx context.Context, in *lobbypb.JoinLobbyRequest, opts ...grpcpkg.CallOption) (*lobbypb.JoinLobbyResponse, error) {
 	m.lastJoinReq = in
 	return m.joinResp, m.err
+}
+
+func (m *mockLobbyClient) LeaveLobby(ctx context.Context, in *lobbypb.LeaveLobbyRequest, opts ...grpcpkg.CallOption) (*lobbypb.LeaveLobbyResponse, error) {
+	m.lastLeaveReq = in
+	return m.leaveResp, m.err
 }
 
 func (m *mockLobbyClient) Subscribe(ctx context.Context, in *lobbypb.SubscribeRequest, opts ...grpcpkg.CallOption) (grpcpkg.ServerStreamingClient[lobbypb.LobbyEvent], error) {
@@ -87,5 +94,21 @@ func TestJoinLobby_Success(t *testing.T) {
 	}
 	if mock.lastJoinReq == nil || mock.lastJoinReq.GetLobbyId() != "ABCD" {
 		t.Fatalf("expected JoinLobby called with lobby id ABCD, got %+v", mock.lastJoinReq)
+	}
+}
+
+func TestLeaveLobby_Success(t *testing.T) {
+	mock := &mockLobbyClient{leaveResp: &lobbypb.LeaveLobbyResponse{Success: true}}
+	g := &lobbyGateway{ctx: context.Background(), conn: mock}
+
+	err := g.Leave("ABCD", "Player1")
+	if err != nil {
+		t.Fatalf("expected no error, got %v", err)
+	}
+	if mock.lastLeaveReq == nil || mock.lastLeaveReq.GetLobbyId() != "ABCD" {
+		t.Fatalf("expected LeaveLobby called with lobby id ABCD, got %+v", mock.lastLeaveReq)
+	}
+	if mock.lastLeaveReq.GetPlayerName() != "Player1" {
+		t.Fatalf("expected player name Player1, got %q", mock.lastLeaveReq.GetPlayerName())
 	}
 }

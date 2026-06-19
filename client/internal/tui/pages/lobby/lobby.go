@@ -4,6 +4,7 @@ package lobby
 import (
 	tea "charm.land/bubbletea/v2"
 	"charm.land/lipgloss/v2"
+	"github.com/sceredi/co-type/client/internal/service"
 	"github.com/sceredi/co-type/client/internal/tui/pages/lobby/components/header"
 	"github.com/sceredi/co-type/client/internal/tui/pages/lobby/components/playerinfo"
 	"github.com/sceredi/co-type/client/internal/tui/pages/lobby/components/playerlist"
@@ -28,17 +29,20 @@ type Model struct {
 	lobby          *domain.Lobby
 	updates        <-chan *domain.Lobby
 
+	ls service.LobbyService
+
 	settings settings.Model
 }
 
 // New creates a new lobby model for the given player, lobby, and subscription channel.
-func New(player *domain.Player, lobby *domain.Lobby, updates <-chan *domain.Lobby) Model {
+func New(player *domain.Player, lobby *domain.Lobby, updates <-chan *domain.Lobby, ls service.LobbyService) Model {
 	m := Model{
 		focus:          focusPlayersList,
 		selectedPlayer: 0,
 		player:         player,
 		lobby:          lobby,
 		updates:        updates,
+		ls:             ls,
 	}
 	return m
 }
@@ -95,7 +99,7 @@ func (m Model) Update(msg tea.Msg) (Model, tea.Cmd) {
 			case "enter":
 				m.handleOpenSettingsModal()
 			case "esc":
-				cmds = append(cmds, lobby_messages.NewLeaveCmd())
+				cmds = append(cmds, lobby_messages.NewLeaveLobbyCmd(m.ls, m.lobby.ID, m.player.Name))
 			}
 		}
 	} else {

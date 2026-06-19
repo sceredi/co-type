@@ -2,7 +2,11 @@
 package lobby_messages
 
 import (
+	"context"
+	"log/slog"
+
 	tea "charm.land/bubbletea/v2"
+	"github.com/sceredi/co-type/client/internal/service"
 	"github.com/sceredi/co-type/common/domain"
 )
 
@@ -28,6 +32,20 @@ type LeaveMsg struct{}
 // NewLeaveCmd returns a command that creates a LeaveMessage.
 func NewLeaveCmd() tea.Cmd {
 	return func() tea.Msg { return LeaveMsg{} }
+}
+
+// NewLeaveLobbyCmd returns a command that calls the lobby service to leave the lobby and then emits a LeaveMsg.
+func NewLeaveLobbyCmd(ls service.LobbyService, lobbyID, playerName string) tea.Cmd {
+	return func() tea.Msg {
+		if err := ls.Leave(lobbyID, playerName); err != nil {
+			slog.ErrorContext(context.Background(), "Failed to leave lobby",
+				slog.String("lobby_id", lobbyID),
+				slog.String("player_name", playerName),
+				slog.String("error", err.Error()),
+			)
+		}
+		return LeaveMsg{}
+	}
 }
 
 // UpdatePlayerMsg is a message that indicates that a player's settings have been updated.
