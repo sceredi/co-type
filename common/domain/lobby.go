@@ -22,16 +22,14 @@ var ErrPlayerAlreadyInLobby = errors.New("player already in lobby")
 type Lobby struct {
 	ID      string
 	Players []*Player
-	Host    *Player
 	Snippet string
 }
 
-// NewLobby creates a new lobby with the given ID and host player.
-func NewLobby(id string, host *Player) *Lobby {
+// NewLobby creates a new lobby with the given ID and first player.
+func NewLobby(id string, firstPlayer *Player) *Lobby {
 	return &Lobby{
 		ID:      id,
-		Players: []*Player{host},
-		Host:    host,
+		Players: []*Player{firstPlayer},
 		Snippet: "",
 	}
 }
@@ -51,13 +49,6 @@ func NewLobbyFromGRPC(l *lobby.Lobby) *Lobby {
 	return &Lobby{
 		ID:      l.Id,
 		Players: players,
-		Host: &Player{
-			Name:              l.Host.Name,
-			IsReady:           l.Host.IsReady,
-			AllowedCharacters: l.Host.AllowedCharacters,
-			BlockedCharacters: l.Host.BlockedCharacters,
-			CanDelete:         l.Host.CanDelete,
-		},
 		Snippet: l.Snippet,
 	}
 }
@@ -107,13 +98,6 @@ func (l *Lobby) ToGRPCLobby() *lobby.Lobby {
 	return &lobby.Lobby{
 		Id:      l.ID,
 		Players: players,
-		Host: &lobby.Player{
-			Name:              l.Host.Name,
-			IsReady:           l.Host.IsReady,
-			AllowedCharacters: l.Host.AllowedCharacters,
-			BlockedCharacters: l.Host.BlockedCharacters,
-			CanDelete:         l.Host.CanDelete,
-		},
 		Snippet: l.Snippet,
 	}
 }

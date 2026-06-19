@@ -16,7 +16,6 @@ service LobbyService {
 message Lobby {
   string id = 1;
   repeated Player players = 2;
-  Player host = 3;
   string snippet = 4;
 }
 

@@ -48,8 +48,8 @@ func TestCreateLobby_Success(t *testing.T) {
 	mock := &mockLobbyClient{createResp: &lobbypb.CreateLobbyResponse{
 		Lobby: &lobbypb.Lobby{
 			Id: "ABCD",
-			Host: &lobbypb.Player{
-				Name: "Host",
+			Players: []*lobbypb.Player{
+				{Name: "Host"},
 			},
 		},
 	}}
@@ -65,8 +65,8 @@ func TestCreateLobby_Success(t *testing.T) {
 	if l.ID != "ABCD" {
 		t.Fatalf("expected id ABCD, got %q", l.ID)
 	}
-	if l.Host.Name != "Host" {
-		t.Fatalf("expected host Host, got %q", l.Host.Name)
+	if len(l.Players) != 1 || l.Players[0].Name != "Host" {
+		t.Fatalf("expected one player Host, got %+v", l.Players)
 	}
 	if mock.lastCreateReq == nil || mock.lastCreateReq.GetLobbyId() != "ABCD" {
 		t.Fatalf("expected CreateLobby called with lobby id ABCD, got %+v", mock.lastCreateReq)
@@ -81,7 +81,6 @@ func TestJoinLobby_Success(t *testing.T) {
 				{Name: "Host"},
 				{Name: "Player2"},
 			},
-			Host: &lobbypb.Player{Name: "Host"},
 		},
 	}}
 	g := &lobbyGateway{ctx: context.Background(), conn: mock}
@@ -127,7 +126,6 @@ func TestEditPlayer_Success(t *testing.T) {
 			Players: []*lobbypb.Player{
 				{Name: "Player1", IsReady: true, AllowedCharacters: "abc", BlockedCharacters: "xyz", CanDelete: false},
 			},
-			Host: &lobbypb.Player{Name: "Player1"},
 		},
 	}}
 	g := &lobbyGateway{ctx: context.Background(), conn: mock}

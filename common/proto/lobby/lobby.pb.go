@@ -25,7 +25,6 @@ type Lobby struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
 	Players       []*Player              `protobuf:"bytes,2,rep,name=players,proto3" json:"players,omitempty"`
-	Host          *Player                `protobuf:"bytes,3,opt,name=host,proto3" json:"host,omitempty"`
 	Snippet       string                 `protobuf:"bytes,4,opt,name=snippet,proto3" json:"snippet,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -71,13 +70,6 @@ func (x *Lobby) GetId() string {
 func (x *Lobby) GetPlayers() []*Player {
 	if x != nil {
 		return x.Players
-	}
-	return nil
-}
-
-func (x *Lobby) GetHost() *Player {
-	if x != nil {
-		return x.Host
 	}
 	return nil
 }
@@ -690,11 +682,10 @@ var File_common_proto_lobby_lobby_proto protoreflect.FileDescriptor
 
 const file_common_proto_lobby_lobby_proto_rawDesc = "" +
 	"\n" +
-	"\x1ecommon/proto/lobby/lobby.proto\x12\x05lobby\"}\n" +
+	"\x1ecommon/proto/lobby/lobby.proto\x12\x05lobby\"Z\n" +
 	"\x05Lobby\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12'\n" +
-	"\aplayers\x18\x02 \x03(\v2\r.lobby.PlayerR\aplayers\x12!\n" +
-	"\x04host\x18\x03 \x01(\v2\r.lobby.PlayerR\x04host\x12\x18\n" +
+	"\aplayers\x18\x02 \x03(\v2\r.lobby.PlayerR\aplayers\x12\x18\n" +
 	"\asnippet\x18\x04 \x01(\tR\asnippet\"\xb4\x01\n" +
 	"\x06Player\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12\x19\n" +
@@ -778,26 +769,25 @@ var file_common_proto_lobby_lobby_proto_goTypes = []any{
 }
 var file_common_proto_lobby_lobby_proto_depIdxs = []int32{
 	1,  // 0: lobby.Lobby.players:type_name -> lobby.Player
-	1,  // 1: lobby.Lobby.host:type_name -> lobby.Player
-	0,  // 2: lobby.CreateLobbyResponse.lobby:type_name -> lobby.Lobby
-	0,  // 3: lobby.JoinLobbyResponse.lobby:type_name -> lobby.Lobby
-	0,  // 4: lobby.EditPlayerResponse.lobby:type_name -> lobby.Lobby
-	0,  // 5: lobby.LobbyEvent.lobby:type_name -> lobby.Lobby
-	2,  // 6: lobby.LobbyService.CreateLobby:input_type -> lobby.CreateLobbyRequest
-	4,  // 7: lobby.LobbyService.JoinLobby:input_type -> lobby.JoinLobbyRequest
-	6,  // 8: lobby.LobbyService.LeaveLobby:input_type -> lobby.LeaveLobbyRequest
-	8,  // 9: lobby.LobbyService.EditPlayer:input_type -> lobby.EditPlayerRequest
-	10, // 10: lobby.LobbyService.Subscribe:input_type -> lobby.SubscribeRequest
-	3,  // 11: lobby.LobbyService.CreateLobby:output_type -> lobby.CreateLobbyResponse
-	5,  // 12: lobby.LobbyService.JoinLobby:output_type -> lobby.JoinLobbyResponse
-	7,  // 13: lobby.LobbyService.LeaveLobby:output_type -> lobby.LeaveLobbyResponse
-	9,  // 14: lobby.LobbyService.EditPlayer:output_type -> lobby.EditPlayerResponse
-	11, // 15: lobby.LobbyService.Subscribe:output_type -> lobby.LobbyEvent
-	11, // [11:16] is the sub-list for method output_type
-	6,  // [6:11] is the sub-list for method input_type
-	6,  // [6:6] is the sub-list for extension type_name
-	6,  // [6:6] is the sub-list for extension extendee
-	0,  // [0:6] is the sub-list for field type_name
+	0,  // 1: lobby.CreateLobbyResponse.lobby:type_name -> lobby.Lobby
+	0,  // 2: lobby.JoinLobbyResponse.lobby:type_name -> lobby.Lobby
+	0,  // 3: lobby.EditPlayerResponse.lobby:type_name -> lobby.Lobby
+	0,  // 4: lobby.LobbyEvent.lobby:type_name -> lobby.Lobby
+	2,  // 5: lobby.LobbyService.CreateLobby:input_type -> lobby.CreateLobbyRequest
+	4,  // 6: lobby.LobbyService.JoinLobby:input_type -> lobby.JoinLobbyRequest
+	6,  // 7: lobby.LobbyService.LeaveLobby:input_type -> lobby.LeaveLobbyRequest
+	8,  // 8: lobby.LobbyService.EditPlayer:input_type -> lobby.EditPlayerRequest
+	10, // 9: lobby.LobbyService.Subscribe:input_type -> lobby.SubscribeRequest
+	3,  // 10: lobby.LobbyService.CreateLobby:output_type -> lobby.CreateLobbyResponse
+	5,  // 11: lobby.LobbyService.JoinLobby:output_type -> lobby.JoinLobbyResponse
+	7,  // 12: lobby.LobbyService.LeaveLobby:output_type -> lobby.LeaveLobbyResponse
+	9,  // 13: lobby.LobbyService.EditPlayer:output_type -> lobby.EditPlayerResponse
+	11, // 14: lobby.LobbyService.Subscribe:output_type -> lobby.LobbyEvent
+	10, // [10:15] is the sub-list for method output_type
+	5,  // [5:10] is the sub-list for method input_type
+	5,  // [5:5] is the sub-list for extension type_name
+	5,  // [5:5] is the sub-list for extension extendee
+	0,  // [0:5] is the sub-list for field type_name
 }
 
 func init() { file_common_proto_lobby_lobby_proto_init() }
