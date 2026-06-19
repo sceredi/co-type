@@ -13,7 +13,6 @@ func testLobby() *domain.Lobby {
 	third := &domain.Player{Name: "Ci", IsReady: true}
 
 	return &domain.Lobby{
-		Host:    host,
 		Players: []*domain.Player{host, guest, third},
 	}
 }

@@ -15,7 +15,6 @@ func newTestLobbyModel() Model {
 
 	l := &domain.Lobby{
 		ID:      "ABCD",
-		Host:    host,
 		Players: []*domain.Player{host, guest, third},
 	}
 

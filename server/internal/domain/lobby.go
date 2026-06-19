@@ -9,9 +9,9 @@ type Lobby struct {
 	Base *domain.Lobby
 }
 
-// NewLobby creates a new instance of Lobby with the provided ID and host player, and returns it.
-func NewLobby(id string, host *domain.Player) *Lobby {
-	base := domain.NewLobby(id, host)
+// NewLobby creates a new instance of Lobby with the provided ID and first player, and returns it.
+func NewLobby(id string, firstPlayer *domain.Player) *Lobby {
+	base := domain.NewLobby(id, firstPlayer)
 	subs := make(map[string]chan *Lobby)
 	return &Lobby{Base: base, Subs: subs}
 }

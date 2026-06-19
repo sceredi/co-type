@@ -4,7 +4,6 @@ package playerlist
 import (
 	"charm.land/lipgloss/v2"
 	"charm.land/lipgloss/v2/table"
-	"github.com/sceredi/co-type/client/internal/tui/styles"
 	"github.com/sceredi/co-type/common/domain"
 )
 
@@ -17,11 +16,7 @@ func Render(selectedPlayer int, lobby *domain.Lobby) string {
 			pointer = "→"
 		}
 		rows[i] = append(rows[i], pointer)
-		name := player.Name
-		if player.Name == lobby.Host.Name {
-			name = styles.NewLabelBold(player.Name)
-		}
-		rows[i] = append(rows[i], name)
+		rows[i] = append(rows[i], player.Name)
 		ready := " "
 		if player.IsReady {
 			ready = "r"

@@ -29,7 +29,7 @@ type mockLobbyService struct{}
 
 func (m *mockLobbyService) Create(id, hostName string) (*domain.Lobby, error) {
 	host := &domain.Player{Name: hostName}
-	return &domain.Lobby{ID: id, Host: host, Players: []*domain.Player{host}}, nil
+	return &domain.Lobby{ID: id, Players: []*domain.Player{host}}, nil
 }
 
 func (m *mockLobbyService) Join(id, playerName string) (*domain.Lobby, error) {
@@ -61,7 +61,6 @@ func TestJoinLobbyMsgSwitchesToLobbyPage(t *testing.T) {
 	host := &domain.Player{Name: "Host"}
 	lobby := &domain.Lobby{
 		ID:      "ABCD",
-		Host:    host,
 		Players: []*domain.Player{host},
 	}
 	m := New(newMockDiscoveryService(), newMockLobbyService())
@@ -77,7 +76,6 @@ func TestLeaveMessageReturnsToWelcomePage(t *testing.T) {
 	host := &domain.Player{Name: "Host"}
 	lobby := &domain.Lobby{
 		ID:      "ABCD",
-		Host:    host,
 		Players: []*domain.Player{host},
 	}
 

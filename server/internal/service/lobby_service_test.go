@@ -126,11 +126,8 @@ func TestLobbyService_Create(t *testing.T) {
 			if tt.repo.received.Base.ID != tt.id {
 				t.Fatalf("Create() received id = %q, want %q", tt.repo.received.Base.ID, tt.id)
 			}
-			if tt.repo.received.Base.Host == nil || tt.repo.received.Base.Host.Name != tt.userName {
-				t.Fatalf("Create() received host = %+v, want host name %q", tt.repo.received.Base.Host, tt.userName)
-			}
-			if len(tt.repo.received.Base.Players) != 1 || tt.repo.received.Base.Players[0] != tt.repo.received.Base.Host {
-				t.Fatalf("Create() received players = %+v, want one host player", tt.repo.received.Base.Players)
+			if len(tt.repo.received.Base.Players) != 1 || tt.repo.received.Base.Players[0].Name != tt.userName {
+				t.Fatalf("Create() received players = %+v, want one player with name %q", tt.repo.received.Base.Players, tt.userName)
 			}
 
 			if err == nil || errors.Is(err, gatewayErr) {

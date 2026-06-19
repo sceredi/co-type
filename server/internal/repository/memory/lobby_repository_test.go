@@ -69,11 +69,8 @@ func TestLobbyRepository_Create(t *testing.T) {
 			if got.Base.ID != tt.input.Base.ID {
 				t.Fatalf("Create() lobby id = %q, want %q", got.Base.ID, tt.input.Base.ID)
 			}
-			if got.Base.Host == nil || got.Base.Host.Name != tt.input.Base.Host.Name {
-				t.Fatalf("Create() host = %+v, want host name %q", got.Base.Host, tt.input.Base.Host.Name)
-			}
-			if len(got.Base.Players) != 1 || got.Base.Players[0] != got.Base.Host {
-				t.Fatalf("Create() players = %+v, want one host player", got.Base.Players)
+			if len(got.Base.Players) != 1 || got.Base.Players[0].Name != tt.input.Base.Players[0].Name {
+				t.Fatalf("Create() players = %+v, want one player matching input", got.Base.Players)
 			}
 		})
 	}
