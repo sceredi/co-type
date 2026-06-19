@@ -363,3 +363,93 @@ func buildLobbyWithTwo(id, host, other string) *serverdomain.Lobby {
 	l.Subs[other] = make(chan *serverdomain.Lobby, 64)
 	return l
 }
+
+func TestLobbyService_EditPlayer(t *testing.T) {
+	serverName := "test-server"
+	lobbyID := "lobby-1"
+
+	tests := []struct {
+		name             string
+		playerName       string
+		repo             *mockLobbyRepository
+		wantErr          error
+		wantIsReady      bool
+		wantAllowedChars string
+		wantBlockedChars string
+		wantCanDelete    bool
+	}{
+		{
+			name:       "returns error if lobby not found",
+			playerName: "alice",
+			repo:       &mockLobbyRepository{getResp: nil},
+			wantErr:    domain.ErrLobbyNotFound,
+		},
+		{
+			name:       "returns error if player not in lobby",
+			playerName: "charlie",
+			repo:       &mockLobbyRepository{getResp: serverdomain.NewLobby(lobbyID, playerPtr("alice"))},
+			wantErr:    domain.ErrPlayerNotInLobby,
+		},
+		{
+			name:             "updates player settings and notifies subscribers",
+			playerName:       "alice",
+			repo:             &mockLobbyRepository{getResp: buildLobbyWithSub(lobbyID, "alice")},
+			wantErr:          nil,
+			wantIsReady:      true,
+			wantAllowedChars: "abc",
+			wantBlockedChars: "xyz",
+			wantCanDelete:    true,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			svc := service.NewLobbyService(serverName, &mockControlGateway{}, tt.repo)
+			l, err := svc.EditPlayer(lobbyID, tt.playerName, tt.wantIsReady, tt.wantAllowedChars, tt.wantBlockedChars, tt.wantCanDelete)
+
+			if !errors.Is(err, tt.wantErr) {
+				t.Fatalf("EditPlayer() error = %v, want %v", err, tt.wantErr)
+			}
+
+			if tt.wantErr != nil {
+				if l != nil {
+					t.Fatalf("EditPlayer() got = %v, want nil", l)
+				}
+				return
+			}
+
+			if l == nil {
+				t.Fatal("EditPlayer() got nil, want non-nil lobby")
+			}
+
+			var found *domain.Player
+			for _, p := range l.Base.Players {
+				if p.Name == tt.playerName {
+					found = p
+					break
+				}
+			}
+			if found == nil {
+				t.Fatalf("EditPlayer() player %q not found in lobby", tt.playerName)
+			}
+			if found.IsReady != tt.wantIsReady {
+				t.Errorf("EditPlayer() IsReady = %v, want %v", found.IsReady, tt.wantIsReady)
+			}
+			if found.AllowedCharacters != tt.wantAllowedChars {
+				t.Errorf("EditPlayer() AllowedCharacters = %q, want %q", found.AllowedCharacters, tt.wantAllowedChars)
+			}
+			if found.BlockedCharacters != tt.wantBlockedChars {
+				t.Errorf("EditPlayer() BlockedCharacters = %q, want %q", found.BlockedCharacters, tt.wantBlockedChars)
+			}
+			if found.CanDelete != tt.wantCanDelete {
+				t.Errorf("EditPlayer() CanDelete = %v, want %v", found.CanDelete, tt.wantCanDelete)
+			}
+		})
+	}
+}
+
+func buildLobbyWithSub(id, playerName string) *serverdomain.Lobby {
+	l := serverdomain.NewLobby(id, playerPtr(playerName))
+	l.Subs[playerName] = make(chan *serverdomain.Lobby, 64)
+	return l
+}

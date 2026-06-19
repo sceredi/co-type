@@ -56,6 +56,17 @@ func (h *LobbyHandler) LeaveLobby(_ context.Context, req *lobby.LeaveLobbyReques
 	}, nil
 }
 
+// EditPlayer handles the gRPC request to edit a player's settings in a lobby.
+func (h *LobbyHandler) EditPlayer(_ context.Context, req *lobby.EditPlayerRequest) (*lobby.EditPlayerResponse, error) {
+	l, err := h.lobbySvc.EditPlayer(req.LobbyId, req.PlayerName, req.IsReady, req.AllowedCharacters, req.BlockedCharacters, req.CanDelete)
+	if err != nil {
+		return nil, grpc_utils.ToGRPCError(err)
+	}
+	return &lobby.EditPlayerResponse{
+		Lobby: l.Base.ToGRPCLobby(),
+	}, nil
+}
+
 // Subscribe handles the gRPC subscription to lobby events.
 func (h *LobbyHandler) Subscribe(req *lobby.SubscribeRequest, stream lobby.LobbyService_SubscribeServer) error {
 	ctx := stream.Context()

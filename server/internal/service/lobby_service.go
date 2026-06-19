@@ -15,6 +15,7 @@ type LobbyService interface {
 	Create(id, userName string) (*domain.Lobby, error)
 	Join(id, userName string) (*domain.Lobby, error)
 	Leave(id, userName string) error
+	EditPlayer(lobbyID, playerName string, isReady bool, allowedCharacters, blockedCharacters string, canDelete bool) (*domain.Lobby, error)
 	Get(id string) *domain.Lobby
 }
 
@@ -85,6 +86,26 @@ func (s *lobbyService) Join(id, userName string) (*domain.Lobby, error) {
 
 func (s *lobbyService) Get(id string) *domain.Lobby {
 	return s.lobbyRepo.Get(id)
+}
+
+func (s *lobbyService) EditPlayer(lobbyID, playerName string, isReady bool, allowedCharacters, blockedCharacters string, canDelete bool) (*domain.Lobby, error) {
+	slog.DebugContext(context.Background(), "Editing player",
+		slog.String("lobbyID", lobbyID),
+		slog.String("playerName", playerName),
+	)
+	lobby := s.lobbyRepo.Get(lobbyID)
+	if lobby == nil {
+		return nil, commondomain.ErrLobbyNotFound
+	}
+	updated := lobby.Base.UpdatePlayer(playerName, isReady, allowedCharacters, blockedCharacters, canDelete)
+	if !updated {
+		return nil, commondomain.ErrPlayerNotInLobby
+	}
+
+	for _, ch := range lobby.Subs {
+		ch <- lobby
+	}
+	return lobby, nil
 }
 
 func (s *lobbyService) Leave(id, userName string) error {
