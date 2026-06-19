@@ -9,6 +9,7 @@ service LobbyService {
   rpc CreateLobby(CreateLobbyRequest) returns (CreateLobbyResponse);
   rpc JoinLobby(JoinLobbyRequest) returns (JoinLobbyResponse);
   rpc LeaveLobby(LeaveLobbyRequest) returns (LeaveLobbyResponse);
+  rpc EditPlayer(EditPlayerRequest) returns (EditPlayerResponse);
   rpc Subscribe(SubscribeRequest) returns (stream LobbyEvent);
 }
 
@@ -54,6 +55,19 @@ message LeaveLobbyRequest {
 message LeaveLobbyResponse {
   bool success = 1;
   string message = 2;
+}
+
+message EditPlayerRequest {
+  string lobby_id = 1;
+  string player_name = 2;
+  bool is_ready = 3;
+  string allowed_characters = 4;
+  string blocked_characters = 5;
+  bool can_delete = 6;
+}
+
+message EditPlayerResponse {
+  Lobby lobby = 1;
 }
 
 message SubscribeRequest {

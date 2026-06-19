@@ -67,6 +67,20 @@ func (l *Lobby) AddPlayers(players ...*Player) {
 	l.Players = append(l.Players, players...)
 }
 
+// UpdatePlayer updates the settings of the player with the given name. Returns true if the player was found and updated.
+func (l *Lobby) UpdatePlayer(name string, isReady bool, allowedCharacters, blockedCharacters string, canDelete bool) bool {
+	for _, p := range l.Players {
+		if p.Name == name {
+			p.IsReady = isReady
+			p.AllowedCharacters = allowedCharacters
+			p.BlockedCharacters = blockedCharacters
+			p.CanDelete = canDelete
+			return true
+		}
+	}
+	return false
+}
+
 // RemovePlayer removes the player with the given name from the lobby. Returns true if the player was found and removed.
 func (l *Lobby) RemovePlayer(name string) bool {
 	for i, p := range l.Players {
