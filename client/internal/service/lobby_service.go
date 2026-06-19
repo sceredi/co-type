@@ -20,6 +20,9 @@ type LobbyService interface {
 
 	// Connect connects to the given server. It returns an error if the connection fails.
 	Connect(target *domain.Server) error
+
+	// Subscribe subscribes to lobby events and returns a channel that receives updated lobby state.
+	Subscribe(lobbyID, playerName string) (<-chan *domain.Lobby, error)
 }
 
 type lobbyService struct {
@@ -47,4 +50,11 @@ func (s *lobbyService) Join(id, playerName string) (*domain.Lobby, error) {
 
 func (s *lobbyService) Connect(target *domain.Server) error {
 	return s.gtw.Connect(target)
+}
+
+func (s *lobbyService) Subscribe(lobbyID, playerName string) (<-chan *domain.Lobby, error) {
+	if s.gtw == nil {
+		return nil, ErrLobbyGatewayNotSet
+	}
+	return s.gtw.Subscribe(lobbyID, playerName)
 }

@@ -62,6 +62,10 @@ func (s *lobbyService) Join(id, userName string) (*domain.Lobby, error) {
 	player := commondomain.NewPlayer(userName)
 	lobby.Base.AddPlayers(player)
 
+	for _, ch := range lobby.Subs {
+		ch <- lobby
+	}
+
 	ch := make(chan *domain.Lobby, 64)
 	lobby.Subs[userName] = ch
 	return lobby, nil

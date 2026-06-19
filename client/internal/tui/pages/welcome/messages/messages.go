@@ -13,7 +13,8 @@ import (
 
 // JoinedLobbyMsg is a message that is sent when the user wants to join a lobby.
 type JoinedLobbyMsg struct {
-	Lobby *domain.Lobby
+	Lobby   *domain.Lobby
+	Updates <-chan *domain.Lobby
 }
 
 // JoinLobbyErrorMsg is a message that is sent when there is an error joining a lobby.
@@ -59,7 +60,13 @@ func NewCreateLobbyCmd(ds service.DiscoveryService, ls service.LobbyService, lob
 				Error: fmt.Sprintf("Unable to create lobby:\n%s", err.Error()),
 			}
 		}
-		return JoinedLobbyMsg{Lobby: lobby}
+		updates, err := ls.Subscribe(lobbyCode, playerName)
+		if err != nil {
+			slog.ErrorContext(context.Background(), "unable to subscribe to lobby",
+				slog.String("err", err.Error()),
+			)
+		}
+		return JoinedLobbyMsg{Lobby: lobby, Updates: updates}
 	}
 }
 
@@ -102,7 +109,13 @@ func NewJoinLobbyCmd(ds service.DiscoveryService, ls service.LobbyService, lobby
 				Error: fmt.Sprintf("Unable to join lobby:\n%s", err.Error()),
 			}
 		}
-		return JoinedLobbyMsg{Lobby: lobby}
+		updates, err := ls.Subscribe(lobbyCode, playerName)
+		if err != nil {
+			slog.ErrorContext(context.Background(), "unable to subscribe to lobby",
+				slog.String("err", err.Error()),
+			)
+		}
+		return JoinedLobbyMsg{Lobby: lobby, Updates: updates}
 	}
 }
 

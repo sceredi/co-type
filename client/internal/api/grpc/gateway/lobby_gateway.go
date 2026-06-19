@@ -18,6 +18,8 @@ type LobbyGateway interface {
 	Create(id, hostName string) (*domain.Lobby, error)
 	Join(id, playerName string) (*domain.Lobby, error)
 	Connect(target *domain.Server) error
+	// Subscribe subscribes to lobby events and returns a channel that receives updated lobby state.
+	Subscribe(lobbyID, playerName string) (<-chan *domain.Lobby, error)
 }
 
 type lobbyGateway struct {
@@ -62,4 +64,27 @@ func (g *lobbyGateway) Connect(target *domain.Server) error {
 	}
 	g.conn = lobby.NewLobbyServiceClient(conn)
 	return nil
+}
+
+func (g *lobbyGateway) Subscribe(lobbyID, playerName string) (<-chan *domain.Lobby, error) {
+	req := &lobby.SubscribeRequest{
+		LobbyId:    lobbyID,
+		PlayerName: playerName,
+	}
+	stream, err := g.conn.Subscribe(g.ctx, req)
+	if err != nil {
+		return nil, commongrpc.FromGRPCError(err)
+	}
+	ch := make(chan *domain.Lobby, 64)
+	go func() {
+		defer close(ch)
+		for {
+			event, err := stream.Recv()
+			if err != nil {
+				return
+			}
+			ch <- domain.NewLobbyFromGRPC(event.GetLobby())
+		}
+	}()
+	return ch, nil
 }

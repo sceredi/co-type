@@ -41,6 +41,10 @@ func (m *mockLobbyService) Connect(target *domain.Server) error {
 	return nil
 }
 
+func (m *mockLobbyService) Subscribe(lobbyID, playerName string) (<-chan *domain.Lobby, error) {
+	return nil, nil
+}
+
 func newMockLobbyService() *mockLobbyService {
 	return &mockLobbyService{}
 }
