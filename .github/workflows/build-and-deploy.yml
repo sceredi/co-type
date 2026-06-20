@@ -12,7 +12,7 @@ jobs:
       ci: true
     steps:
       - name: Checkout
-        uses: DanySK/action-checkout@0.2.29
+        uses: DanySK/action-checkout@0.2.30
       - name: Set up Go
         uses: actions/setup-go@v6.4.0
         with:
@@ -37,7 +37,7 @@ jobs:
         module: [broker, client, common, server]
     steps:
       - name: Checkout
-        uses: DanySK/action-checkout@0.2.29
+        uses: DanySK/action-checkout@0.2.30
       - name: Set up Go
         uses: actions/setup-go@v6.4.0
         with:
@@ -60,7 +60,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: DanySK/action-checkout@0.2.29
+        uses: DanySK/action-checkout@0.2.30
       - name: Set up Go
         uses: actions/setup-go@v6.4.0
         with:
@@ -112,7 +112,7 @@ jobs:
     # Skips if is PR or isn't inside main branch
     steps:
       - name: Checkout
-        uses: DanySK/action-checkout@0.2.29
+        uses: DanySK/action-checkout@0.2.30
       - name: Set up Go
         uses: actions/setup-go@v6.4.0
         with:
