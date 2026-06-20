@@ -25,7 +25,7 @@ type Lobby struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
 	Players       []*Player              `protobuf:"bytes,2,rep,name=players,proto3" json:"players,omitempty"`
-	Snippet       string                 `protobuf:"bytes,4,opt,name=snippet,proto3" json:"snippet,omitempty"`
+	Snippet       string                 `protobuf:"bytes,3,opt,name=snippet,proto3" json:"snippet,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -686,7 +686,7 @@ const file_common_proto_lobby_lobby_proto_rawDesc = "" +
 	"\x05Lobby\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12'\n" +
 	"\aplayers\x18\x02 \x03(\v2\r.lobby.PlayerR\aplayers\x12\x18\n" +
-	"\asnippet\x18\x04 \x01(\tR\asnippet\"\xb4\x01\n" +
+	"\asnippet\x18\x03 \x01(\tR\asnippet\"\xb4\x01\n" +
 	"\x06Player\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12\x19\n" +
 	"\bis_ready\x18\x02 \x01(\bR\aisReady\x12-\n" +
