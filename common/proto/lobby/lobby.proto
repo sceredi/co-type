@@ -10,6 +10,7 @@ service LobbyService {
   rpc JoinLobby(JoinLobbyRequest) returns (JoinLobbyResponse);
   rpc LeaveLobby(LeaveLobbyRequest) returns (LeaveLobbyResponse);
   rpc EditPlayer(EditPlayerRequest) returns (EditPlayerResponse);
+  rpc ReadyPlayer(ReadyPlayerRequest) returns (ReadyPlayerResponse);
   rpc Subscribe(SubscribeRequest) returns (stream LobbyEvent);
 }
 
@@ -66,6 +67,15 @@ message EditPlayerRequest {
 }
 
 message EditPlayerResponse {
+  Lobby lobby = 1;
+}
+
+message ReadyPlayerRequest {
+  string lobby_id = 1;
+  string player_name = 2;
+}
+
+message ReadyPlayerResponse {
   Lobby lobby = 1;
 }
 

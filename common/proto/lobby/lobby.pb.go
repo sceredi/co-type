@@ -582,6 +582,102 @@ func (x *EditPlayerResponse) GetLobby() *Lobby {
 	return nil
 }
 
+type ReadyPlayerRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	LobbyId       string                 `protobuf:"bytes,1,opt,name=lobby_id,json=lobbyId,proto3" json:"lobby_id,omitempty"`
+	PlayerName    string                 `protobuf:"bytes,2,opt,name=player_name,json=playerName,proto3" json:"player_name,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ReadyPlayerRequest) Reset() {
+	*x = ReadyPlayerRequest{}
+	mi := &file_common_proto_lobby_lobby_proto_msgTypes[10]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ReadyPlayerRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ReadyPlayerRequest) ProtoMessage() {}
+
+func (x *ReadyPlayerRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_common_proto_lobby_lobby_proto_msgTypes[10]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ReadyPlayerRequest.ProtoReflect.Descriptor instead.
+func (*ReadyPlayerRequest) Descriptor() ([]byte, []int) {
+	return file_common_proto_lobby_lobby_proto_rawDescGZIP(), []int{10}
+}
+
+func (x *ReadyPlayerRequest) GetLobbyId() string {
+	if x != nil {
+		return x.LobbyId
+	}
+	return ""
+}
+
+func (x *ReadyPlayerRequest) GetPlayerName() string {
+	if x != nil {
+		return x.PlayerName
+	}
+	return ""
+}
+
+type ReadyPlayerResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Lobby         *Lobby                 `protobuf:"bytes,1,opt,name=lobby,proto3" json:"lobby,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ReadyPlayerResponse) Reset() {
+	*x = ReadyPlayerResponse{}
+	mi := &file_common_proto_lobby_lobby_proto_msgTypes[11]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ReadyPlayerResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ReadyPlayerResponse) ProtoMessage() {}
+
+func (x *ReadyPlayerResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_common_proto_lobby_lobby_proto_msgTypes[11]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ReadyPlayerResponse.ProtoReflect.Descriptor instead.
+func (*ReadyPlayerResponse) Descriptor() ([]byte, []int) {
+	return file_common_proto_lobby_lobby_proto_rawDescGZIP(), []int{11}
+}
+
+func (x *ReadyPlayerResponse) GetLobby() *Lobby {
+	if x != nil {
+		return x.Lobby
+	}
+	return nil
+}
+
 type SubscribeRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	LobbyId       string                 `protobuf:"bytes,1,opt,name=lobby_id,json=lobbyId,proto3" json:"lobby_id,omitempty"`
@@ -592,7 +688,7 @@ type SubscribeRequest struct {
 
 func (x *SubscribeRequest) Reset() {
 	*x = SubscribeRequest{}
-	mi := &file_common_proto_lobby_lobby_proto_msgTypes[10]
+	mi := &file_common_proto_lobby_lobby_proto_msgTypes[12]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -604,7 +700,7 @@ func (x *SubscribeRequest) String() string {
 func (*SubscribeRequest) ProtoMessage() {}
 
 func (x *SubscribeRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_common_proto_lobby_lobby_proto_msgTypes[10]
+	mi := &file_common_proto_lobby_lobby_proto_msgTypes[12]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -617,7 +713,7 @@ func (x *SubscribeRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SubscribeRequest.ProtoReflect.Descriptor instead.
 func (*SubscribeRequest) Descriptor() ([]byte, []int) {
-	return file_common_proto_lobby_lobby_proto_rawDescGZIP(), []int{10}
+	return file_common_proto_lobby_lobby_proto_rawDescGZIP(), []int{12}
 }
 
 func (x *SubscribeRequest) GetLobbyId() string {
@@ -643,7 +739,7 @@ type LobbyEvent struct {
 
 func (x *LobbyEvent) Reset() {
 	*x = LobbyEvent{}
-	mi := &file_common_proto_lobby_lobby_proto_msgTypes[11]
+	mi := &file_common_proto_lobby_lobby_proto_msgTypes[13]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -655,7 +751,7 @@ func (x *LobbyEvent) String() string {
 func (*LobbyEvent) ProtoMessage() {}
 
 func (x *LobbyEvent) ProtoReflect() protoreflect.Message {
-	mi := &file_common_proto_lobby_lobby_proto_msgTypes[11]
+	mi := &file_common_proto_lobby_lobby_proto_msgTypes[13]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -668,7 +764,7 @@ func (x *LobbyEvent) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use LobbyEvent.ProtoReflect.Descriptor instead.
 func (*LobbyEvent) Descriptor() ([]byte, []int) {
-	return file_common_proto_lobby_lobby_proto_rawDescGZIP(), []int{11}
+	return file_common_proto_lobby_lobby_proto_rawDescGZIP(), []int{13}
 }
 
 func (x *LobbyEvent) GetLobby() *Lobby {
@@ -723,6 +819,12 @@ const file_common_proto_lobby_lobby_proto_rawDesc = "" +
 	"\n" +
 	"can_delete\x18\x06 \x01(\bR\tcanDelete\"8\n" +
 	"\x12EditPlayerResponse\x12\"\n" +
+	"\x05lobby\x18\x01 \x01(\v2\f.lobby.LobbyR\x05lobby\"P\n" +
+	"\x12ReadyPlayerRequest\x12\x19\n" +
+	"\blobby_id\x18\x01 \x01(\tR\alobbyId\x12\x1f\n" +
+	"\vplayer_name\x18\x02 \x01(\tR\n" +
+	"playerName\"9\n" +
+	"\x13ReadyPlayerResponse\x12\"\n" +
 	"\x05lobby\x18\x01 \x01(\v2\f.lobby.LobbyR\x05lobby\"N\n" +
 	"\x10SubscribeRequest\x12\x19\n" +
 	"\blobby_id\x18\x01 \x01(\tR\alobbyId\x12\x1f\n" +
@@ -730,14 +832,15 @@ const file_common_proto_lobby_lobby_proto_rawDesc = "" +
 	"playerName\"0\n" +
 	"\n" +
 	"LobbyEvent\x12\"\n" +
-	"\x05lobby\x18\x01 \x01(\v2\f.lobby.LobbyR\x05lobby2\xd5\x02\n" +
+	"\x05lobby\x18\x01 \x01(\v2\f.lobby.LobbyR\x05lobby2\x9b\x03\n" +
 	"\fLobbyService\x12D\n" +
 	"\vCreateLobby\x12\x19.lobby.CreateLobbyRequest\x1a\x1a.lobby.CreateLobbyResponse\x12>\n" +
 	"\tJoinLobby\x12\x17.lobby.JoinLobbyRequest\x1a\x18.lobby.JoinLobbyResponse\x12A\n" +
 	"\n" +
 	"LeaveLobby\x12\x18.lobby.LeaveLobbyRequest\x1a\x19.lobby.LeaveLobbyResponse\x12A\n" +
 	"\n" +
-	"EditPlayer\x12\x18.lobby.EditPlayerRequest\x1a\x19.lobby.EditPlayerResponse\x129\n" +
+	"EditPlayer\x12\x18.lobby.EditPlayerRequest\x1a\x19.lobby.EditPlayerResponse\x12D\n" +
+	"\vReadyPlayer\x12\x19.lobby.ReadyPlayerRequest\x1a\x1a.lobby.ReadyPlayerResponse\x129\n" +
 	"\tSubscribe\x12\x17.lobby.SubscribeRequest\x1a\x11.lobby.LobbyEvent0\x01B/Z-github.com/sceredi/co-type/common/proto/lobbyb\x06proto3"
 
 var (
@@ -752,7 +855,7 @@ func file_common_proto_lobby_lobby_proto_rawDescGZIP() []byte {
 	return file_common_proto_lobby_lobby_proto_rawDescData
 }
 
-var file_common_proto_lobby_lobby_proto_msgTypes = make([]protoimpl.MessageInfo, 12)
+var file_common_proto_lobby_lobby_proto_msgTypes = make([]protoimpl.MessageInfo, 14)
 var file_common_proto_lobby_lobby_proto_goTypes = []any{
 	(*Lobby)(nil),               // 0: lobby.Lobby
 	(*Player)(nil),              // 1: lobby.Player
@@ -764,30 +867,35 @@ var file_common_proto_lobby_lobby_proto_goTypes = []any{
 	(*LeaveLobbyResponse)(nil),  // 7: lobby.LeaveLobbyResponse
 	(*EditPlayerRequest)(nil),   // 8: lobby.EditPlayerRequest
 	(*EditPlayerResponse)(nil),  // 9: lobby.EditPlayerResponse
-	(*SubscribeRequest)(nil),    // 10: lobby.SubscribeRequest
-	(*LobbyEvent)(nil),          // 11: lobby.LobbyEvent
+	(*ReadyPlayerRequest)(nil),  // 10: lobby.ReadyPlayerRequest
+	(*ReadyPlayerResponse)(nil), // 11: lobby.ReadyPlayerResponse
+	(*SubscribeRequest)(nil),    // 12: lobby.SubscribeRequest
+	(*LobbyEvent)(nil),          // 13: lobby.LobbyEvent
 }
 var file_common_proto_lobby_lobby_proto_depIdxs = []int32{
 	1,  // 0: lobby.Lobby.players:type_name -> lobby.Player
 	0,  // 1: lobby.CreateLobbyResponse.lobby:type_name -> lobby.Lobby
 	0,  // 2: lobby.JoinLobbyResponse.lobby:type_name -> lobby.Lobby
 	0,  // 3: lobby.EditPlayerResponse.lobby:type_name -> lobby.Lobby
-	0,  // 4: lobby.LobbyEvent.lobby:type_name -> lobby.Lobby
-	2,  // 5: lobby.LobbyService.CreateLobby:input_type -> lobby.CreateLobbyRequest
-	4,  // 6: lobby.LobbyService.JoinLobby:input_type -> lobby.JoinLobbyRequest
-	6,  // 7: lobby.LobbyService.LeaveLobby:input_type -> lobby.LeaveLobbyRequest
-	8,  // 8: lobby.LobbyService.EditPlayer:input_type -> lobby.EditPlayerRequest
-	10, // 9: lobby.LobbyService.Subscribe:input_type -> lobby.SubscribeRequest
-	3,  // 10: lobby.LobbyService.CreateLobby:output_type -> lobby.CreateLobbyResponse
-	5,  // 11: lobby.LobbyService.JoinLobby:output_type -> lobby.JoinLobbyResponse
-	7,  // 12: lobby.LobbyService.LeaveLobby:output_type -> lobby.LeaveLobbyResponse
-	9,  // 13: lobby.LobbyService.EditPlayer:output_type -> lobby.EditPlayerResponse
-	11, // 14: lobby.LobbyService.Subscribe:output_type -> lobby.LobbyEvent
-	10, // [10:15] is the sub-list for method output_type
-	5,  // [5:10] is the sub-list for method input_type
-	5,  // [5:5] is the sub-list for extension type_name
-	5,  // [5:5] is the sub-list for extension extendee
-	0,  // [0:5] is the sub-list for field type_name
+	0,  // 4: lobby.ReadyPlayerResponse.lobby:type_name -> lobby.Lobby
+	0,  // 5: lobby.LobbyEvent.lobby:type_name -> lobby.Lobby
+	2,  // 6: lobby.LobbyService.CreateLobby:input_type -> lobby.CreateLobbyRequest
+	4,  // 7: lobby.LobbyService.JoinLobby:input_type -> lobby.JoinLobbyRequest
+	6,  // 8: lobby.LobbyService.LeaveLobby:input_type -> lobby.LeaveLobbyRequest
+	8,  // 9: lobby.LobbyService.EditPlayer:input_type -> lobby.EditPlayerRequest
+	10, // 10: lobby.LobbyService.ReadyPlayer:input_type -> lobby.ReadyPlayerRequest
+	12, // 11: lobby.LobbyService.Subscribe:input_type -> lobby.SubscribeRequest
+	3,  // 12: lobby.LobbyService.CreateLobby:output_type -> lobby.CreateLobbyResponse
+	5,  // 13: lobby.LobbyService.JoinLobby:output_type -> lobby.JoinLobbyResponse
+	7,  // 14: lobby.LobbyService.LeaveLobby:output_type -> lobby.LeaveLobbyResponse
+	9,  // 15: lobby.LobbyService.EditPlayer:output_type -> lobby.EditPlayerResponse
+	11, // 16: lobby.LobbyService.ReadyPlayer:output_type -> lobby.ReadyPlayerResponse
+	13, // 17: lobby.LobbyService.Subscribe:output_type -> lobby.LobbyEvent
+	12, // [12:18] is the sub-list for method output_type
+	6,  // [6:12] is the sub-list for method input_type
+	6,  // [6:6] is the sub-list for extension type_name
+	6,  // [6:6] is the sub-list for extension extendee
+	0,  // [0:6] is the sub-list for field type_name
 }
 
 func init() { file_common_proto_lobby_lobby_proto_init() }
@@ -801,7 +909,7 @@ func file_common_proto_lobby_lobby_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_common_proto_lobby_lobby_proto_rawDesc), len(file_common_proto_lobby_lobby_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   12,
+			NumMessages:   14,
 			NumExtensions: 0,
 			NumServices:   1,
 		},
