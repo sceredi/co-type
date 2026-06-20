@@ -67,6 +67,17 @@ func (h *LobbyHandler) EditPlayer(_ context.Context, req *lobby.EditPlayerReques
 	}, nil
 }
 
+// ReadyPlayer handles the gRPC request to toggle a player's ready status in a lobby.
+func (h *LobbyHandler) ReadyPlayer(_ context.Context, req *lobby.ReadyPlayerRequest) (*lobby.ReadyPlayerResponse, error) {
+	l, err := h.lobbySvc.Ready(req.LobbyId, req.PlayerName)
+	if err != nil {
+		return nil, grpc_utils.ToGRPCError(err)
+	}
+	return &lobby.ReadyPlayerResponse{
+		Lobby: l.Base.ToGRPCLobby(),
+	}, nil
+}
+
 // Subscribe handles the gRPC subscription to lobby events.
 func (h *LobbyHandler) Subscribe(req *lobby.SubscribeRequest, stream lobby.LobbyService_SubscribeServer) error {
 	ctx := stream.Context()
