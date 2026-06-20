@@ -40,6 +40,10 @@ func (m *mockLobbyClient) EditPlayer(ctx context.Context, in *lobbypb.EditPlayer
 	return m.editPlayerResp, m.err
 }
 
+func (m *mockLobbyClient) ReadyPlayer(ctx context.Context, in *lobbypb.ReadyPlayerRequest, opts ...grpcpkg.CallOption) (*lobbypb.ReadyPlayerResponse, error) {
+	return nil, m.err
+}
+
 func (m *mockLobbyClient) Subscribe(ctx context.Context, in *lobbypb.SubscribeRequest, opts ...grpcpkg.CallOption) (grpcpkg.ServerStreamingClient[lobbypb.LobbyEvent], error) {
 	return nil, nil
 }

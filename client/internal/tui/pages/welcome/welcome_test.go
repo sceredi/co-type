@@ -45,6 +45,10 @@ func (m *mockLobbyService) EditPlayer(lobbyID, playerName string, isReady bool, 
 	return nil, nil
 }
 
+func (m *mockLobbyService) Ready(lobbyID, playerName string) (*domain.Lobby, error) {
+	return nil, nil
+}
+
 func (m *mockLobbyService) Connect(target *domain.Server) error {
 	return nil
 }
