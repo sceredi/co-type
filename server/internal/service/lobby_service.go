@@ -10,12 +10,22 @@ import (
 	"github.com/sceredi/co-type/server/internal/repository"
 )
 
+// defaultSnippet is used as the game snippet when all players are ready.
+const defaultSnippet = `package main
+
+import "fmt"
+
+func main() {
+	fmt.Println("Hello, World!")
+}`
+
 // LobbyService defines the interface for managing lobbies in the server service.
 type LobbyService interface {
 	Create(id, userName string) (*domain.Lobby, error)
 	Join(id, userName string) (*domain.Lobby, error)
 	Leave(id, userName string) error
 	EditPlayer(lobbyID, playerName string, isReady bool, allowedCharacters, blockedCharacters string, canDelete bool) (*domain.Lobby, error)
+	Ready(lobbyID, playerName string) (*domain.Lobby, error)
 	Get(id string) *domain.Lobby
 }
 
@@ -147,4 +157,49 @@ func (s *lobbyService) Leave(id, userName string) error {
 		ch <- lobby
 	}
 	return nil
+}
+
+func (s *lobbyService) Ready(lobbyID, playerName string) (*domain.Lobby, error) {
+	slog.DebugContext(context.Background(), "Toggling player ready",
+		slog.String("lobbyID", lobbyID),
+		slog.String("playerName", playerName),
+	)
+	lobby := s.lobbyRepo.Get(lobbyID)
+	if lobby == nil {
+		return nil, commondomain.ErrLobbyNotFound
+	}
+
+	var player *commondomain.Player
+	for _, p := range lobby.Base.Players {
+		if p.Name == playerName {
+			player = p
+			break
+		}
+	}
+	if player == nil {
+		return nil, commondomain.ErrPlayerNotInLobby
+	}
+
+	player.IsReady = !player.IsReady
+
+	if allPlayersReady(lobby.Base) {
+		lobby.Base.Snippet = defaultSnippet
+	}
+
+	for _, ch := range lobby.Subs {
+		ch <- lobby
+	}
+	return lobby, nil
+}
+
+func allPlayersReady(l *commondomain.Lobby) bool {
+	if len(l.Players) == 0 {
+		return false
+	}
+	for _, p := range l.Players {
+		if !p.IsReady {
+			return false
+		}
+	}
+	return true
 }

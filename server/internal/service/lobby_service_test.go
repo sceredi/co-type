@@ -450,3 +450,96 @@ func buildLobbyWithSub(id, playerName string) *serverdomain.Lobby {
 	l.Subs[playerName] = make(chan *serverdomain.Lobby, 64)
 	return l
 }
+
+func TestLobbyService_Ready(t *testing.T) {
+	serverName := "test-server"
+	lobbyID := "lobby-1"
+
+	tests := []struct {
+		name        string
+		playerName  string
+		repo        *mockLobbyRepository
+		wantErr     error
+		wantIsReady bool
+		wantSnippet bool
+	}{
+		{
+			name:       "returns error if lobby not found",
+			playerName: "alice",
+			repo:       &mockLobbyRepository{getResp: nil},
+			wantErr:    domain.ErrLobbyNotFound,
+		},
+		{
+			name:       "returns error if player not in lobby",
+			playerName: "charlie",
+			repo:       &mockLobbyRepository{getResp: buildLobbyWithSub(lobbyID, "alice")},
+			wantErr:    domain.ErrPlayerNotInLobby,
+		},
+		{
+			name:        "toggles player to ready and notifies subscribers",
+			playerName:  "alice",
+			repo:        &mockLobbyRepository{getResp: buildLobbyWithSub(lobbyID, "alice")},
+			wantErr:     nil,
+			wantIsReady: true,
+			wantSnippet: true,
+		},
+		{
+			name:        "sets snippet when all players are ready",
+			playerName:  "bob",
+			repo:        &mockLobbyRepository{getResp: buildReadyLobbyMissingOne(lobbyID, "alice", "bob")},
+			wantErr:     nil,
+			wantIsReady: true,
+			wantSnippet: true,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			svc := service.NewLobbyService(serverName, &mockControlGateway{}, tt.repo)
+			l, err := svc.Ready(lobbyID, tt.playerName)
+
+			if !errors.Is(err, tt.wantErr) {
+				t.Fatalf("Ready() error = %v, want %v", err, tt.wantErr)
+			}
+
+			if tt.wantErr != nil {
+				if l != nil {
+					t.Fatalf("Ready() got = %v, want nil", l)
+				}
+				return
+			}
+
+			if l == nil {
+				t.Fatal("Ready() got nil, want non-nil lobby")
+			}
+
+			var found *domain.Player
+			for _, p := range l.Base.Players {
+				if p.Name == tt.playerName {
+					found = p
+					break
+				}
+			}
+			if found == nil {
+				t.Fatalf("Ready() player %q not found in lobby", tt.playerName)
+			}
+			if found.IsReady != tt.wantIsReady {
+				t.Errorf("Ready() IsReady = %v, want %v", found.IsReady, tt.wantIsReady)
+			}
+			if tt.wantSnippet && l.Base.Snippet == "" {
+				t.Error("Ready() expected snippet to be set when all players are ready")
+			}
+		})
+	}
+}
+
+// buildReadyLobbyMissingOne builds a lobby where all players except one are already ready.
+func buildReadyLobbyMissingOne(id, readyPlayer, notReadyPlayer string) *serverdomain.Lobby {
+	l := serverdomain.NewLobby(id, playerPtr(readyPlayer))
+	l.Base.Players[0].IsReady = true
+	notReady := domain.NewPlayer(notReadyPlayer)
+	l.Base.AddPlayers(notReady)
+	l.Subs[readyPlayer] = make(chan *serverdomain.Lobby, 64)
+	l.Subs[notReadyPlayer] = make(chan *serverdomain.Lobby, 64)
+	return l
+}
