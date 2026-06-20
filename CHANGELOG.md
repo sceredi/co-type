@@ -1,3 +1,14 @@
+## [0.7.0](https://github.com/sceredi/co-type/compare/v0.6.0...v0.7.0) (2026-06-20)
+
+### Features
+
+* **client:** wire user ready update with server ([2bb8345](https://github.com/sceredi/co-type/commit/2bb8345e0d0024e821f1dd883fa325c35b5d2609))
+* **server:** add lobby user ready set ([6017919](https://github.com/sceredi/co-type/commit/601791904c1497d5c5d2fabe0f7e245f00a20189))
+
+### General maintenance
+
+* add lobby service user ready set endpoint ([33da223](https://github.com/sceredi/co-type/commit/33da223136c083f4a77c68aa53f6712302a04633))
+
 ## [0.6.0](https://github.com/sceredi/co-type/compare/v0.5.0...v0.6.0) (2026-06-20)
 
 ### Features
