@@ -1,3 +1,23 @@
+## [0.6.0](https://github.com/sceredi/co-type/compare/v0.5.0...v0.6.0) (2026-06-20)
+
+### Features
+
+* **client:** wire user settings update with server ([37e1ba0](https://github.com/sceredi/co-type/commit/37e1ba081e2906e7a17540329e041c7fa264b047))
+* **server:** add lobby user update ([a6ad51a](https://github.com/sceredi/co-type/commit/a6ad51afffa227bb36248af1a33e5a1071c27bf7))
+
+### Build and continuous integration
+
+* **deps:** update danysk/action-checkout action to v0.2.30 ([8fc9602](https://github.com/sceredi/co-type/commit/8fc9602c1607d64e3f39cd91be4c4d9b20ab5acf))
+
+### General maintenance
+
+* add lobby service user settings update ([2293d54](https://github.com/sceredi/co-type/commit/2293d543b0da98e6cdae4242532e155f208a3e99))
+* remove host from lobby message ([7289111](https://github.com/sceredi/co-type/commit/72891117824f13316cdb3068df2e059531350180))
+
+### Refactoring
+
+* remove host from lobby ([8ed7a0f](https://github.com/sceredi/co-type/commit/8ed7a0f7d0bef9514eb559339c9452a50e324be4))
+
 ## [0.5.0](https://github.com/sceredi/co-type/compare/v0.4.0...v0.5.0) (2026-06-19)
 
 ### Features
