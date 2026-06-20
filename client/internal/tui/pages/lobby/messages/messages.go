@@ -82,6 +82,20 @@ func NewEditPlayerCmd(ls service.LobbyService, lobbyID, playerName string, isRea
 	}
 }
 
+// NewReadyCmd returns a command that calls the lobby service to toggle the ready status of the player.
+func NewReadyCmd(ls service.LobbyService, lobbyID, playerName string) tea.Cmd {
+	return func() tea.Msg {
+		if _, err := ls.Ready(lobbyID, playerName); err != nil {
+			slog.ErrorContext(context.Background(), "Failed to toggle player ready",
+				slog.String("lobby_id", lobbyID),
+				slog.String("player_name", playerName),
+				slog.String("error", err.Error()),
+			)
+		}
+		return nil
+	}
+}
+
 // CloseSettingsMsg is a message that indicates that the settings modal should be closed.
 type CloseSettingsMsg struct{}
 

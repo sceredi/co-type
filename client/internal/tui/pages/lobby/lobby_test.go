@@ -77,13 +77,27 @@ func TestRTogglesCurrentPlayerReady(t *testing.T) {
 		t.Fatal("expected player to start not ready")
 	}
 
+	// Pressing "r" dispatches a command to the server; the state update arrives
+	// via LobbyUpdatedMsg. Simulate the server response by sending an updated lobby.
 	m, _ = m.Update(tea.KeyPressMsg{Text: "r"})
+
+	updatedLobby := &domain.Lobby{
+		ID:      m.lobby.ID,
+		Players: []*domain.Player{{Name: "Host", IsReady: true}, {Name: "Guest"}, {Name: "Third"}},
+	}
+	m, _ = m.Update(lobby_messages.LobbyUpdatedMsg{Lobby: updatedLobby})
 	if !m.player.IsReady {
-		t.Error("expected player to be ready after first r")
+		t.Error("expected player to be ready after lobby update")
 	}
 
 	m, _ = m.Update(tea.KeyPressMsg{Text: "r"})
+
+	updatedLobby2 := &domain.Lobby{
+		ID:      m.lobby.ID,
+		Players: []*domain.Player{{Name: "Host", IsReady: false}, {Name: "Guest"}, {Name: "Third"}},
+	}
+	m, _ = m.Update(lobby_messages.LobbyUpdatedMsg{Lobby: updatedLobby2})
 	if m.player.IsReady {
-		t.Error("expected player to be not ready after second r")
+		t.Error("expected player to be not ready after second lobby update")
 	}
 }

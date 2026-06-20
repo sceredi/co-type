@@ -88,6 +88,21 @@ func (m Model) Update(msg tea.Msg) (Model, tea.Cmd) {
 		m.focus = focusPlayersList
 	case lobby_messages.LobbyUpdatedMsg:
 		m.lobby = msg.Lobby
+		for _, p := range m.lobby.Players {
+			if p.Name == m.player.Name {
+				m.player = p
+				break
+			}
+		}
+		if allReady(m.lobby) && m.lobby.Snippet != "" {
+			game := domain.Game{
+				Lobby: *m.lobby,
+				State: domain.GameState{
+					Status: domain.Running,
+				},
+			}
+			cmds = append(cmds, lobby_messages.NewStartGameCmd(game))
+		}
 		cmds = append(cmds, waitForLobbyUpdate(m.updates))
 	case lobby_messages.LobbySubscriptionClosedMsg:
 		// subscription ended, no further updates
@@ -153,4 +168,16 @@ func (m Model) View() string {
 	}
 
 	return v
+}
+
+func allReady(l *domain.Lobby) bool {
+	if len(l.Players) == 0 {
+		return false
+	}
+	for _, p := range l.Players {
+		if !p.IsReady {
+			return false
+		}
+	}
+	return true
 }
