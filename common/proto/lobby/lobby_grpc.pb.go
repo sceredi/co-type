@@ -23,6 +23,7 @@ const (
 	LobbyService_JoinLobby_FullMethodName   = "/lobby.LobbyService/JoinLobby"
 	LobbyService_LeaveLobby_FullMethodName  = "/lobby.LobbyService/LeaveLobby"
 	LobbyService_EditPlayer_FullMethodName  = "/lobby.LobbyService/EditPlayer"
+	LobbyService_ReadyPlayer_FullMethodName = "/lobby.LobbyService/ReadyPlayer"
 	LobbyService_Subscribe_FullMethodName   = "/lobby.LobbyService/Subscribe"
 )
 
@@ -36,6 +37,7 @@ type LobbyServiceClient interface {
 	JoinLobby(ctx context.Context, in *JoinLobbyRequest, opts ...grpc.CallOption) (*JoinLobbyResponse, error)
 	LeaveLobby(ctx context.Context, in *LeaveLobbyRequest, opts ...grpc.CallOption) (*LeaveLobbyResponse, error)
 	EditPlayer(ctx context.Context, in *EditPlayerRequest, opts ...grpc.CallOption) (*EditPlayerResponse, error)
+	ReadyPlayer(ctx context.Context, in *ReadyPlayerRequest, opts ...grpc.CallOption) (*ReadyPlayerResponse, error)
 	Subscribe(ctx context.Context, in *SubscribeRequest, opts ...grpc.CallOption) (grpc.ServerStreamingClient[LobbyEvent], error)
 }
 
@@ -87,6 +89,16 @@ func (c *lobbyServiceClient) EditPlayer(ctx context.Context, in *EditPlayerReque
 	return out, nil
 }
 
+func (c *lobbyServiceClient) ReadyPlayer(ctx context.Context, in *ReadyPlayerRequest, opts ...grpc.CallOption) (*ReadyPlayerResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ReadyPlayerResponse)
+	err := c.cc.Invoke(ctx, LobbyService_ReadyPlayer_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *lobbyServiceClient) Subscribe(ctx context.Context, in *SubscribeRequest, opts ...grpc.CallOption) (grpc.ServerStreamingClient[LobbyEvent], error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	stream, err := c.cc.NewStream(ctx, &LobbyService_ServiceDesc.Streams[0], LobbyService_Subscribe_FullMethodName, cOpts...)
@@ -116,6 +128,7 @@ type LobbyServiceServer interface {
 	JoinLobby(context.Context, *JoinLobbyRequest) (*JoinLobbyResponse, error)
 	LeaveLobby(context.Context, *LeaveLobbyRequest) (*LeaveLobbyResponse, error)
 	EditPlayer(context.Context, *EditPlayerRequest) (*EditPlayerResponse, error)
+	ReadyPlayer(context.Context, *ReadyPlayerRequest) (*ReadyPlayerResponse, error)
 	Subscribe(*SubscribeRequest, grpc.ServerStreamingServer[LobbyEvent]) error
 	mustEmbedUnimplementedLobbyServiceServer()
 }
@@ -138,6 +151,9 @@ func (UnimplementedLobbyServiceServer) LeaveLobby(context.Context, *LeaveLobbyRe
 }
 func (UnimplementedLobbyServiceServer) EditPlayer(context.Context, *EditPlayerRequest) (*EditPlayerResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method EditPlayer not implemented")
+}
+func (UnimplementedLobbyServiceServer) ReadyPlayer(context.Context, *ReadyPlayerRequest) (*ReadyPlayerResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method ReadyPlayer not implemented")
 }
 func (UnimplementedLobbyServiceServer) Subscribe(*SubscribeRequest, grpc.ServerStreamingServer[LobbyEvent]) error {
 	return status.Error(codes.Unimplemented, "method Subscribe not implemented")
@@ -235,6 +251,24 @@ func _LobbyService_EditPlayer_Handler(srv interface{}, ctx context.Context, dec 
 	return interceptor(ctx, in, info, handler)
 }
 
+func _LobbyService_ReadyPlayer_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ReadyPlayerRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(LobbyServiceServer).ReadyPlayer(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: LobbyService_ReadyPlayer_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(LobbyServiceServer).ReadyPlayer(ctx, req.(*ReadyPlayerRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _LobbyService_Subscribe_Handler(srv interface{}, stream grpc.ServerStream) error {
 	m := new(SubscribeRequest)
 	if err := stream.RecvMsg(m); err != nil {
@@ -268,6 +302,10 @@ var LobbyService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "EditPlayer",
 			Handler:    _LobbyService_EditPlayer_Handler,
+		},
+		{
+			MethodName: "ReadyPlayer",
+			Handler:    _LobbyService_ReadyPlayer_Handler,
 		},
 	},
 	Streams: []grpc.StreamDesc{
