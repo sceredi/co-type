@@ -20,7 +20,7 @@ func TestViewFormatsStatisticsCorrectly(t *testing.T) {
 			stats: domain.GameStats{
 				TotalTime: 10 * time.Second,
 				Lobby: domain.Lobby{
-					Snippet: "hello world",
+					Game: domain.GameInfo{Snippet: "hello world"},
 				},
 			},
 			checkFuncs: []func(string) bool{
@@ -32,7 +32,7 @@ func TestViewFormatsStatisticsCorrectly(t *testing.T) {
 			stats: domain.GameStats{
 				TotalTime: 10 * time.Second,
 				Lobby: domain.Lobby{
-					Snippet: "hello world",
+					Game: domain.GameInfo{Snippet: "hello world"},
 				},
 			},
 			checkFuncs: []func(string) bool{
@@ -44,7 +44,7 @@ func TestViewFormatsStatisticsCorrectly(t *testing.T) {
 			stats: domain.GameStats{
 				TotalTime: 65 * time.Second, // 1 minute 5 seconds
 				Lobby: domain.Lobby{
-					Snippet: "test",
+					Game: domain.GameInfo{Snippet: "test"},
 				},
 			},
 			checkFuncs: []func(string) bool{
@@ -56,7 +56,7 @@ func TestViewFormatsStatisticsCorrectly(t *testing.T) {
 			stats: domain.GameStats{
 				TotalTime: 5 * time.Second, // 0 minutes 5 seconds
 				Lobby: domain.Lobby{
-					Snippet: "test",
+					Game: domain.GameInfo{Snippet: "test"},
 				},
 			},
 			checkFuncs: []func(string) bool{
@@ -68,7 +68,7 @@ func TestViewFormatsStatisticsCorrectly(t *testing.T) {
 			stats: domain.GameStats{
 				TotalTime: 125 * time.Second, // 2 minutes 5 seconds
 				Lobby: domain.Lobby{
-					Snippet: "test",
+					Game: domain.GameInfo{Snippet: "test"},
 				},
 			},
 			checkFuncs: []func(string) bool{
@@ -129,7 +129,7 @@ func TestCPSCalculation(t *testing.T) {
 			stats := domain.GameStats{
 				TotalTime: tt.totalTime,
 				Lobby: domain.Lobby{
-					Snippet: tt.snippet,
+					Game: domain.GameInfo{Snippet: tt.snippet},
 				},
 			}
 			m := New(stats)
@@ -147,7 +147,7 @@ func TestViewRendersAllComponents(t *testing.T) {
 	stats := domain.GameStats{
 		TotalTime: 30 * time.Second,
 		Lobby: domain.Lobby{
-			Snippet: "hello",
+			Game: domain.GameInfo{Snippet: "hello"},
 		},
 	}
 
@@ -173,7 +173,7 @@ func TestInit(t *testing.T) {
 	stats := domain.GameStats{
 		TotalTime: 10 * time.Second,
 		Lobby: domain.Lobby{
-			Snippet: "test",
+			Game: domain.GameInfo{Snippet: "test"},
 		},
 	}
 	m := New(stats)
@@ -188,7 +188,7 @@ func TestUpdate(t *testing.T) {
 	stats := domain.GameStats{
 		TotalTime: 10 * time.Second,
 		Lobby: domain.Lobby{
-			Snippet: "test",
+			Game: domain.GameInfo{Snippet: "test"},
 		},
 	}
 	m := New(stats)

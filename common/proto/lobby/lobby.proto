@@ -14,10 +14,17 @@ service LobbyService {
   rpc Subscribe(SubscribeRequest) returns (stream LobbyEvent);
 }
 
+message GameInfo {
+  string snippet = 1;
+  int64 correct_chars = 2;
+  int64 wrong_chars = 3;
+  int64 revision = 4;
+}
+
 message Lobby {
   string id = 1;
   repeated Player players = 2;
-  string snippet = 3;
+  GameInfo game = 3;
 }
 
 message Player {

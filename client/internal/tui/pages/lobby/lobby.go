@@ -94,7 +94,7 @@ func (m Model) Update(msg tea.Msg) (Model, tea.Cmd) {
 				break
 			}
 		}
-		if allReady(m.lobby) && m.lobby.Snippet != "" {
+		if allReady(m.lobby) && m.lobby.Game.Snippet != "" {
 			game := domain.Game{
 				Lobby: *m.lobby,
 				State: domain.GameState{
