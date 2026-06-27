@@ -8,16 +8,8 @@ import (
 	"github.com/sceredi/co-type/server/internal/api/grpc/gateway"
 	"github.com/sceredi/co-type/server/internal/domain"
 	"github.com/sceredi/co-type/server/internal/repository"
+	"github.com/sceredi/co-type/server/internal/snippet"
 )
-
-// defaultSnippet is used as the game snippet when all players are ready.
-const defaultSnippet = `package main
-
-import "fmt"
-
-func main() {
-	fmt.Println("Hello, World!")
-}`
 
 // LobbyService defines the interface for managing lobbies in the server service.
 type LobbyService interface {
@@ -183,7 +175,7 @@ func (s *lobbyService) Ready(lobbyID, playerName string) (*domain.Lobby, error) 
 	player.IsReady = !player.IsReady
 
 	if allPlayersReady(lobby.Base) {
-		lobby.Base.Snippet = defaultSnippet
+		lobby.Base.Snippet = snippet.Random()
 	}
 
 	for _, ch := range lobby.Subs {
