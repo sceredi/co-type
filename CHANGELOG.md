@@ -1,3 +1,20 @@
+## [0.9.0](https://github.com/sceredi/co-type/compare/v0.8.0...v0.9.0) (2026-06-27)
+
+### Features
+
+* implement key press handling and validation in game ([7cabb41](https://github.com/sceredi/co-type/commit/7cabb41d4506c9bc7cf3cb65cadf20ca2ee15222))
+* implement SendKeyPress ([a21454d](https://github.com/sceredi/co-type/commit/a21454dead1e33307305bcebd644c3dcfe2305bb))
+
+### Tests
+
+* add lobby state checks ([7eb03fd](https://github.com/sceredi/co-type/commit/7eb03fd554536149824606a1ef5cab783884a914))
+
+### General maintenance
+
+* add GameInfo entity ([c549cfe](https://github.com/sceredi/co-type/commit/c549cfebedada7803fbb006f7ebf328f7d0895d3))
+* add SendKeyPress route ([2333e94](https://github.com/sceredi/co-type/commit/2333e94932d6912038af3cf85d8a8a95f6cd033d))
+* add status to lobby ([f9577a5](https://github.com/sceredi/co-type/commit/f9577a5cdc1177eca222e5a61b33c39f8de50867))
+
 ## [0.8.0](https://github.com/sceredi/co-type/compare/v0.7.0...v0.8.0) (2026-06-27)
 
 ### Features
