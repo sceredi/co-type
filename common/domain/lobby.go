@@ -32,6 +32,9 @@ var ErrPlayerNotInLobby = errors.New("player not in lobby")
 // ErrPlayerAlreadyInLobby is returned when a player with the same name is already in the lobby.
 var ErrPlayerAlreadyInLobby = errors.New("player already in lobby")
 
+// ErrLobbyNotOpen is returned when a player tries to join a lobby that is not waiting for players.
+var ErrLobbyNotOpen = errors.New("lobby is not open for new players")
+
 // ErrGameNotPlaying is returned when a key press is sent but the lobby is not in the Playing state.
 var ErrGameNotPlaying = errors.New("game is not currently playing")
 
