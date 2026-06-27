@@ -8,6 +8,7 @@ import (
 
 	tea "charm.land/bubbletea/v2"
 	"charm.land/lipgloss/v2"
+	"github.com/sceredi/co-type/client/internal/tui/pages"
 	game_messages "github.com/sceredi/co-type/client/internal/tui/pages/game/messages"
 	"github.com/sceredi/co-type/client/internal/tui/styles"
 	"github.com/sceredi/co-type/common/domain"
@@ -80,8 +81,8 @@ func (m Model) View() string {
 	wrong := style.Background(styles.DarkRed).Render(m.game.Lobby.Snippet[ce:end])
 	rest := m.game.Lobby.Snippet[end:]
 	board := lipgloss.NewStyle().
-		Width(m.width).
-		Height(m.height).
+		Width(max(m.width, pages.Width) * 4 / 5).
+		Height(max(m.height, pages.Height) - 4).
 		Align(lipgloss.Left).
 		PaddingRight(2).
 		BorderStyle(lipgloss.NormalBorder()).
