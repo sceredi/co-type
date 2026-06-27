@@ -32,6 +32,15 @@ var ErrPlayerNotInLobby = errors.New("player not in lobby")
 // ErrPlayerAlreadyInLobby is returned when a player with the same name is already in the lobby.
 var ErrPlayerAlreadyInLobby = errors.New("player already in lobby")
 
+// ErrGameNotPlaying is returned when a key press is sent but the lobby is not in the Playing state.
+var ErrGameNotPlaying = errors.New("game is not currently playing")
+
+// ErrKeyNotAllowed is returned when a key press does not pass the player's allowed/blocked character filters.
+var ErrKeyNotAllowed = errors.New("key not allowed for this player")
+
+// ErrDeleteNotAllowed is returned when a backspace is sent but the player cannot delete or there is nothing to delete.
+var ErrDeleteNotAllowed = errors.New("delete not allowed")
+
 // Lobby represents the state of the lobby.
 type Lobby struct {
 	ID      string
