@@ -48,6 +48,10 @@ func (m *mockLobbyClient) Subscribe(ctx context.Context, in *lobbypb.SubscribeRe
 	return nil, nil
 }
 
+func (m *mockLobbyClient) SendKeyPress(ctx context.Context, in *lobbypb.SendKeyPressRequest, opts ...grpcpkg.CallOption) (*lobbypb.SendKeyPressResponse, error) {
+	return nil, m.err
+}
+
 func TestCreateLobby_Success(t *testing.T) {
 	mock := &mockLobbyClient{createResp: &lobbypb.CreateLobbyResponse{
 		Lobby: &lobbypb.Lobby{

@@ -109,3 +109,14 @@ func newLobbyEvent(l *domain.Lobby) *lobby.LobbyEvent {
 		Lobby: l.ToGRPCLobby(),
 	}
 }
+
+// SendKeyPress handles the gRPC request to send a key press to the game.
+func (h *LobbyHandler) SendKeyPress(_ context.Context, req *lobby.SendKeyPressRequest) (*lobby.SendKeyPressResponse, error) {
+	l, err := h.lobbySvc.SendKeyPress(req.LobbyId, req.PlayerName, req.Key, req.IsBackspace)
+	if err != nil {
+		return nil, grpc_utils.ToGRPCError(err)
+	}
+	return &lobby.SendKeyPressResponse{
+		Lobby: l.Base.ToGRPCLobby(),
+	}, nil
+}

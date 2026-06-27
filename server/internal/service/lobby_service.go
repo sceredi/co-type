@@ -19,6 +19,7 @@ type LobbyService interface {
 	EditPlayer(lobbyID, playerName string, isReady bool, allowedCharacters, blockedCharacters string, canDelete bool) (*domain.Lobby, error)
 	Ready(lobbyID, playerName string) (*domain.Lobby, error)
 	Get(id string) *domain.Lobby
+	SendKeyPress(lobbyID, playerName, key string, isBackspace bool) (*domain.Lobby, error)
 }
 
 type lobbyService struct {
@@ -145,6 +146,11 @@ func (s *lobbyService) Leave(id, userName string) error {
 		return nil
 	}
 
+	// Pause the game if a player leaves mid-game.
+	if lobby.Base.Status == commondomain.LobbyPlaying {
+		lobby.Base.Status = commondomain.LobbyPaused
+	}
+
 	for _, ch := range lobby.Subs {
 		ch <- lobby
 	}
@@ -195,4 +201,45 @@ func allPlayersReady(l *commondomain.Lobby) bool {
 		}
 	}
 	return true
+}
+
+func (s *lobbyService) SendKeyPress(lobbyID, playerName, key string, isBackspace bool) (*domain.Lobby, error) {
+	slog.DebugContext(context.Background(), "Sending key press",
+		slog.String("lobbyID", lobbyID),
+		slog.String("playerName", playerName),
+		slog.String("key", key),
+		slog.Bool("isBackspace", isBackspace),
+	)
+	lobby := s.lobbyRepo.Get(lobbyID)
+	if lobby == nil {
+		return nil, commondomain.ErrLobbyNotFound
+	}
+	if lobby.Base.Status != commondomain.LobbyPlaying {
+		return nil, commondomain.ErrGameNotPlaying
+	}
+
+	var player *commondomain.Player
+	for _, p := range lobby.Base.Players {
+		if p.Name == playerName {
+			player = p
+			break
+		}
+	}
+	if player == nil {
+		return nil, commondomain.ErrPlayerNotInLobby
+	}
+
+	if err := validateKey(player, key, isBackspace); err != nil {
+		return nil, err
+	}
+
+	ended := applyKeyPress(&lobby.Base.Game, key, isBackspace)
+	if ended {
+		lobby.Base.Status = commondomain.LobbyGameEnded
+	}
+
+	for _, ch := range lobby.Subs {
+		ch <- lobby
+	}
+	return lobby, nil
 }
