@@ -237,6 +237,15 @@ func TestLobbyService_Join(t *testing.T) {
 			repo:    &mockLobbyRepository{getResp: serverdomain.NewLobby(lobbyID, playerPtr(userName))},
 			wantErr: domain.ErrPlayerAlreadyInLobby,
 		},
+		{
+			name: "returns error if lobby is not waiting for players",
+			repo: func() *mockLobbyRepository {
+				l := serverdomain.NewLobby(lobbyID, playerPtr("alice"))
+				l.Base.Status = domain.LobbyPlaying
+				return &mockLobbyRepository{getResp: l}
+			}(),
+			wantErr: domain.ErrLobbyNotOpen,
+		},
 	}
 
 	for _, tt := range tests {
@@ -542,4 +551,202 @@ func buildReadyLobbyMissingOne(id, readyPlayer, notReadyPlayer string) *serverdo
 	l.Subs[readyPlayer] = make(chan *serverdomain.Lobby, 64)
 	l.Subs[notReadyPlayer] = make(chan *serverdomain.Lobby, 64)
 	return l
+}
+
+func buildPlayingLobby(id string, players ...string) *serverdomain.Lobby {
+	if len(players) == 0 {
+		return nil
+	}
+	l := serverdomain.NewLobby(id, playerPtr(players[0]))
+	l.Base.Players[0].IsReady = true
+	for _, name := range players[1:] {
+		p := domain.NewPlayer(name)
+		p.IsReady = true
+		l.Base.AddPlayers(p)
+		l.Subs[name] = make(chan *serverdomain.Lobby, 64)
+	}
+	l.Subs[players[0]] = make(chan *serverdomain.Lobby, 64)
+	l.Base.Status = domain.LobbyPlaying
+	l.Base.Game = *domain.NewGameInfo("Hello")
+	return l
+}
+
+func TestLobbyService_Leave_PausesOnMidGameLeave(t *testing.T) {
+	lobbyID := "lobby-1"
+	l := buildPlayingLobby(lobbyID, "alice", "bob")
+	repo := &mockLobbyRepository{getResp: l}
+	svc := service.NewLobbyService("test-server", &mockControlGateway{}, repo)
+
+	if err := svc.Leave(lobbyID, "bob"); err != nil {
+		t.Fatalf("Leave() unexpected error: %v", err)
+	}
+	if l.Base.Status != domain.LobbyPaused {
+		t.Errorf("Leave() status = %v, want LobbyPaused", l.Base.Status)
+	}
+}
+
+func TestLobbyService_Ready_NotAllReadyKeepsWaiting(t *testing.T) {
+	lobbyID := "lobby-1"
+	l := serverdomain.NewLobby(lobbyID, playerPtr("alice"))
+	notReady := domain.NewPlayer("bob")
+	l.Base.AddPlayers(notReady)
+	l.Subs["alice"] = make(chan *serverdomain.Lobby, 64)
+	l.Subs["bob"] = make(chan *serverdomain.Lobby, 64)
+	repo := &mockLobbyRepository{getResp: l}
+	svc := service.NewLobbyService("test-server", &mockControlGateway{}, repo)
+
+	// Only alice goes ready — bob is still not ready.
+	got, err := svc.Ready(lobbyID, "alice")
+	if err != nil {
+		t.Fatalf("Ready() unexpected error: %v", err)
+	}
+	if got.Base.Status != domain.LobbyWaitingForPlayers {
+		t.Errorf("Ready() status = %v, want LobbyWaitingForPlayers", got.Base.Status)
+	}
+	if got.Base.Game.Snippet != "" {
+		t.Errorf("Ready() snippet = %q, want empty (game not started yet)", got.Base.Game.Snippet)
+	}
+}
+
+func TestLobbyService_Ready_AllReadySetsPlayingAndSnippet(t *testing.T) {
+	lobbyID := "lobby-1"
+	l := buildReadyLobbyMissingOne(lobbyID, "alice", "bob")
+	repo := &mockLobbyRepository{getResp: l}
+	svc := service.NewLobbyService("test-server", &mockControlGateway{}, repo)
+
+	got, err := svc.Ready(lobbyID, "bob")
+	if err != nil {
+		t.Fatalf("Ready() unexpected error: %v", err)
+	}
+	if got.Base.Status != domain.LobbyPlaying {
+		t.Errorf("Ready() status = %v, want LobbyPlaying", got.Base.Status)
+	}
+	if got.Base.Game.Snippet == "" {
+		t.Error("Ready() snippet is empty, want non-empty when all players are ready")
+	}
+}
+
+func TestLobbyService_SendKeyPress(t *testing.T) {
+	lobbyID := "lobby-1"
+
+	tests := []struct {
+		name        string
+		playerName  string
+		key         string
+		isBackspace bool
+		repo        *mockLobbyRepository
+		wantErr     error
+	}{
+		{
+			name:       "returns error if lobby not found",
+			playerName: "alice",
+			key:        "H",
+			repo:       &mockLobbyRepository{getResp: nil},
+			wantErr:    domain.ErrLobbyNotFound,
+		},
+		{
+			name:       "returns error if lobby is not playing",
+			playerName: "alice",
+			key:        "H",
+			repo: func() *mockLobbyRepository {
+				l := serverdomain.NewLobby(lobbyID, playerPtr("alice"))
+				// status stays WaitingForPlayers
+				return &mockLobbyRepository{getResp: l}
+			}(),
+			wantErr: domain.ErrGameNotPlaying,
+		},
+		{
+			name:       "returns error if player not in lobby",
+			playerName: "charlie",
+			key:        "H",
+			repo:       &mockLobbyRepository{getResp: buildPlayingLobby(lobbyID, "alice")},
+			wantErr:    domain.ErrPlayerNotInLobby,
+		},
+		{
+			name:       "returns error if key is not allowed for player",
+			playerName: "alice",
+			key:        "x",
+			repo: func() *mockLobbyRepository {
+				l := buildPlayingLobby(lobbyID, "alice")
+				l.Base.Players[0].AllowedCharacters = "^[A-Z]$"
+				return &mockLobbyRepository{getResp: l}
+			}(),
+			wantErr: domain.ErrKeyNotAllowed,
+		},
+		{
+			name:        "returns error on backspace when player cannot delete",
+			playerName:  "alice",
+			isBackspace: true,
+			repo: func() *mockLobbyRepository {
+				l := buildPlayingLobby(lobbyID, "alice")
+				l.Base.Players[0].CanDelete = false
+				return &mockLobbyRepository{getResp: l}
+			}(),
+			wantErr: domain.ErrDeleteNotAllowed,
+		},
+		{
+			name:       "correct key increments CorrectChars",
+			playerName: "alice",
+			key:        "H",
+			repo:       &mockLobbyRepository{getResp: buildPlayingLobby(lobbyID, "alice")},
+			wantErr:    nil,
+		},
+		{
+			name:       "wrong key increments WrongChars",
+			playerName: "alice",
+			key:        "Z",
+			repo:       &mockLobbyRepository{getResp: buildPlayingLobby(lobbyID, "alice")},
+			wantErr:    nil,
+		},
+		{
+			name:       "game ends when snippet is fully typed",
+			playerName: "alice",
+			key:        "o",
+			repo: func() *mockLobbyRepository {
+				l := buildPlayingLobby(lobbyID, "alice")
+				// snippet is "Hello"; set CorrectChars to 4 so next correct key finishes it
+				l.Base.Game.Snippet = "Hello"
+				l.Base.Game.CorrectChars = 4
+				return &mockLobbyRepository{getResp: l}
+			}(),
+			wantErr: nil,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			svc := service.NewLobbyService("test-server", &mockControlGateway{}, tt.repo)
+			got, err := svc.SendKeyPress(lobbyID, tt.playerName, tt.key, tt.isBackspace)
+
+			if !errors.Is(err, tt.wantErr) {
+				t.Fatalf("SendKeyPress() error = %v, want %v", err, tt.wantErr)
+			}
+
+			if tt.wantErr != nil {
+				if got != nil {
+					t.Fatalf("SendKeyPress() got = %v, want nil", got)
+				}
+				return
+			}
+
+			if got == nil {
+				t.Fatal("SendKeyPress() got nil, want non-nil lobby")
+			}
+
+			switch tt.name {
+			case "correct key increments CorrectChars":
+				if got.Base.Game.CorrectChars != 1 {
+					t.Errorf("CorrectChars = %d, want 1", got.Base.Game.CorrectChars)
+				}
+			case "wrong key increments WrongChars":
+				if got.Base.Game.WrongChars != 1 {
+					t.Errorf("WrongChars = %d, want 1", got.Base.Game.WrongChars)
+				}
+			case "game ends when snippet is fully typed":
+				if got.Base.Status != domain.LobbyGameEnded {
+					t.Errorf("Status = %v, want LobbyGameEnded", got.Base.Status)
+				}
+			}
+		})
+	}
 }

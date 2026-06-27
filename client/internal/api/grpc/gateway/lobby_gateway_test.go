@@ -9,15 +9,17 @@ import (
 )
 
 type mockLobbyClient struct {
-	lastCreateReq  *lobbypb.CreateLobbyRequest
-	lastJoinReq    *lobbypb.JoinLobbyRequest
-	lastLeaveReq   *lobbypb.LeaveLobbyRequest
-	lastEditReq    *lobbypb.EditPlayerRequest
-	createResp     *lobbypb.CreateLobbyResponse
-	joinResp       *lobbypb.JoinLobbyResponse
-	leaveResp      *lobbypb.LeaveLobbyResponse
-	editPlayerResp *lobbypb.EditPlayerResponse
-	err            error
+	lastCreateReq    *lobbypb.CreateLobbyRequest
+	lastJoinReq      *lobbypb.JoinLobbyRequest
+	lastLeaveReq     *lobbypb.LeaveLobbyRequest
+	lastEditReq      *lobbypb.EditPlayerRequest
+	createResp       *lobbypb.CreateLobbyResponse
+	joinResp         *lobbypb.JoinLobbyResponse
+	leaveResp        *lobbypb.LeaveLobbyResponse
+	editPlayerResp   *lobbypb.EditPlayerResponse
+	readyPlayerResp  *lobbypb.ReadyPlayerResponse
+	sendKeyPressResp *lobbypb.SendKeyPressResponse
+	err              error
 }
 
 func (m *mockLobbyClient) CreateLobby(ctx context.Context, in *lobbypb.CreateLobbyRequest, opts ...grpcpkg.CallOption) (*lobbypb.CreateLobbyResponse, error) {
@@ -41,7 +43,7 @@ func (m *mockLobbyClient) EditPlayer(ctx context.Context, in *lobbypb.EditPlayer
 }
 
 func (m *mockLobbyClient) ReadyPlayer(ctx context.Context, in *lobbypb.ReadyPlayerRequest, opts ...grpcpkg.CallOption) (*lobbypb.ReadyPlayerResponse, error) {
-	return nil, m.err
+	return m.readyPlayerResp, m.err
 }
 
 func (m *mockLobbyClient) Subscribe(ctx context.Context, in *lobbypb.SubscribeRequest, opts ...grpcpkg.CallOption) (grpcpkg.ServerStreamingClient[lobbypb.LobbyEvent], error) {
@@ -49,7 +51,7 @@ func (m *mockLobbyClient) Subscribe(ctx context.Context, in *lobbypb.SubscribeRe
 }
 
 func (m *mockLobbyClient) SendKeyPress(ctx context.Context, in *lobbypb.SendKeyPressRequest, opts ...grpcpkg.CallOption) (*lobbypb.SendKeyPressResponse, error) {
-	return nil, m.err
+	return m.sendKeyPressResp, m.err
 }
 
 func TestCreateLobby_Success(t *testing.T) {
@@ -156,5 +158,116 @@ func TestEditPlayer_Success(t *testing.T) {
 	}
 	if mock.lastEditReq.GetPlayerName() != "Player1" {
 		t.Fatalf("expected player name Player1, got %q", mock.lastEditReq.GetPlayerName())
+	}
+}
+
+func TestCreateLobby_Error(t *testing.T) {
+	mock := &mockLobbyClient{err: grpcpkg.ErrClientConnClosing}
+	g := &lobbyGateway{ctx: context.Background(), conn: mock}
+
+	l, err := g.Create("ABCD", "Host")
+	if err == nil {
+		t.Fatal("expected error, got nil")
+	}
+	if l != nil {
+		t.Fatalf("expected nil lobby on error, got %+v", l)
+	}
+}
+
+func TestJoinLobby_Error(t *testing.T) {
+	mock := &mockLobbyClient{err: grpcpkg.ErrClientConnClosing}
+	g := &lobbyGateway{ctx: context.Background(), conn: mock}
+
+	l, err := g.Join("ABCD", "Player2")
+	if err == nil {
+		t.Fatal("expected error, got nil")
+	}
+	if l != nil {
+		t.Fatalf("expected nil lobby on error, got %+v", l)
+	}
+}
+
+func TestLeaveLobby_Error(t *testing.T) {
+	mock := &mockLobbyClient{err: grpcpkg.ErrClientConnClosing}
+	g := &lobbyGateway{ctx: context.Background(), conn: mock}
+
+	err := g.Leave("ABCD", "Player1")
+	if err == nil {
+		t.Fatal("expected error, got nil")
+	}
+}
+
+func TestEditPlayer_Error(t *testing.T) {
+	mock := &mockLobbyClient{err: grpcpkg.ErrClientConnClosing}
+	g := &lobbyGateway{ctx: context.Background(), conn: mock}
+
+	l, err := g.EditPlayer("ABCD", "Player1", true, "", "", false)
+	if err == nil {
+		t.Fatal("expected error, got nil")
+	}
+	if l != nil {
+		t.Fatalf("expected nil lobby on error, got %+v", l)
+	}
+}
+
+func TestReadyPlayer_Success(t *testing.T) {
+	mock := &mockLobbyClient{readyPlayerResp: &lobbypb.ReadyPlayerResponse{
+		Lobby: &lobbypb.Lobby{
+			Id:      "ABCD",
+			Players: []*lobbypb.Player{{Name: "Player1", IsReady: true}},
+		},
+	}}
+	g := &lobbyGateway{ctx: context.Background(), conn: mock}
+
+	l, err := g.Ready("ABCD", "Player1")
+	if err != nil {
+		t.Fatalf("expected no error, got %v", err)
+	}
+	if l == nil {
+		t.Fatal("expected lobby, got nil")
+	}
+	if len(l.Players) != 1 || !l.Players[0].IsReady {
+		t.Fatalf("expected ready player, got %+v", l.Players)
+	}
+}
+
+func TestReadyPlayer_Error(t *testing.T) {
+	mock := &mockLobbyClient{err: grpcpkg.ErrClientConnClosing}
+	g := &lobbyGateway{ctx: context.Background(), conn: mock}
+
+	l, err := g.Ready("ABCD", "Player1")
+	if err == nil {
+		t.Fatal("expected error, got nil")
+	}
+	if l != nil {
+		t.Fatalf("expected nil lobby on error, got %+v", l)
+	}
+}
+
+func TestSendKeyPress_Success(t *testing.T) {
+	mock := &mockLobbyClient{sendKeyPressResp: &lobbypb.SendKeyPressResponse{
+		Lobby: &lobbypb.Lobby{Id: "ABCD"},
+	}}
+	g := &lobbyGateway{ctx: context.Background(), conn: mock}
+
+	l, err := g.SendKeyPress("ABCD", "Player1", "H", false)
+	if err != nil {
+		t.Fatalf("expected no error, got %v", err)
+	}
+	if l == nil {
+		t.Fatal("expected lobby, got nil")
+	}
+}
+
+func TestSendKeyPress_Error(t *testing.T) {
+	mock := &mockLobbyClient{err: grpcpkg.ErrClientConnClosing}
+	g := &lobbyGateway{ctx: context.Background(), conn: mock}
+
+	l, err := g.SendKeyPress("ABCD", "Player1", "H", false)
+	if err == nil {
+		t.Fatal("expected error, got nil")
+	}
+	if l != nil {
+		t.Fatalf("expected nil lobby on error, got %+v", l)
 	}
 }

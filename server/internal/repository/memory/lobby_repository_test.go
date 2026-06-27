@@ -158,3 +158,37 @@ func TestLobbyRepository_Delete(t *testing.T) {
 		})
 	}
 }
+
+func TestLobbyRepository_Delete_Twice(t *testing.T) {
+	repo := memory.NewLobbyRepository()
+	l := serverdomain.NewLobby("lobby-1", domain.NewPlayer("alice"))
+	if _, err := repo.Create(l); err != nil {
+		t.Fatalf("seed create failed: %v", err)
+	}
+
+	if err := repo.Delete("lobby-1"); err != nil {
+		t.Fatalf("first Delete() unexpected error: %v", err)
+	}
+	if err := repo.Delete("lobby-1"); !errors.Is(err, domain.ErrLobbyNotFound) {
+		t.Fatalf("second Delete() error = %v, want ErrLobbyNotFound", err)
+	}
+}
+
+func TestLobbyRepository_Delete_DoesNotAffectOtherLobbies(t *testing.T) {
+	repo := memory.NewLobbyRepository()
+	l1 := serverdomain.NewLobby("lobby-1", domain.NewPlayer("alice"))
+	l2 := serverdomain.NewLobby("lobby-2", domain.NewPlayer("bob"))
+	if _, err := repo.Create(l1); err != nil {
+		t.Fatalf("create lobby-1 failed: %v", err)
+	}
+	if _, err := repo.Create(l2); err != nil {
+		t.Fatalf("create lobby-2 failed: %v", err)
+	}
+
+	if err := repo.Delete("lobby-1"); err != nil {
+		t.Fatalf("Delete() unexpected error: %v", err)
+	}
+	if got := repo.Get("lobby-2"); got == nil {
+		t.Fatal("Delete() removed lobby-2, want it to still exist")
+	}
+}
