@@ -98,8 +98,12 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		case lobby_messages.LeaveMsg:
 			m.page = welcomePage
 		case lobby_messages.StartGameMsg:
-			m.game = game.New(msg.Game)
+			m.game = game.New(msg.Game, msg.Player, msg.Updates, m.ls)
 			m.page = gamePage
+			var lobbyCmd tea.Cmd
+			m.lobby, lobbyCmd = m.lobby.Update(msg)
+			cmd = tea.Batch(lobbyCmd, m.game.Init())
+			return m, cmd
 		}
 		m.lobby, cmd = m.lobby.Update(msg)
 	case gamePage:

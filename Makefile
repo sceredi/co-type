@@ -33,8 +33,8 @@ tidy:
 
 .PHONY: docker-build
 docker-build: kind-cluster
-	docker build --build-arg MODULE=broker -t co-type/broker:latest .
-	docker build --build-arg MODULE=server -t co-type/server:latest .
+	docker build --no-cache --build-arg MODULE=broker -t co-type/broker:latest .
+	docker build --no-cache --build-arg MODULE=server -t co-type/server:latest .
 	kind load docker-image --name $(KIND_CLUSTER_NAME) co-type/broker:latest
 	kind load docker-image --name $(KIND_CLUSTER_NAME) co-type/server:latest
 

@@ -32,6 +32,9 @@ type LobbyService interface {
 
 	// Subscribe subscribes to lobby events and returns a channel that receives updated lobby state.
 	Subscribe(lobbyID, playerName string) (<-chan *domain.Lobby, error)
+
+	// SendKeyPress validates and sends a key press for the given player. Returns the updated lobby.
+	SendKeyPress(lobbyID string, player *domain.Player, key string, isBackspace bool) (*domain.Lobby, error)
 }
 
 type lobbyService struct {
@@ -87,4 +90,14 @@ func (s *lobbyService) Subscribe(lobbyID, playerName string) (<-chan *domain.Lob
 		return nil, ErrLobbyGatewayNotSet
 	}
 	return s.gtw.Subscribe(lobbyID, playerName)
+}
+
+func (s *lobbyService) SendKeyPress(lobbyID string, player *domain.Player, key string, isBackspace bool) (*domain.Lobby, error) {
+	if s.gtw == nil {
+		return nil, ErrLobbyGatewayNotSet
+	}
+	if err := domain.ValidateKeyPress(player, key, isBackspace); err != nil {
+		return nil, err
+	}
+	return s.gtw.SendKeyPress(lobbyID, player.Name, key, isBackspace)
 }

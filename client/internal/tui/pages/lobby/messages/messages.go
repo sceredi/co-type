@@ -116,12 +116,14 @@ type LobbySubscriptionClosedMsg struct{}
 
 // StartGameMsg is a message that indicates that a game should be started.
 type StartGameMsg struct {
-	Game domain.Game
+	Game    domain.Game
+	Player  *domain.Player
+	Updates <-chan *domain.Lobby
 }
 
 // NewStartGameCmd return a command that creates a StartGameMsg.
-func NewStartGameCmd(game domain.Game) tea.Cmd {
+func NewStartGameCmd(game domain.Game, player *domain.Player, updates <-chan *domain.Lobby) tea.Cmd {
 	return func() tea.Msg {
-		return StartGameMsg{Game: game}
+		return StartGameMsg{Game: game, Player: player, Updates: updates}
 	}
 }
