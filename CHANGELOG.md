@@ -1,3 +1,21 @@
+## [0.8.0](https://github.com/sceredi/co-type/compare/v0.7.0...v0.8.0) (2026-06-27)
+
+### Features
+
+* generate code snippets from server own code ([8bcea9c](https://github.com/sceredi/co-type/commit/8bcea9cd60675a01a6b52ce5a9ee1edba4d6311b))
+
+### Dependency updates
+
+* **deps:** update node.js to 24.18 ([301993f](https://github.com/sceredi/co-type/commit/301993f2fb937a1944633edb8247e6bd4135623d))
+
+### Bug Fixes
+
+* avoid game window being too wide ([51fe641](https://github.com/sceredi/co-type/commit/51fe64167dafa4118a595e699208ae4d501eac6a))
+
+### Build and continuous integration
+
+* **deps:** update actions/setup-go action to v6.5.0 ([168b832](https://github.com/sceredi/co-type/commit/168b8329749edd2af8889d398f9ab85f5e41c430))
+
 ## [0.7.0](https://github.com/sceredi/co-type/compare/v0.6.0...v0.7.0) (2026-06-20)
 
 ### Features
