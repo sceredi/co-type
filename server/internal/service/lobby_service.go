@@ -175,7 +175,7 @@ func (s *lobbyService) Ready(lobbyID, playerName string) (*domain.Lobby, error) 
 	player.IsReady = !player.IsReady
 
 	if allPlayersReady(lobby.Base) {
-		lobby.Base.Snippet = snippet.Random()
+		lobby.Base.Game = *commondomain.NewGameInfo(snippet.Random())
 	}
 
 	for _, ch := range lobby.Subs {

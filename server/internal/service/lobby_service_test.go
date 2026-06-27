@@ -526,7 +526,7 @@ func TestLobbyService_Ready(t *testing.T) {
 			if found.IsReady != tt.wantIsReady {
 				t.Errorf("Ready() IsReady = %v, want %v", found.IsReady, tt.wantIsReady)
 			}
-			if tt.wantSnippet && l.Base.Snippet == "" {
+			if tt.wantSnippet && l.Base.Game.Snippet == "" {
 				t.Error("Ready() expected snippet to be set when all players are ready")
 			}
 		})

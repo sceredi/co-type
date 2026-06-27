@@ -48,7 +48,7 @@ func (m Model) View() string {
 	duration := fmt.Sprintf("Duration -> %02d:%02d (mm:ss)", minutes, seconds)
 	cps := "Characters per second -> 0.00"
 	if m.stats.TotalTime > 0 {
-		cps = fmt.Sprintf("Characters per second -> %.02f", float64(len(m.stats.Lobby.Snippet))/m.stats.TotalTime.Seconds())
+		cps = fmt.Sprintf("Characters per second -> %.02f", float64(len(m.stats.Lobby.Game.Snippet))/m.stats.TotalTime.Seconds())
 	}
 	v := lipgloss.JoinVertical(lipgloss.Left, duration, cps)
 	v = lipgloss.JoinVertical(lipgloss.Center, header, v, "\nUse \"ctrl+c\" to close co-type")

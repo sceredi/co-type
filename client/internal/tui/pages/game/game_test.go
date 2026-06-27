@@ -11,7 +11,7 @@ import (
 func createTestGame() domain.Game {
 	return domain.Game{
 		Lobby: domain.Lobby{
-			Snippet: "hello world",
+			Game: domain.GameInfo{Snippet: "hello world"},
 			Players: []*domain.Player{
 				{Name: "Player1"},
 				{Name: "Player2"},
@@ -29,7 +29,7 @@ func TestNew(t *testing.T) {
 	game := createTestGame()
 	m := New(game)
 
-	if m.game.Lobby.Snippet != "hello world" {
+	if m.game.Lobby.Game.Snippet != "hello world" {
 		t.Fatalf("expected model to store game, got empty")
 	}
 }
@@ -148,8 +148,8 @@ func TestViewWithNoCorrectChars(t *testing.T) {
 
 func TestViewWithAllCharsInput(t *testing.T) {
 	game := createTestGame()
-	game.State.CorrectChars = len(game.Lobby.Snippet)
-	game.State.LastChar = len(game.Lobby.Snippet)
+	game.State.CorrectChars = len(game.Lobby.Game.Snippet)
+	game.State.LastChar = len(game.Lobby.Game.Snippet)
 	m := New(game)
 
 	view := m.View()
@@ -171,7 +171,7 @@ func TestInit(t *testing.T) {
 func TestRenderPlayersWithSinglePlayer(t *testing.T) {
 	game := domain.Game{
 		Lobby: domain.Lobby{
-			Snippet: "test",
+			Game: domain.GameInfo{Snippet: "test"},
 			Players: []*domain.Player{
 				{Name: "OnlyPlayer"},
 			},
@@ -193,7 +193,7 @@ func TestRenderPlayersWithSinglePlayer(t *testing.T) {
 func TestRenderPlayersWithNoPlayers(t *testing.T) {
 	game := domain.Game{
 		Lobby: domain.Lobby{
-			Snippet: "test",
+			Game:    domain.GameInfo{Snippet: "test"},
 			Players: []*domain.Player{},
 		},
 		State: domain.GameState{},

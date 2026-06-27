@@ -77,9 +77,9 @@ func (m Model) View() string {
 	style := lipgloss.NewStyle()
 	ce := m.game.State.CorrectChars
 	end := m.game.State.LastChar
-	correct := style.Background(styles.DarkGreen).Render(m.game.Lobby.Snippet[:ce])
-	wrong := style.Background(styles.DarkRed).Render(m.game.Lobby.Snippet[ce:end])
-	rest := m.game.Lobby.Snippet[end:]
+	correct := style.Background(styles.DarkGreen).Render(m.game.Lobby.Game.Snippet[:ce])
+	wrong := style.Background(styles.DarkRed).Render(m.game.Lobby.Game.Snippet[ce:end])
+	rest := m.game.Lobby.Game.Snippet[end:]
 	board := lipgloss.NewStyle().
 		Width(max(m.width, pages.Width) * 4 / 5).
 		Height(max(m.height, pages.Height) - 4).

@@ -21,18 +21,86 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
+type GameInfo struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Snippet       string                 `protobuf:"bytes,1,opt,name=snippet,proto3" json:"snippet,omitempty"`
+	CorrectChars  int64                  `protobuf:"varint,2,opt,name=correct_chars,json=correctChars,proto3" json:"correct_chars,omitempty"`
+	WrongChars    int64                  `protobuf:"varint,3,opt,name=wrong_chars,json=wrongChars,proto3" json:"wrong_chars,omitempty"`
+	Revision      int64                  `protobuf:"varint,4,opt,name=revision,proto3" json:"revision,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GameInfo) Reset() {
+	*x = GameInfo{}
+	mi := &file_common_proto_lobby_lobby_proto_msgTypes[0]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GameInfo) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GameInfo) ProtoMessage() {}
+
+func (x *GameInfo) ProtoReflect() protoreflect.Message {
+	mi := &file_common_proto_lobby_lobby_proto_msgTypes[0]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GameInfo.ProtoReflect.Descriptor instead.
+func (*GameInfo) Descriptor() ([]byte, []int) {
+	return file_common_proto_lobby_lobby_proto_rawDescGZIP(), []int{0}
+}
+
+func (x *GameInfo) GetSnippet() string {
+	if x != nil {
+		return x.Snippet
+	}
+	return ""
+}
+
+func (x *GameInfo) GetCorrectChars() int64 {
+	if x != nil {
+		return x.CorrectChars
+	}
+	return 0
+}
+
+func (x *GameInfo) GetWrongChars() int64 {
+	if x != nil {
+		return x.WrongChars
+	}
+	return 0
+}
+
+func (x *GameInfo) GetRevision() int64 {
+	if x != nil {
+		return x.Revision
+	}
+	return 0
+}
+
 type Lobby struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
 	Players       []*Player              `protobuf:"bytes,2,rep,name=players,proto3" json:"players,omitempty"`
-	Snippet       string                 `protobuf:"bytes,3,opt,name=snippet,proto3" json:"snippet,omitempty"`
+	Game          *GameInfo              `protobuf:"bytes,3,opt,name=game,proto3" json:"game,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
 func (x *Lobby) Reset() {
 	*x = Lobby{}
-	mi := &file_common_proto_lobby_lobby_proto_msgTypes[0]
+	mi := &file_common_proto_lobby_lobby_proto_msgTypes[1]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -44,7 +112,7 @@ func (x *Lobby) String() string {
 func (*Lobby) ProtoMessage() {}
 
 func (x *Lobby) ProtoReflect() protoreflect.Message {
-	mi := &file_common_proto_lobby_lobby_proto_msgTypes[0]
+	mi := &file_common_proto_lobby_lobby_proto_msgTypes[1]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -57,7 +125,7 @@ func (x *Lobby) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Lobby.ProtoReflect.Descriptor instead.
 func (*Lobby) Descriptor() ([]byte, []int) {
-	return file_common_proto_lobby_lobby_proto_rawDescGZIP(), []int{0}
+	return file_common_proto_lobby_lobby_proto_rawDescGZIP(), []int{1}
 }
 
 func (x *Lobby) GetId() string {
@@ -74,11 +142,11 @@ func (x *Lobby) GetPlayers() []*Player {
 	return nil
 }
 
-func (x *Lobby) GetSnippet() string {
+func (x *Lobby) GetGame() *GameInfo {
 	if x != nil {
-		return x.Snippet
+		return x.Game
 	}
-	return ""
+	return nil
 }
 
 type Player struct {
@@ -94,7 +162,7 @@ type Player struct {
 
 func (x *Player) Reset() {
 	*x = Player{}
-	mi := &file_common_proto_lobby_lobby_proto_msgTypes[1]
+	mi := &file_common_proto_lobby_lobby_proto_msgTypes[2]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -106,7 +174,7 @@ func (x *Player) String() string {
 func (*Player) ProtoMessage() {}
 
 func (x *Player) ProtoReflect() protoreflect.Message {
-	mi := &file_common_proto_lobby_lobby_proto_msgTypes[1]
+	mi := &file_common_proto_lobby_lobby_proto_msgTypes[2]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -119,7 +187,7 @@ func (x *Player) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Player.ProtoReflect.Descriptor instead.
 func (*Player) Descriptor() ([]byte, []int) {
-	return file_common_proto_lobby_lobby_proto_rawDescGZIP(), []int{1}
+	return file_common_proto_lobby_lobby_proto_rawDescGZIP(), []int{2}
 }
 
 func (x *Player) GetName() string {
@@ -168,7 +236,7 @@ type CreateLobbyRequest struct {
 
 func (x *CreateLobbyRequest) Reset() {
 	*x = CreateLobbyRequest{}
-	mi := &file_common_proto_lobby_lobby_proto_msgTypes[2]
+	mi := &file_common_proto_lobby_lobby_proto_msgTypes[3]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -180,7 +248,7 @@ func (x *CreateLobbyRequest) String() string {
 func (*CreateLobbyRequest) ProtoMessage() {}
 
 func (x *CreateLobbyRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_common_proto_lobby_lobby_proto_msgTypes[2]
+	mi := &file_common_proto_lobby_lobby_proto_msgTypes[3]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -193,7 +261,7 @@ func (x *CreateLobbyRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreateLobbyRequest.ProtoReflect.Descriptor instead.
 func (*CreateLobbyRequest) Descriptor() ([]byte, []int) {
-	return file_common_proto_lobby_lobby_proto_rawDescGZIP(), []int{2}
+	return file_common_proto_lobby_lobby_proto_rawDescGZIP(), []int{3}
 }
 
 func (x *CreateLobbyRequest) GetLobbyId() string {
@@ -219,7 +287,7 @@ type CreateLobbyResponse struct {
 
 func (x *CreateLobbyResponse) Reset() {
 	*x = CreateLobbyResponse{}
-	mi := &file_common_proto_lobby_lobby_proto_msgTypes[3]
+	mi := &file_common_proto_lobby_lobby_proto_msgTypes[4]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -231,7 +299,7 @@ func (x *CreateLobbyResponse) String() string {
 func (*CreateLobbyResponse) ProtoMessage() {}
 
 func (x *CreateLobbyResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_common_proto_lobby_lobby_proto_msgTypes[3]
+	mi := &file_common_proto_lobby_lobby_proto_msgTypes[4]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -244,7 +312,7 @@ func (x *CreateLobbyResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreateLobbyResponse.ProtoReflect.Descriptor instead.
 func (*CreateLobbyResponse) Descriptor() ([]byte, []int) {
-	return file_common_proto_lobby_lobby_proto_rawDescGZIP(), []int{3}
+	return file_common_proto_lobby_lobby_proto_rawDescGZIP(), []int{4}
 }
 
 func (x *CreateLobbyResponse) GetLobby() *Lobby {
@@ -264,7 +332,7 @@ type JoinLobbyRequest struct {
 
 func (x *JoinLobbyRequest) Reset() {
 	*x = JoinLobbyRequest{}
-	mi := &file_common_proto_lobby_lobby_proto_msgTypes[4]
+	mi := &file_common_proto_lobby_lobby_proto_msgTypes[5]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -276,7 +344,7 @@ func (x *JoinLobbyRequest) String() string {
 func (*JoinLobbyRequest) ProtoMessage() {}
 
 func (x *JoinLobbyRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_common_proto_lobby_lobby_proto_msgTypes[4]
+	mi := &file_common_proto_lobby_lobby_proto_msgTypes[5]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -289,7 +357,7 @@ func (x *JoinLobbyRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use JoinLobbyRequest.ProtoReflect.Descriptor instead.
 func (*JoinLobbyRequest) Descriptor() ([]byte, []int) {
-	return file_common_proto_lobby_lobby_proto_rawDescGZIP(), []int{4}
+	return file_common_proto_lobby_lobby_proto_rawDescGZIP(), []int{5}
 }
 
 func (x *JoinLobbyRequest) GetLobbyId() string {
@@ -315,7 +383,7 @@ type JoinLobbyResponse struct {
 
 func (x *JoinLobbyResponse) Reset() {
 	*x = JoinLobbyResponse{}
-	mi := &file_common_proto_lobby_lobby_proto_msgTypes[5]
+	mi := &file_common_proto_lobby_lobby_proto_msgTypes[6]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -327,7 +395,7 @@ func (x *JoinLobbyResponse) String() string {
 func (*JoinLobbyResponse) ProtoMessage() {}
 
 func (x *JoinLobbyResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_common_proto_lobby_lobby_proto_msgTypes[5]
+	mi := &file_common_proto_lobby_lobby_proto_msgTypes[6]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -340,7 +408,7 @@ func (x *JoinLobbyResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use JoinLobbyResponse.ProtoReflect.Descriptor instead.
 func (*JoinLobbyResponse) Descriptor() ([]byte, []int) {
-	return file_common_proto_lobby_lobby_proto_rawDescGZIP(), []int{5}
+	return file_common_proto_lobby_lobby_proto_rawDescGZIP(), []int{6}
 }
 
 func (x *JoinLobbyResponse) GetLobby() *Lobby {
@@ -360,7 +428,7 @@ type LeaveLobbyRequest struct {
 
 func (x *LeaveLobbyRequest) Reset() {
 	*x = LeaveLobbyRequest{}
-	mi := &file_common_proto_lobby_lobby_proto_msgTypes[6]
+	mi := &file_common_proto_lobby_lobby_proto_msgTypes[7]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -372,7 +440,7 @@ func (x *LeaveLobbyRequest) String() string {
 func (*LeaveLobbyRequest) ProtoMessage() {}
 
 func (x *LeaveLobbyRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_common_proto_lobby_lobby_proto_msgTypes[6]
+	mi := &file_common_proto_lobby_lobby_proto_msgTypes[7]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -385,7 +453,7 @@ func (x *LeaveLobbyRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use LeaveLobbyRequest.ProtoReflect.Descriptor instead.
 func (*LeaveLobbyRequest) Descriptor() ([]byte, []int) {
-	return file_common_proto_lobby_lobby_proto_rawDescGZIP(), []int{6}
+	return file_common_proto_lobby_lobby_proto_rawDescGZIP(), []int{7}
 }
 
 func (x *LeaveLobbyRequest) GetLobbyId() string {
@@ -412,7 +480,7 @@ type LeaveLobbyResponse struct {
 
 func (x *LeaveLobbyResponse) Reset() {
 	*x = LeaveLobbyResponse{}
-	mi := &file_common_proto_lobby_lobby_proto_msgTypes[7]
+	mi := &file_common_proto_lobby_lobby_proto_msgTypes[8]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -424,7 +492,7 @@ func (x *LeaveLobbyResponse) String() string {
 func (*LeaveLobbyResponse) ProtoMessage() {}
 
 func (x *LeaveLobbyResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_common_proto_lobby_lobby_proto_msgTypes[7]
+	mi := &file_common_proto_lobby_lobby_proto_msgTypes[8]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -437,7 +505,7 @@ func (x *LeaveLobbyResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use LeaveLobbyResponse.ProtoReflect.Descriptor instead.
 func (*LeaveLobbyResponse) Descriptor() ([]byte, []int) {
-	return file_common_proto_lobby_lobby_proto_rawDescGZIP(), []int{7}
+	return file_common_proto_lobby_lobby_proto_rawDescGZIP(), []int{8}
 }
 
 func (x *LeaveLobbyResponse) GetSuccess() bool {
@@ -468,7 +536,7 @@ type EditPlayerRequest struct {
 
 func (x *EditPlayerRequest) Reset() {
 	*x = EditPlayerRequest{}
-	mi := &file_common_proto_lobby_lobby_proto_msgTypes[8]
+	mi := &file_common_proto_lobby_lobby_proto_msgTypes[9]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -480,7 +548,7 @@ func (x *EditPlayerRequest) String() string {
 func (*EditPlayerRequest) ProtoMessage() {}
 
 func (x *EditPlayerRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_common_proto_lobby_lobby_proto_msgTypes[8]
+	mi := &file_common_proto_lobby_lobby_proto_msgTypes[9]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -493,7 +561,7 @@ func (x *EditPlayerRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use EditPlayerRequest.ProtoReflect.Descriptor instead.
 func (*EditPlayerRequest) Descriptor() ([]byte, []int) {
-	return file_common_proto_lobby_lobby_proto_rawDescGZIP(), []int{8}
+	return file_common_proto_lobby_lobby_proto_rawDescGZIP(), []int{9}
 }
 
 func (x *EditPlayerRequest) GetLobbyId() string {
@@ -547,7 +615,7 @@ type EditPlayerResponse struct {
 
 func (x *EditPlayerResponse) Reset() {
 	*x = EditPlayerResponse{}
-	mi := &file_common_proto_lobby_lobby_proto_msgTypes[9]
+	mi := &file_common_proto_lobby_lobby_proto_msgTypes[10]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -559,7 +627,7 @@ func (x *EditPlayerResponse) String() string {
 func (*EditPlayerResponse) ProtoMessage() {}
 
 func (x *EditPlayerResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_common_proto_lobby_lobby_proto_msgTypes[9]
+	mi := &file_common_proto_lobby_lobby_proto_msgTypes[10]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -572,7 +640,7 @@ func (x *EditPlayerResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use EditPlayerResponse.ProtoReflect.Descriptor instead.
 func (*EditPlayerResponse) Descriptor() ([]byte, []int) {
-	return file_common_proto_lobby_lobby_proto_rawDescGZIP(), []int{9}
+	return file_common_proto_lobby_lobby_proto_rawDescGZIP(), []int{10}
 }
 
 func (x *EditPlayerResponse) GetLobby() *Lobby {
@@ -592,7 +660,7 @@ type ReadyPlayerRequest struct {
 
 func (x *ReadyPlayerRequest) Reset() {
 	*x = ReadyPlayerRequest{}
-	mi := &file_common_proto_lobby_lobby_proto_msgTypes[10]
+	mi := &file_common_proto_lobby_lobby_proto_msgTypes[11]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -604,7 +672,7 @@ func (x *ReadyPlayerRequest) String() string {
 func (*ReadyPlayerRequest) ProtoMessage() {}
 
 func (x *ReadyPlayerRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_common_proto_lobby_lobby_proto_msgTypes[10]
+	mi := &file_common_proto_lobby_lobby_proto_msgTypes[11]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -617,7 +685,7 @@ func (x *ReadyPlayerRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ReadyPlayerRequest.ProtoReflect.Descriptor instead.
 func (*ReadyPlayerRequest) Descriptor() ([]byte, []int) {
-	return file_common_proto_lobby_lobby_proto_rawDescGZIP(), []int{10}
+	return file_common_proto_lobby_lobby_proto_rawDescGZIP(), []int{11}
 }
 
 func (x *ReadyPlayerRequest) GetLobbyId() string {
@@ -643,7 +711,7 @@ type ReadyPlayerResponse struct {
 
 func (x *ReadyPlayerResponse) Reset() {
 	*x = ReadyPlayerResponse{}
-	mi := &file_common_proto_lobby_lobby_proto_msgTypes[11]
+	mi := &file_common_proto_lobby_lobby_proto_msgTypes[12]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -655,7 +723,7 @@ func (x *ReadyPlayerResponse) String() string {
 func (*ReadyPlayerResponse) ProtoMessage() {}
 
 func (x *ReadyPlayerResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_common_proto_lobby_lobby_proto_msgTypes[11]
+	mi := &file_common_proto_lobby_lobby_proto_msgTypes[12]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -668,7 +736,7 @@ func (x *ReadyPlayerResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ReadyPlayerResponse.ProtoReflect.Descriptor instead.
 func (*ReadyPlayerResponse) Descriptor() ([]byte, []int) {
-	return file_common_proto_lobby_lobby_proto_rawDescGZIP(), []int{11}
+	return file_common_proto_lobby_lobby_proto_rawDescGZIP(), []int{12}
 }
 
 func (x *ReadyPlayerResponse) GetLobby() *Lobby {
@@ -688,7 +756,7 @@ type SubscribeRequest struct {
 
 func (x *SubscribeRequest) Reset() {
 	*x = SubscribeRequest{}
-	mi := &file_common_proto_lobby_lobby_proto_msgTypes[12]
+	mi := &file_common_proto_lobby_lobby_proto_msgTypes[13]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -700,7 +768,7 @@ func (x *SubscribeRequest) String() string {
 func (*SubscribeRequest) ProtoMessage() {}
 
 func (x *SubscribeRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_common_proto_lobby_lobby_proto_msgTypes[12]
+	mi := &file_common_proto_lobby_lobby_proto_msgTypes[13]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -713,7 +781,7 @@ func (x *SubscribeRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SubscribeRequest.ProtoReflect.Descriptor instead.
 func (*SubscribeRequest) Descriptor() ([]byte, []int) {
-	return file_common_proto_lobby_lobby_proto_rawDescGZIP(), []int{12}
+	return file_common_proto_lobby_lobby_proto_rawDescGZIP(), []int{13}
 }
 
 func (x *SubscribeRequest) GetLobbyId() string {
@@ -739,7 +807,7 @@ type LobbyEvent struct {
 
 func (x *LobbyEvent) Reset() {
 	*x = LobbyEvent{}
-	mi := &file_common_proto_lobby_lobby_proto_msgTypes[13]
+	mi := &file_common_proto_lobby_lobby_proto_msgTypes[14]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -751,7 +819,7 @@ func (x *LobbyEvent) String() string {
 func (*LobbyEvent) ProtoMessage() {}
 
 func (x *LobbyEvent) ProtoReflect() protoreflect.Message {
-	mi := &file_common_proto_lobby_lobby_proto_msgTypes[13]
+	mi := &file_common_proto_lobby_lobby_proto_msgTypes[14]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -764,7 +832,7 @@ func (x *LobbyEvent) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use LobbyEvent.ProtoReflect.Descriptor instead.
 func (*LobbyEvent) Descriptor() ([]byte, []int) {
-	return file_common_proto_lobby_lobby_proto_rawDescGZIP(), []int{13}
+	return file_common_proto_lobby_lobby_proto_rawDescGZIP(), []int{14}
 }
 
 func (x *LobbyEvent) GetLobby() *Lobby {
@@ -778,11 +846,17 @@ var File_common_proto_lobby_lobby_proto protoreflect.FileDescriptor
 
 const file_common_proto_lobby_lobby_proto_rawDesc = "" +
 	"\n" +
-	"\x1ecommon/proto/lobby/lobby.proto\x12\x05lobby\"Z\n" +
+	"\x1ecommon/proto/lobby/lobby.proto\x12\x05lobby\"\x86\x01\n" +
+	"\bGameInfo\x12\x18\n" +
+	"\asnippet\x18\x01 \x01(\tR\asnippet\x12#\n" +
+	"\rcorrect_chars\x18\x02 \x01(\x03R\fcorrectChars\x12\x1f\n" +
+	"\vwrong_chars\x18\x03 \x01(\x03R\n" +
+	"wrongChars\x12\x1a\n" +
+	"\brevision\x18\x04 \x01(\x03R\brevision\"e\n" +
 	"\x05Lobby\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12'\n" +
-	"\aplayers\x18\x02 \x03(\v2\r.lobby.PlayerR\aplayers\x12\x18\n" +
-	"\asnippet\x18\x03 \x01(\tR\asnippet\"\xb4\x01\n" +
+	"\aplayers\x18\x02 \x03(\v2\r.lobby.PlayerR\aplayers\x12#\n" +
+	"\x04game\x18\x03 \x01(\v2\x0f.lobby.GameInfoR\x04game\"\xb4\x01\n" +
 	"\x06Player\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12\x19\n" +
 	"\bis_ready\x18\x02 \x01(\bR\aisReady\x12-\n" +
@@ -855,47 +929,49 @@ func file_common_proto_lobby_lobby_proto_rawDescGZIP() []byte {
 	return file_common_proto_lobby_lobby_proto_rawDescData
 }
 
-var file_common_proto_lobby_lobby_proto_msgTypes = make([]protoimpl.MessageInfo, 14)
+var file_common_proto_lobby_lobby_proto_msgTypes = make([]protoimpl.MessageInfo, 15)
 var file_common_proto_lobby_lobby_proto_goTypes = []any{
-	(*Lobby)(nil),               // 0: lobby.Lobby
-	(*Player)(nil),              // 1: lobby.Player
-	(*CreateLobbyRequest)(nil),  // 2: lobby.CreateLobbyRequest
-	(*CreateLobbyResponse)(nil), // 3: lobby.CreateLobbyResponse
-	(*JoinLobbyRequest)(nil),    // 4: lobby.JoinLobbyRequest
-	(*JoinLobbyResponse)(nil),   // 5: lobby.JoinLobbyResponse
-	(*LeaveLobbyRequest)(nil),   // 6: lobby.LeaveLobbyRequest
-	(*LeaveLobbyResponse)(nil),  // 7: lobby.LeaveLobbyResponse
-	(*EditPlayerRequest)(nil),   // 8: lobby.EditPlayerRequest
-	(*EditPlayerResponse)(nil),  // 9: lobby.EditPlayerResponse
-	(*ReadyPlayerRequest)(nil),  // 10: lobby.ReadyPlayerRequest
-	(*ReadyPlayerResponse)(nil), // 11: lobby.ReadyPlayerResponse
-	(*SubscribeRequest)(nil),    // 12: lobby.SubscribeRequest
-	(*LobbyEvent)(nil),          // 13: lobby.LobbyEvent
+	(*GameInfo)(nil),            // 0: lobby.GameInfo
+	(*Lobby)(nil),               // 1: lobby.Lobby
+	(*Player)(nil),              // 2: lobby.Player
+	(*CreateLobbyRequest)(nil),  // 3: lobby.CreateLobbyRequest
+	(*CreateLobbyResponse)(nil), // 4: lobby.CreateLobbyResponse
+	(*JoinLobbyRequest)(nil),    // 5: lobby.JoinLobbyRequest
+	(*JoinLobbyResponse)(nil),   // 6: lobby.JoinLobbyResponse
+	(*LeaveLobbyRequest)(nil),   // 7: lobby.LeaveLobbyRequest
+	(*LeaveLobbyResponse)(nil),  // 8: lobby.LeaveLobbyResponse
+	(*EditPlayerRequest)(nil),   // 9: lobby.EditPlayerRequest
+	(*EditPlayerResponse)(nil),  // 10: lobby.EditPlayerResponse
+	(*ReadyPlayerRequest)(nil),  // 11: lobby.ReadyPlayerRequest
+	(*ReadyPlayerResponse)(nil), // 12: lobby.ReadyPlayerResponse
+	(*SubscribeRequest)(nil),    // 13: lobby.SubscribeRequest
+	(*LobbyEvent)(nil),          // 14: lobby.LobbyEvent
 }
 var file_common_proto_lobby_lobby_proto_depIdxs = []int32{
-	1,  // 0: lobby.Lobby.players:type_name -> lobby.Player
-	0,  // 1: lobby.CreateLobbyResponse.lobby:type_name -> lobby.Lobby
-	0,  // 2: lobby.JoinLobbyResponse.lobby:type_name -> lobby.Lobby
-	0,  // 3: lobby.EditPlayerResponse.lobby:type_name -> lobby.Lobby
-	0,  // 4: lobby.ReadyPlayerResponse.lobby:type_name -> lobby.Lobby
-	0,  // 5: lobby.LobbyEvent.lobby:type_name -> lobby.Lobby
-	2,  // 6: lobby.LobbyService.CreateLobby:input_type -> lobby.CreateLobbyRequest
-	4,  // 7: lobby.LobbyService.JoinLobby:input_type -> lobby.JoinLobbyRequest
-	6,  // 8: lobby.LobbyService.LeaveLobby:input_type -> lobby.LeaveLobbyRequest
-	8,  // 9: lobby.LobbyService.EditPlayer:input_type -> lobby.EditPlayerRequest
-	10, // 10: lobby.LobbyService.ReadyPlayer:input_type -> lobby.ReadyPlayerRequest
-	12, // 11: lobby.LobbyService.Subscribe:input_type -> lobby.SubscribeRequest
-	3,  // 12: lobby.LobbyService.CreateLobby:output_type -> lobby.CreateLobbyResponse
-	5,  // 13: lobby.LobbyService.JoinLobby:output_type -> lobby.JoinLobbyResponse
-	7,  // 14: lobby.LobbyService.LeaveLobby:output_type -> lobby.LeaveLobbyResponse
-	9,  // 15: lobby.LobbyService.EditPlayer:output_type -> lobby.EditPlayerResponse
-	11, // 16: lobby.LobbyService.ReadyPlayer:output_type -> lobby.ReadyPlayerResponse
-	13, // 17: lobby.LobbyService.Subscribe:output_type -> lobby.LobbyEvent
-	12, // [12:18] is the sub-list for method output_type
-	6,  // [6:12] is the sub-list for method input_type
-	6,  // [6:6] is the sub-list for extension type_name
-	6,  // [6:6] is the sub-list for extension extendee
-	0,  // [0:6] is the sub-list for field type_name
+	2,  // 0: lobby.Lobby.players:type_name -> lobby.Player
+	0,  // 1: lobby.Lobby.game:type_name -> lobby.GameInfo
+	1,  // 2: lobby.CreateLobbyResponse.lobby:type_name -> lobby.Lobby
+	1,  // 3: lobby.JoinLobbyResponse.lobby:type_name -> lobby.Lobby
+	1,  // 4: lobby.EditPlayerResponse.lobby:type_name -> lobby.Lobby
+	1,  // 5: lobby.ReadyPlayerResponse.lobby:type_name -> lobby.Lobby
+	1,  // 6: lobby.LobbyEvent.lobby:type_name -> lobby.Lobby
+	3,  // 7: lobby.LobbyService.CreateLobby:input_type -> lobby.CreateLobbyRequest
+	5,  // 8: lobby.LobbyService.JoinLobby:input_type -> lobby.JoinLobbyRequest
+	7,  // 9: lobby.LobbyService.LeaveLobby:input_type -> lobby.LeaveLobbyRequest
+	9,  // 10: lobby.LobbyService.EditPlayer:input_type -> lobby.EditPlayerRequest
+	11, // 11: lobby.LobbyService.ReadyPlayer:input_type -> lobby.ReadyPlayerRequest
+	13, // 12: lobby.LobbyService.Subscribe:input_type -> lobby.SubscribeRequest
+	4,  // 13: lobby.LobbyService.CreateLobby:output_type -> lobby.CreateLobbyResponse
+	6,  // 14: lobby.LobbyService.JoinLobby:output_type -> lobby.JoinLobbyResponse
+	8,  // 15: lobby.LobbyService.LeaveLobby:output_type -> lobby.LeaveLobbyResponse
+	10, // 16: lobby.LobbyService.EditPlayer:output_type -> lobby.EditPlayerResponse
+	12, // 17: lobby.LobbyService.ReadyPlayer:output_type -> lobby.ReadyPlayerResponse
+	14, // 18: lobby.LobbyService.Subscribe:output_type -> lobby.LobbyEvent
+	13, // [13:19] is the sub-list for method output_type
+	7,  // [7:13] is the sub-list for method input_type
+	7,  // [7:7] is the sub-list for extension type_name
+	7,  // [7:7] is the sub-list for extension extendee
+	0,  // [0:7] is the sub-list for field type_name
 }
 
 func init() { file_common_proto_lobby_lobby_proto_init() }
@@ -909,7 +985,7 @@ func file_common_proto_lobby_lobby_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_common_proto_lobby_lobby_proto_rawDesc), len(file_common_proto_lobby_lobby_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   14,
+			NumMessages:   15,
 			NumExtensions: 0,
 			NumServices:   1,
 		},
