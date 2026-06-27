@@ -12,6 +12,7 @@ service LobbyService {
   rpc EditPlayer(EditPlayerRequest) returns (EditPlayerResponse);
   rpc ReadyPlayer(ReadyPlayerRequest) returns (ReadyPlayerResponse);
   rpc Subscribe(SubscribeRequest) returns (stream LobbyEvent);
+  rpc SendKeyPress(SendKeyPressRequest) returns (SendKeyPressResponse);
 }
 
 enum LobbyStatus {
@@ -100,5 +101,16 @@ message SubscribeRequest {
 }
 
 message LobbyEvent {
+  Lobby lobby = 1;
+}
+
+message SendKeyPressRequest {
+  string lobby_id = 1;
+  string player_name = 2;
+  string key = 3;
+  bool is_backspace = 4;
+}
+
+message SendKeyPressResponse {
   Lobby lobby = 1;
 }
