@@ -14,6 +14,13 @@ service LobbyService {
   rpc Subscribe(SubscribeRequest) returns (stream LobbyEvent);
 }
 
+enum LobbyStatus {
+  WAITING_FOR_PLAYERS = 0;
+  PLAYING = 1;
+  PAUSED = 2;
+  GAME_ENDED = 3;
+}
+
 message GameInfo {
   string snippet = 1;
   int64 correct_chars = 2;
@@ -25,6 +32,7 @@ message Lobby {
   string id = 1;
   repeated Player players = 2;
   GameInfo game = 3;
+  LobbyStatus status = 4;
 }
 
 message Player {

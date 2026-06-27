@@ -6,6 +6,20 @@ import (
 	"github.com/sceredi/co-type/common/proto/lobby"
 )
 
+// LobbyStatus represents the current phase of a lobby.
+type LobbyStatus int
+
+const (
+	// LobbyWaitingForPlayers indicates the lobby is open and waiting for all players to be ready.
+	LobbyWaitingForPlayers LobbyStatus = iota
+	// LobbyPlaying indicates the game is currently in progress.
+	LobbyPlaying
+	// LobbyPaused indicates the game is temporarily paused (e.g. a player disconnected).
+	LobbyPaused
+	// LobbyGameEnded indicates the game has finished.
+	LobbyGameEnded
+)
+
 // ErrLobbyAlreadyExists is returned when a lobby with the same ID already exists.
 var ErrLobbyAlreadyExists = errors.New("lobby already exists")
 
@@ -23,6 +37,7 @@ type Lobby struct {
 	ID      string
 	Players []*Player
 	Game    GameInfo
+	Status  LobbyStatus
 }
 
 // NewLobby creates a new lobby with the given ID and first player.
@@ -48,6 +63,7 @@ func NewLobbyFromGRPC(l *lobby.Lobby) *Lobby {
 	return &Lobby{
 		ID:      l.Id,
 		Players: players,
+		Status:  lobbyStatusFromGRPC(l.Status),
 		Game: GameInfo{
 			Snippet:      l.Game.GetSnippet(),
 			CorrectChars: l.Game.GetCorrectChars(),
@@ -102,11 +118,38 @@ func (l *Lobby) ToGRPCLobby() *lobby.Lobby {
 	return &lobby.Lobby{
 		Id:      l.ID,
 		Players: players,
+		Status:  lobbyStatusToGRPC(l.Status),
 		Game: &lobby.GameInfo{
 			Snippet:      l.Game.Snippet,
 			CorrectChars: l.Game.CorrectChars,
 			WrongChars:   l.Game.WrongChars,
 			Revision:     l.Game.Revision,
 		},
+	}
+}
+
+func lobbyStatusToGRPC(s LobbyStatus) lobby.LobbyStatus {
+	switch s {
+	case LobbyPlaying:
+		return lobby.LobbyStatus_PLAYING
+	case LobbyPaused:
+		return lobby.LobbyStatus_PAUSED
+	case LobbyGameEnded:
+		return lobby.LobbyStatus_GAME_ENDED
+	default:
+		return lobby.LobbyStatus_WAITING_FOR_PLAYERS
+	}
+}
+
+func lobbyStatusFromGRPC(s lobby.LobbyStatus) LobbyStatus {
+	switch s {
+	case lobby.LobbyStatus_PLAYING:
+		return LobbyPlaying
+	case lobby.LobbyStatus_PAUSED:
+		return LobbyPaused
+	case lobby.LobbyStatus_GAME_ENDED:
+		return LobbyGameEnded
+	default:
+		return LobbyWaitingForPlayers
 	}
 }

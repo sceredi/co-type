@@ -176,6 +176,7 @@ func (s *lobbyService) Ready(lobbyID, playerName string) (*domain.Lobby, error) 
 
 	if allPlayersReady(lobby.Base) {
 		lobby.Base.Game = *commondomain.NewGameInfo(snippet.Random())
+		lobby.Base.Status = commondomain.LobbyPlaying
 	}
 
 	for _, ch := range lobby.Subs {
