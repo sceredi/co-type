@@ -57,6 +57,10 @@ func (m *mockLobbyService) Subscribe(lobbyID, playerName string) (<-chan *domain
 	return nil, nil
 }
 
+func (m *mockLobbyService) SendKeyPress(lobbyID string, player *domain.Player, key string, isBackspace bool) (*domain.Lobby, error) {
+	return nil, nil
+}
+
 func newMockLobbyService() *mockLobbyService {
 	return &mockLobbyService{}
 }

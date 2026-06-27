@@ -23,6 +23,8 @@ type LobbyGateway interface {
 	Connect(target *domain.Server) error
 	// Subscribe subscribes to lobby events and returns a channel that receives updated lobby state.
 	Subscribe(lobbyID, playerName string) (<-chan *domain.Lobby, error)
+	// SendKeyPress sends a validated key press to the server.
+	SendKeyPress(lobbyID, playerName, key string, isBackspace bool) (*domain.Lobby, error)
 }
 
 type lobbyGateway struct {
@@ -130,4 +132,18 @@ func (g *lobbyGateway) Subscribe(lobbyID, playerName string) (<-chan *domain.Lob
 		}
 	}()
 	return ch, nil
+}
+
+func (g *lobbyGateway) SendKeyPress(lobbyID, playerName, key string, isBackspace bool) (*domain.Lobby, error) {
+	req := &lobby.SendKeyPressRequest{
+		LobbyId:     lobbyID,
+		PlayerName:  playerName,
+		Key:         key,
+		IsBackspace: isBackspace,
+	}
+	res, err := g.conn.SendKeyPress(g.ctx, req)
+	if err != nil {
+		return nil, commongrpc.FromGRPCError(err)
+	}
+	return domain.NewLobbyFromGRPC(res.GetLobby()), nil
 }

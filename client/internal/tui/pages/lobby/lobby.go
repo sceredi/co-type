@@ -101,7 +101,7 @@ func (m Model) Update(msg tea.Msg) (Model, tea.Cmd) {
 					Status: domain.Running,
 				},
 			}
-			cmds = append(cmds, lobby_messages.NewStartGameCmd(game))
+			cmds = append(cmds, lobby_messages.NewStartGameCmd(game, m.player, m.updates))
 		}
 		cmds = append(cmds, waitForLobbyUpdate(m.updates))
 	case lobby_messages.LobbySubscriptionClosedMsg:
