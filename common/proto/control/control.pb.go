@@ -27,6 +27,7 @@ type RegisterServerRequest struct {
 	Name          string                 `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	Host          string                 `protobuf:"bytes,2,opt,name=host,proto3" json:"host,omitempty"`
 	Port          int64                  `protobuf:"varint,3,opt,name=port,proto3" json:"port,omitempty"`
+	LobbyIds      []string               `protobuf:"bytes,4,rep,name=lobby_ids,json=lobbyIds,proto3" json:"lobby_ids,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -80,6 +81,13 @@ func (x *RegisterServerRequest) GetPort() int64 {
 		return x.Port
 	}
 	return 0
+}
+
+func (x *RegisterServerRequest) GetLobbyIds() []string {
+	if x != nil {
+		return x.LobbyIds
+	}
+	return nil
 }
 
 // Acknowledgment for server registration.
@@ -441,11 +449,12 @@ var File_common_proto_control_control_proto protoreflect.FileDescriptor
 
 const file_common_proto_control_control_proto_rawDesc = "" +
 	"\n" +
-	"\"common/proto/control/control.proto\x12\acontrol\"S\n" +
+	"\"common/proto/control/control.proto\x12\acontrol\"p\n" +
 	"\x15RegisterServerRequest\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12\x12\n" +
 	"\x04host\x18\x02 \x01(\tR\x04host\x12\x12\n" +
-	"\x04port\x18\x03 \x01(\x03R\x04port\"L\n" +
+	"\x04port\x18\x03 \x01(\x03R\x04port\x12\x1b\n" +
+	"\tlobby_ids\x18\x04 \x03(\tR\blobbyIds\"L\n" +
 	"\x16RegisterServerResponse\x12\x18\n" +
 	"\asuccess\x18\x01 \x01(\bR\asuccess\x12\x18\n" +
 	"\amessage\x18\x02 \x01(\tR\amessage\"R\n" +

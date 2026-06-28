@@ -16,6 +16,8 @@ import (
 type ServerService interface {
 	// Create creates a new server in the broker service. It takes a CreateServerRequest and returns the created Server or an error if the operation fails.
 	Create(name, addr string, port int) (*domain.Server, error)
+	// Upsert registers or updates a server entry. It never returns ErrServerAlreadyExists.
+	Upsert(name, addr string, port int) *domain.Server
 	// LowestLoad finds the server with the lowest load. It returns it or an error if there are no available servers.
 	LowestLoad() (*domain.Server, error)
 	// GetByName retrieves a server by its name. It returns the server or an error if the server is not found or if the operation fails.
@@ -74,6 +76,11 @@ func (s *serverService) GetByName(name string) (*domain.Server, error) {
 		}
 	}
 	return nil, domain.ErrServerNotFound
+}
+
+func (s *serverService) Upsert(name, addr string, port int) *domain.Server {
+	server := &domain.Server{Name: name, Addr: addr, Port: port}
+	return s.serverRepo.Upsert(server)
 }
 
 func (s *serverService) Heartbeat(name string, load int) error {

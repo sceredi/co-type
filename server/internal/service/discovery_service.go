@@ -14,18 +14,18 @@ import (
 const heartbeatInterval = 10 * time.Second
 
 // DiscoveryService defines the interface for managing service discovery in the server service.
-// It provides a method to register the server with the service discovery mechanism.
-// The Register method is responsible for registering the server and returns an error if the operation fails.
 type DiscoveryService interface {
-	// Register registers the server with the service discovery mechanism using the provided host and port.
-	Register(name, host string, port int) error
+	// Register registers the server with the broker. lobbyIDs is empty on first startup and
+	// contains the current lobby IDs when re-registering after a broker restart.
+	Register(name, host string, port int, lobbyIDs []string) error
 
 	// RegisterLobby registers a lobby with the service discovery mechanism using the provided lobby ID and server name.
 	RegisterLobby(lobbyID, serverName string) error
 
 	// StartHeartbeat starts a background goroutine that periodically sends heartbeats to the broker.
+	// On any heartbeat failure it automatically re-registers the server (with current lobby IDs).
 	// It stops when ctx is cancelled.
-	StartHeartbeat(ctx context.Context, name string, load int)
+	StartHeartbeat(ctx context.Context, name, host string, port, load int, lobbyIDs func() []string)
 }
 
 type discoveryService struct {
@@ -37,15 +37,15 @@ func NewDiscoveryService(gtw gateway.ControlGateway) DiscoveryService {
 	return &discoveryService{gtw: gtw}
 }
 
-func (s *discoveryService) Register(name, host string, port int) error {
-	return s.gtw.RegisterServer(name, host, port)
+func (s *discoveryService) Register(name, host string, port int, lobbyIDs []string) error {
+	return s.gtw.RegisterServer(name, host, port, lobbyIDs)
 }
 
 func (s *discoveryService) RegisterLobby(lobbyID, serverName string) error {
 	return s.gtw.RegisterLobby(lobbyID, serverName)
 }
 
-func (s *discoveryService) StartHeartbeat(ctx context.Context, name string, load int) {
+func (s *discoveryService) StartHeartbeat(ctx context.Context, name, host string, port, load int, lobbyIDs func() []string) {
 	go func() {
 		ticker := time.NewTicker(heartbeatInterval)
 		defer ticker.Stop()
@@ -55,10 +55,16 @@ func (s *discoveryService) StartHeartbeat(ctx context.Context, name string, load
 				return
 			case <-ticker.C:
 				if err := s.gtw.Heartbeat(name, load); err != nil {
-					slog.WarnContext(ctx, "Heartbeat failed",
+					slog.WarnContext(ctx, "Heartbeat failed, re-registering with broker",
 						slog.String("name", name),
 						slog.String("error", err.Error()),
 					)
+					if regErr := s.gtw.RegisterServer(name, host, port, lobbyIDs()); regErr != nil {
+						slog.ErrorContext(ctx, "Re-registration failed",
+							slog.String("name", name),
+							slog.String("error", regErr.Error()),
+						)
+					}
 				}
 			}
 		}

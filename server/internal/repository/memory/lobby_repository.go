@@ -41,3 +41,11 @@ func (r *lobbyRepository) Delete(id string) error {
 	delete(r.lobbies, id)
 	return nil
 }
+
+func (r *lobbyRepository) ListIDs() []string {
+	ids := make([]string, 0, len(r.lobbies))
+	for id := range r.lobbies {
+		ids = append(ids, id)
+	}
+	return ids
+}

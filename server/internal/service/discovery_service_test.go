@@ -17,7 +17,7 @@ type mockDiscoveryGateway struct {
 	err        error
 }
 
-func (m *mockDiscoveryGateway) RegisterServer(name, host string, port int) error {
+func (m *mockDiscoveryGateway) RegisterServer(name, host string, port int, _ []string) error {
 	m.name = name
 	m.host = host
 	m.port = port
@@ -80,7 +80,7 @@ func TestDiscoveryService_Register(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			svc := service.NewDiscoveryService(tt.gateway)
 
-			err := svc.Register(tt.svcName, tt.host, tt.port)
+			err := svc.Register(tt.svcName, tt.host, tt.port, []string{})
 			if !errors.Is(err, tt.wantErr) {
 				t.Fatalf("Register() error = %v, want %v", err, tt.wantErr)
 			}
