@@ -2,7 +2,11 @@
 // It provides an abstraction layer for data access, allowing for different implementations without affecting the business logic.
 package repository
 
-import "github.com/sceredi/co-type/common/domain"
+import (
+	"time"
+
+	"github.com/sceredi/co-type/common/domain"
+)
 
 // ServerRepository defines the interface for managing servers in the broker.
 type ServerRepository interface {
@@ -10,6 +14,12 @@ type ServerRepository interface {
 	Create(server *domain.Server) (*domain.Server, error)
 	// List retrieves all servers from the repository.
 	List() []*domain.Server
+	// UpdateLastSeen records the time a server was last seen alive and updates its load.
+	UpdateLastSeen(name string, load int, t time.Time) error
+	// Delete removes a server by name. Returns ErrServerNotFound if no such server exists.
+	Delete(name string) error
+	// ListStale returns the names of servers whose last heartbeat is older than ttl.
+	ListStale(ttl time.Duration) []string
 }
 
 // LobbyID is a type alias for string, representing the unique identifier of a lobby.

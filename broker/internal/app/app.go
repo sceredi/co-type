@@ -2,6 +2,8 @@
 package app
 
 import (
+	"context"
+	"log/slog"
 	"time"
 
 	"github.com/sceredi/co-type/broker/internal/api/grpc/handler"
@@ -16,9 +18,15 @@ import (
 	"google.golang.org/grpc/reflection"
 )
 
+const (
+	heartbeatInterval = 10 * time.Second
+	heartbeatTTL      = 3 * heartbeatInterval
+)
+
 // App represents the main application structure for the broker, containing everything needed to run the broker.
 type App struct {
-	Server *grpc.Server
+	Server    *grpc.Server
+	cancelCtx context.CancelFunc
 }
 
 // New initializes a new instance of App.
@@ -46,12 +54,33 @@ func New(_ *config.Config) (*App, error) {
 	app.CreateListener(grpcServer, "control")
 	app.CreateListener(grpcServer, "discovery")
 
+	ctx, cancel := context.WithCancel(context.Background())
+	go runEviction(ctx, serverSvc)
+
 	return &App{
-		Server: grpcServer,
+		Server:    grpcServer,
+		cancelCtx: cancel,
 	}, nil
 }
 
 // Shutdown gracefully shuts down the application by stopping the gRPC server.
 func (a *App) Shutdown() {
+	a.cancelCtx()
 	a.Server.GracefulStop()
+}
+
+func runEviction(ctx context.Context, serverSvc service.ServerService) {
+	ticker := time.NewTicker(heartbeatInterval)
+	defer ticker.Stop()
+	for {
+		select {
+		case <-ctx.Done():
+			return
+		case <-ticker.C:
+			n := serverSvc.EvictStale(heartbeatTTL)
+			if n > 0 {
+				slog.InfoContext(ctx, "Evicted stale servers", slog.Int("count", n))
+			}
+		}
+	}
 }

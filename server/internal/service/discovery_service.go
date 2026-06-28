@@ -3,7 +3,15 @@
 // It defines the interfaces that the handlers will use to interact with the domain models and repositories.
 package service
 
-import "github.com/sceredi/co-type/server/internal/api/grpc/gateway"
+import (
+	"context"
+	"log/slog"
+	"time"
+
+	"github.com/sceredi/co-type/server/internal/api/grpc/gateway"
+)
+
+const heartbeatInterval = 10 * time.Second
 
 // DiscoveryService defines the interface for managing service discovery in the server service.
 // It provides a method to register the server with the service discovery mechanism.
@@ -14,6 +22,10 @@ type DiscoveryService interface {
 
 	// RegisterLobby registers a lobby with the service discovery mechanism using the provided lobby ID and server name.
 	RegisterLobby(lobbyID, serverName string) error
+
+	// StartHeartbeat starts a background goroutine that periodically sends heartbeats to the broker.
+	// It stops when ctx is cancelled.
+	StartHeartbeat(ctx context.Context, name string, load int)
 }
 
 type discoveryService struct {
@@ -31,4 +43,24 @@ func (s *discoveryService) Register(name, host string, port int) error {
 
 func (s *discoveryService) RegisterLobby(lobbyID, serverName string) error {
 	return s.gtw.RegisterLobby(lobbyID, serverName)
+}
+
+func (s *discoveryService) StartHeartbeat(ctx context.Context, name string, load int) {
+	go func() {
+		ticker := time.NewTicker(heartbeatInterval)
+		defer ticker.Stop()
+		for {
+			select {
+			case <-ctx.Done():
+				return
+			case <-ticker.C:
+				if err := s.gtw.Heartbeat(name, load); err != nil {
+					slog.WarnContext(ctx, "Heartbeat failed",
+						slog.String("name", name),
+						slog.String("error", err.Error()),
+					)
+				}
+			}
+		}
+	}()
 }

@@ -17,6 +17,9 @@ type ControlGateway interface {
 	RegisterLobby(lobbyID, serverName string) error
 
 	UnregisterLobby(lobbyID string) error
+
+	// Heartbeat sends a heartbeat to the broker with the server's current load.
+	Heartbeat(name string, load int) error
 }
 
 type controlGateway struct {
@@ -70,6 +73,21 @@ func (g *controlGateway) UnregisterLobby(lobbyID string) error {
 	}
 	if !res.Success {
 		return errors.New("failed to unregister lobby: " + res.Message)
+	}
+	return nil
+}
+
+func (g *controlGateway) Heartbeat(name string, load int) error {
+	req := &control.HeartbeatRequest{
+		Name: name,
+		Load: int64(load),
+	}
+	res, err := g.conn.Heartbeat(g.ctx, req)
+	if err != nil {
+		return commongrpc.FromGRPCError(err)
+	}
+	if !res.Success {
+		return errors.New("heartbeat rejected by broker")
 	}
 	return nil
 }
