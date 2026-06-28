@@ -10,6 +10,8 @@ import (
 type DiscoveryService interface {
 	GetAvailableServer() (*domain.Server, error)
 	GetHostByLobby(lobbyCode string) (*domain.Server, error)
+	// RequestResumeGame asks the broker to assign a server for resuming the given crashed lobby.
+	RequestResumeGame(lobbyID string) (*domain.Server, error)
 }
 
 type discoveryService struct {
@@ -27,4 +29,8 @@ func (s *discoveryService) GetAvailableServer() (*domain.Server, error) {
 
 func (s *discoveryService) GetHostByLobby(lobbyCode string) (*domain.Server, error) {
 	return s.gtw.HostByLobby(lobbyCode)
+}
+
+func (s *discoveryService) RequestResumeGame(lobbyID string) (*domain.Server, error) {
+	return s.gtw.RequestResumeGame(lobbyID)
 }

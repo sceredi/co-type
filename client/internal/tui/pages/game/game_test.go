@@ -27,7 +27,7 @@ func createTestGame() domain.Game {
 
 func TestNew(t *testing.T) {
 	game := createTestGame()
-	m := New(game, nil, nil, nil)
+	m := New(game, nil, nil, nil, nil)
 
 	if m.game.Lobby.Game.Snippet != "hello world" {
 		t.Fatalf("expected model to store game, got empty")
@@ -35,7 +35,7 @@ func TestNew(t *testing.T) {
 }
 
 func TestUpdateWindowSize(t *testing.T) {
-	m := New(createTestGame(), nil, nil, nil)
+	m := New(createTestGame(), nil, nil, nil, nil)
 	initialWidth := m.width
 	initialHeight := m.height
 
@@ -56,7 +56,7 @@ func TestUpdateWindowSize(t *testing.T) {
 
 func TestRenderPlayersListsAllPlayers(t *testing.T) {
 	game := createTestGame()
-	m := New(game, nil, nil, nil)
+	m := New(game, nil, nil, nil, nil)
 	players := m.renderPlayers()
 
 	if !strings.Contains(players, "Players:") {
@@ -76,7 +76,7 @@ func TestViewRendersCorrectCharactersWithGreenBackground(t *testing.T) {
 	game := createTestGame()
 	game.State.CorrectChars = 5
 	game.State.LastChar = 5
-	m := New(game, nil, nil, nil)
+	m := New(game, nil, nil, nil, nil)
 
 	view := m.View()
 
@@ -96,7 +96,7 @@ func TestViewRendersIncorrectCharactersWithRedBackground(t *testing.T) {
 	game := createTestGame()
 	game.State.CorrectChars = 0
 	game.State.LastChar = 3
-	m := New(game, nil, nil, nil)
+	m := New(game, nil, nil, nil, nil)
 
 	view := m.View()
 
@@ -108,7 +108,7 @@ func TestViewRendersIncorrectCharactersWithRedBackground(t *testing.T) {
 func TestViewWithPausedStatus(t *testing.T) {
 	game := createTestGame()
 	game.Lobby.Status = domain.LobbyPaused
-	m := New(game, nil, nil, nil)
+	m := New(game, nil, nil, nil, nil)
 
 	view := m.View()
 
@@ -120,7 +120,7 @@ func TestViewWithPausedStatus(t *testing.T) {
 func TestViewWithRunningStatus(t *testing.T) {
 	game := createTestGame()
 	game.Lobby.Status = domain.LobbyPlaying
-	m := New(game, nil, nil, nil)
+	m := New(game, nil, nil, nil, nil)
 
 	view := m.View()
 
@@ -133,7 +133,7 @@ func TestViewWithNoCorrectChars(t *testing.T) {
 	game := createTestGame()
 	game.State.CorrectChars = 0
 	game.State.LastChar = 0
-	m := New(game, nil, nil, nil)
+	m := New(game, nil, nil, nil, nil)
 
 	view := m.View()
 
@@ -146,7 +146,7 @@ func TestViewWithAllCharsInput(t *testing.T) {
 	game := createTestGame()
 	game.State.CorrectChars = len(game.Lobby.Game.Snippet)
 	game.State.LastChar = len(game.Lobby.Game.Snippet)
-	m := New(game, nil, nil, nil)
+	m := New(game, nil, nil, nil, nil)
 
 	view := m.View()
 
@@ -156,7 +156,7 @@ func TestViewWithAllCharsInput(t *testing.T) {
 }
 
 func TestInit(t *testing.T) {
-	m := New(createTestGame(), nil, nil, nil)
+	m := New(createTestGame(), nil, nil, nil, nil)
 	cmd := m.Init()
 
 	if cmd != nil {
@@ -174,7 +174,7 @@ func TestRenderPlayersWithSinglePlayer(t *testing.T) {
 		},
 		State: domain.GameState{},
 	}
-	m := New(game, nil, nil, nil)
+	m := New(game, nil, nil, nil, nil)
 	players := m.renderPlayers()
 
 	if !strings.Contains(players, "Players:") {
@@ -194,7 +194,7 @@ func TestRenderPlayersWithNoPlayers(t *testing.T) {
 		},
 		State: domain.GameState{},
 	}
-	m := New(game, nil, nil, nil)
+	m := New(game, nil, nil, nil, nil)
 	players := m.renderPlayers()
 
 	if !strings.Contains(players, "Players:") {

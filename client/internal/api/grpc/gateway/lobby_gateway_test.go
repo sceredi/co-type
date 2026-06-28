@@ -54,6 +54,10 @@ func (m *mockLobbyClient) SendKeyPress(ctx context.Context, in *lobbypb.SendKeyP
 	return m.sendKeyPressResp, m.err
 }
 
+func (m *mockLobbyClient) ResumeGame(_ context.Context, _ *lobbypb.ResumeGameRequest, _ ...grpcpkg.CallOption) (*lobbypb.ResumeGameResponse, error) {
+	return nil, nil
+}
+
 func TestCreateLobby_Success(t *testing.T) {
 	mock := &mockLobbyClient{createResp: &lobbypb.CreateLobbyResponse{
 		Lobby: &lobbypb.Lobby{

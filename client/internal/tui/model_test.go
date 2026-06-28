@@ -20,6 +20,10 @@ func (m *mockDiscoveryService) GetHostByLobby(lobbyCode string) (*domain.Server,
 	return nil, nil
 }
 
+func (m *mockDiscoveryService) RequestResumeGame(_ string) (*domain.Server, error) {
+	return nil, nil
+}
+
 func newMockDiscoveryService() *mockDiscoveryService {
 	return &mockDiscoveryService{}
 }
@@ -59,6 +63,10 @@ func (m *mockLobbyService) Subscribe(lobbyID, playerName string) (<-chan *domain
 
 func (m *mockLobbyService) SendKeyPress(lobbyID string, player *domain.Player, key string, isBackspace bool) (*domain.Lobby, error) {
 	return nil, nil
+}
+
+func (m *mockLobbyService) ResumeGame(_ *domain.Server, _ *domain.Lobby, _ string) (*domain.Lobby, <-chan *domain.Lobby, error) {
+	return nil, nil, nil
 }
 
 func newMockLobbyService() *mockLobbyService {

@@ -24,6 +24,10 @@ func (m *mockDiscoveryClient) ServerHostingLobby(ctx context.Context, in *discov
 	return m.hostingLobbyResp, m.err
 }
 
+func (m *mockDiscoveryClient) RequestResumeGame(_ context.Context, _ *discoverypb.RequestResumeGameRequest, _ ...grpcpkg.CallOption) (*discoverypb.RequestResumeGameResponse, error) {
+	return nil, nil
+}
+
 // The generated client interface uses variadic grpc.CallOption; mock implements that signature.
 
 func TestAvailableServer_Success(t *testing.T) {

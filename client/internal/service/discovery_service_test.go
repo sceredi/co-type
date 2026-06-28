@@ -21,6 +21,10 @@ func (m *mockDiscoveryGateway) HostByLobby(lobbyCode string) (*domain.Server, er
 	return m.server, m.err
 }
 
+func (m *mockDiscoveryGateway) RequestResumeGame(_ string) (*domain.Server, error) {
+	return m.server, m.err
+}
+
 func TestNewDiscoveryService(t *testing.T) {
 	gtw := &mockDiscoveryGateway{}
 	svc := NewDiscoveryService(gtw)
