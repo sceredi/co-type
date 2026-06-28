@@ -1,3 +1,10 @@
+## [0.10.0](https://github.com/sceredi/co-type/compare/v0.9.1...v0.10.0) (2026-06-28)
+
+### Features
+
+* implement heartbeat mechanism for server monitoring and management ([60d7a08](https://github.com/sceredi/co-type/commit/60d7a087dc5aa3478d25e5248540b9faa9a017c1))
+* server registration on broker failure ([e384674](https://github.com/sceredi/co-type/commit/e38467469454a5ab2369e361c0d10fe33a29f1dd))
+
 ## [0.9.1](https://github.com/sceredi/co-type/compare/v0.9.0...v0.9.1) (2026-06-28)
 
 ### Bug Fixes
