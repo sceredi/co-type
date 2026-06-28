@@ -20,6 +20,9 @@ type ServerService interface {
 	Upsert(name, addr string, port int) *domain.Server
 	// LowestLoad finds the server with the lowest load. It returns it or an error if there are no available servers.
 	LowestLoad() (*domain.Server, error)
+	// LowestLoadExcluding finds the server with the lowest load, skipping the named server.
+	// Falls back to LowestLoad if the excluded server is the only one registered.
+	LowestLoadExcluding(excludeName string) (*domain.Server, error)
 	// GetByName retrieves a server by its name. It returns the server or an error if the server is not found or if the operation fails.
 	GetByName(name string) (*domain.Server, error)
 	// Heartbeat updates the last-seen timestamp and load for a registered server.
@@ -58,6 +61,28 @@ func (s *serverService) LowestLoad() (*domain.Server, error) {
 	}
 	lowest := svs[0]
 	for _, server := range svs {
+		if server.Load < lowest.Load {
+			lowest = server
+		}
+	}
+	return lowest, nil
+}
+
+func (s *serverService) LowestLoadExcluding(excludeName string) (*domain.Server, error) {
+	slog.DebugContext(context.Background(), "Finding server with lowest load excluding", slog.String("exclude", excludeName))
+	svs := s.serverRepo.List()
+	candidates := make([]*domain.Server, 0, len(svs))
+	for _, sv := range svs {
+		if sv.Name != excludeName {
+			candidates = append(candidates, sv)
+		}
+	}
+	if len(candidates) == 0 {
+		// Only the crashed server is known — fall back to it.
+		return s.LowestLoad()
+	}
+	lowest := candidates[0]
+	for _, server := range candidates {
 		if server.Load < lowest.Load {
 			lowest = server
 		}

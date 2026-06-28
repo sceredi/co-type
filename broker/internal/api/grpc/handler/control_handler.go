@@ -37,17 +37,13 @@ func (h *ControlHandler) RegisterServer(_ context.Context, req *control.Register
 	}, nil
 }
 
-// RegisterLobby handles incoming gRPC requests to register a new lobby. It validates the request and attempts to create a new lobby entry using the LobbyService.
+// RegisterLobby handles incoming gRPC requests to register a new lobby. It validates the request
+// and upserts the lobby entry — this is idempotent and also handles the resume-game path where a
+// lobby was previously hosted by a crashed server. If the lobby was pending resume, it is removed
+// from the pending list.
 func (h *ControlHandler) RegisterLobby(_ context.Context, req *control.RegisterLobbyRequest) (*control.RegisterLobbyResponse, error) {
-	err := h.lobbySvc.Create(repository.LobbyID(req.GetLobbyId()), repository.ServerName(req.GetServerName()))
-	if err != nil {
-		slog.Error("Failed to register lobby",
-			slog.String("lobby_id", req.GetLobbyId()),
-			slog.String("server_name", req.GetServerName()),
-			slog.String("error", err.Error()),
-		)
-		return nil, grpc_utils.ToGRPCError(err)
-	}
+	h.lobbySvc.Upsert(repository.LobbyID(req.GetLobbyId()), repository.ServerName(req.GetServerName()))
+	h.lobbySvc.RemoveFromPending(repository.LobbyID(req.GetLobbyId()))
 	return &control.RegisterLobbyResponse{
 		Success: true,
 		Message: "Lobby registered successfully",
