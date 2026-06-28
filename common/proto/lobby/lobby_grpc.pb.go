@@ -26,6 +26,7 @@ const (
 	LobbyService_ReadyPlayer_FullMethodName  = "/lobby.LobbyService/ReadyPlayer"
 	LobbyService_Subscribe_FullMethodName    = "/lobby.LobbyService/Subscribe"
 	LobbyService_SendKeyPress_FullMethodName = "/lobby.LobbyService/SendKeyPress"
+	LobbyService_ResumeGame_FullMethodName   = "/lobby.LobbyService/ResumeGame"
 )
 
 // LobbyServiceClient is the client API for LobbyService service.
@@ -41,6 +42,10 @@ type LobbyServiceClient interface {
 	ReadyPlayer(ctx context.Context, in *ReadyPlayerRequest, opts ...grpc.CallOption) (*ReadyPlayerResponse, error)
 	Subscribe(ctx context.Context, in *SubscribeRequest, opts ...grpc.CallOption) (grpc.ServerStreamingClient[LobbyEvent], error)
 	SendKeyPress(ctx context.Context, in *SendKeyPressRequest, opts ...grpc.CallOption) (*SendKeyPressResponse, error)
+	// RPC to resume a crashed game on a new server. The first caller creates the lobby;
+	// subsequent callers (reconnecting players) provide their game state so the server
+	// can keep the state with the highest revision.
+	ResumeGame(ctx context.Context, in *ResumeGameRequest, opts ...grpc.CallOption) (*ResumeGameResponse, error)
 }
 
 type lobbyServiceClient struct {
@@ -130,6 +135,16 @@ func (c *lobbyServiceClient) SendKeyPress(ctx context.Context, in *SendKeyPressR
 	return out, nil
 }
 
+func (c *lobbyServiceClient) ResumeGame(ctx context.Context, in *ResumeGameRequest, opts ...grpc.CallOption) (*ResumeGameResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ResumeGameResponse)
+	err := c.cc.Invoke(ctx, LobbyService_ResumeGame_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // LobbyServiceServer is the server API for LobbyService service.
 // All implementations must embed UnimplementedLobbyServiceServer
 // for forward compatibility.
@@ -143,6 +158,10 @@ type LobbyServiceServer interface {
 	ReadyPlayer(context.Context, *ReadyPlayerRequest) (*ReadyPlayerResponse, error)
 	Subscribe(*SubscribeRequest, grpc.ServerStreamingServer[LobbyEvent]) error
 	SendKeyPress(context.Context, *SendKeyPressRequest) (*SendKeyPressResponse, error)
+	// RPC to resume a crashed game on a new server. The first caller creates the lobby;
+	// subsequent callers (reconnecting players) provide their game state so the server
+	// can keep the state with the highest revision.
+	ResumeGame(context.Context, *ResumeGameRequest) (*ResumeGameResponse, error)
 	mustEmbedUnimplementedLobbyServiceServer()
 }
 
@@ -173,6 +192,9 @@ func (UnimplementedLobbyServiceServer) Subscribe(*SubscribeRequest, grpc.ServerS
 }
 func (UnimplementedLobbyServiceServer) SendKeyPress(context.Context, *SendKeyPressRequest) (*SendKeyPressResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method SendKeyPress not implemented")
+}
+func (UnimplementedLobbyServiceServer) ResumeGame(context.Context, *ResumeGameRequest) (*ResumeGameResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method ResumeGame not implemented")
 }
 func (UnimplementedLobbyServiceServer) mustEmbedUnimplementedLobbyServiceServer() {}
 func (UnimplementedLobbyServiceServer) testEmbeddedByValue()                      {}
@@ -314,6 +336,24 @@ func _LobbyService_SendKeyPress_Handler(srv interface{}, ctx context.Context, de
 	return interceptor(ctx, in, info, handler)
 }
 
+func _LobbyService_ResumeGame_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ResumeGameRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(LobbyServiceServer).ResumeGame(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: LobbyService_ResumeGame_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(LobbyServiceServer).ResumeGame(ctx, req.(*ResumeGameRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // LobbyService_ServiceDesc is the grpc.ServiceDesc for LobbyService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -344,6 +384,10 @@ var LobbyService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "SendKeyPress",
 			Handler:    _LobbyService_SendKeyPress_Handler,
+		},
+		{
+			MethodName: "ResumeGame",
+			Handler:    _LobbyService_ResumeGame_Handler,
 		},
 	},
 	Streams: []grpc.StreamDesc{

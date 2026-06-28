@@ -11,6 +11,10 @@ service DiscoveryService {
 
   // RPC to get the server hosting lobby information.
   rpc ServerHostingLobby(ServerHostingLobbyRequest) returns (ServerHostingLobbyResponse);
+
+  // RPC to request resuming a crashed game. The broker assigns (or reuses) a server for
+  // the lobby and returns its address. All players in the crashed game call this.
+  rpc RequestResumeGame(RequestResumeGameRequest) returns (RequestResumeGameResponse);
 }
 
 // Request message for available server information.
@@ -30,6 +34,18 @@ message ServerHostingLobbyRequest {
 
 // Response message containing server hosting lobby information.
 message ServerHostingLobbyResponse {
+  string name = 1;
+  string addr = 2;
+  int64 port = 3;
+}
+
+// Request message to resume a crashed game.
+message RequestResumeGameRequest {
+  string lobby_id = 1;
+}
+
+// Response message containing the server assigned to host the resumed game.
+message RequestResumeGameResponse {
   string name = 1;
   string addr = 2;
   int64 port = 3;
