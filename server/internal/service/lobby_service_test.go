@@ -60,6 +60,8 @@ func (m *mockControlGateway) UnregisterLobby(lobbyID string) error {
 	return m.err
 }
 
+func (m *mockControlGateway) Heartbeat(_ string, _ int) error { return nil }
+
 func TestNewLobbyService(t *testing.T) {
 	svc := service.NewLobbyService("test-server", &mockControlGateway{}, &mockLobbyRepository{})
 	if svc == nil {

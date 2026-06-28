@@ -34,6 +34,10 @@ func (m *mockDiscoveryGateway) UnregisterLobby(lobbyID string) error {
 	return m.err
 }
 
+func (m *mockDiscoveryGateway) Heartbeat(_ string, _ int) error {
+	return m.err
+}
+
 var _ gateway.ControlGateway = (*mockDiscoveryGateway)(nil)
 
 func TestNewDiscoveryService(t *testing.T) {

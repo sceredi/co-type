@@ -27,6 +27,7 @@ type App struct {
 	Conn   *grpc.ClientConn
 	// TODO: wrap into a "grpc.client.{discovery_client, connection_supervisor}" that does healthchecks and reconnection
 	DiscoveryService service.DiscoveryService
+	cancelCtx        context.CancelFunc
 }
 
 // New initializes a new instance of App.
@@ -39,7 +40,7 @@ func New(cfg *config.Config) (*App, error) {
 
 	lobbyRepo := memory.NewLobbyRepository()
 
-	ctx := context.Background()
+	ctx, cancel := context.WithCancel(context.Background())
 	ctrlGtw := gateway.NewControlGateway(ctx, c)
 
 	discoverySvc := service.NewDiscoveryService(ctrlGtw)
@@ -63,21 +64,26 @@ func New(cfg *config.Config) (*App, error) {
 	// TODO: same as todo above
 	err = discoverySvc.Register(cfg.Name, cfg.Addr, cfg.Port)
 	if err != nil {
+		cancel()
 		if closeErr := conn.Close(); closeErr != nil {
 			slog.Error(fmt.Sprintf("Error closing gRPC connection after registration failure: %v", closeErr))
 		}
 		return nil, err
 	}
 
+	discoverySvc.StartHeartbeat(ctx, cfg.Name, 0)
+
 	return &App{
 		Server:           grpcServer,
 		Conn:             conn,
 		DiscoveryService: discoverySvc,
+		cancelCtx:        cancel,
 	}, nil
 }
 
 // Shutdown gracefully shuts down the application by stopping the gRPC server and closing the connection.
 func (a *App) Shutdown() {
+	a.cancelCtx()
 	a.Server.GracefulStop()
 	if err := a.Conn.Close(); err != nil {
 		slog.Error(fmt.Sprintf("Error closing gRPC connection: %v", err))

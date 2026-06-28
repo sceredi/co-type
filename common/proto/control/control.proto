@@ -9,6 +9,7 @@ service ControlService {
   rpc RegisterServer(RegisterServerRequest) returns (RegisterServerResponse);
   rpc RegisterLobby(RegisterLobbyRequest) returns (RegisterLobbyResponse);
   rpc UnregisterLobby(UnregisterLobbyRequest) returns (UnregisterLobbyResponse);
+  rpc Heartbeat(HeartbeatRequest) returns (HeartbeatResponse);
 }
 
 // Messages for server registration.
@@ -45,4 +46,15 @@ message UnregisterLobbyRequest {
 message UnregisterLobbyResponse {
   bool success = 1;
   string message = 2;
+}
+
+// Heartbeat request sent periodically by a server to signal it is alive and report its current load.
+message HeartbeatRequest {
+  string name = 1;
+  int64 load = 2;
+}
+
+// Acknowledgment for a heartbeat.
+message HeartbeatResponse {
+  bool success = 1;
 }

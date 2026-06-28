@@ -339,6 +339,104 @@ func (x *UnregisterLobbyResponse) GetMessage() string {
 	return ""
 }
 
+// Heartbeat request sent periodically by a server to signal it is alive and report its current load.
+type HeartbeatRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Name          string                 `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	Load          int64                  `protobuf:"varint,2,opt,name=load,proto3" json:"load,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *HeartbeatRequest) Reset() {
+	*x = HeartbeatRequest{}
+	mi := &file_common_proto_control_control_proto_msgTypes[6]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *HeartbeatRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*HeartbeatRequest) ProtoMessage() {}
+
+func (x *HeartbeatRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_common_proto_control_control_proto_msgTypes[6]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use HeartbeatRequest.ProtoReflect.Descriptor instead.
+func (*HeartbeatRequest) Descriptor() ([]byte, []int) {
+	return file_common_proto_control_control_proto_rawDescGZIP(), []int{6}
+}
+
+func (x *HeartbeatRequest) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
+func (x *HeartbeatRequest) GetLoad() int64 {
+	if x != nil {
+		return x.Load
+	}
+	return 0
+}
+
+// Acknowledgment for a heartbeat.
+type HeartbeatResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Success       bool                   `protobuf:"varint,1,opt,name=success,proto3" json:"success,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *HeartbeatResponse) Reset() {
+	*x = HeartbeatResponse{}
+	mi := &file_common_proto_control_control_proto_msgTypes[7]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *HeartbeatResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*HeartbeatResponse) ProtoMessage() {}
+
+func (x *HeartbeatResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_common_proto_control_control_proto_msgTypes[7]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use HeartbeatResponse.ProtoReflect.Descriptor instead.
+func (*HeartbeatResponse) Descriptor() ([]byte, []int) {
+	return file_common_proto_control_control_proto_rawDescGZIP(), []int{7}
+}
+
+func (x *HeartbeatResponse) GetSuccess() bool {
+	if x != nil {
+		return x.Success
+	}
+	return false
+}
+
 var File_common_proto_control_control_proto protoreflect.FileDescriptor
 
 const file_common_proto_control_control_proto_rawDesc = "" +
@@ -362,11 +460,17 @@ const file_common_proto_control_control_proto_rawDesc = "" +
 	"\blobby_id\x18\x01 \x01(\tR\alobbyId\"M\n" +
 	"\x17UnregisterLobbyResponse\x12\x18\n" +
 	"\asuccess\x18\x01 \x01(\bR\asuccess\x12\x18\n" +
-	"\amessage\x18\x02 \x01(\tR\amessage2\x89\x02\n" +
+	"\amessage\x18\x02 \x01(\tR\amessage\":\n" +
+	"\x10HeartbeatRequest\x12\x12\n" +
+	"\x04name\x18\x01 \x01(\tR\x04name\x12\x12\n" +
+	"\x04load\x18\x02 \x01(\x03R\x04load\"-\n" +
+	"\x11HeartbeatResponse\x12\x18\n" +
+	"\asuccess\x18\x01 \x01(\bR\asuccess2\xcd\x02\n" +
 	"\x0eControlService\x12Q\n" +
 	"\x0eRegisterServer\x12\x1e.control.RegisterServerRequest\x1a\x1f.control.RegisterServerResponse\x12N\n" +
 	"\rRegisterLobby\x12\x1d.control.RegisterLobbyRequest\x1a\x1e.control.RegisterLobbyResponse\x12T\n" +
-	"\x0fUnregisterLobby\x12\x1f.control.UnregisterLobbyRequest\x1a .control.UnregisterLobbyResponseB1Z/github.com/sceredi/co-type/common/proto/controlb\x06proto3"
+	"\x0fUnregisterLobby\x12\x1f.control.UnregisterLobbyRequest\x1a .control.UnregisterLobbyResponse\x12B\n" +
+	"\tHeartbeat\x12\x19.control.HeartbeatRequest\x1a\x1a.control.HeartbeatResponseB1Z/github.com/sceredi/co-type/common/proto/controlb\x06proto3"
 
 var (
 	file_common_proto_control_control_proto_rawDescOnce sync.Once
@@ -380,7 +484,7 @@ func file_common_proto_control_control_proto_rawDescGZIP() []byte {
 	return file_common_proto_control_control_proto_rawDescData
 }
 
-var file_common_proto_control_control_proto_msgTypes = make([]protoimpl.MessageInfo, 6)
+var file_common_proto_control_control_proto_msgTypes = make([]protoimpl.MessageInfo, 8)
 var file_common_proto_control_control_proto_goTypes = []any{
 	(*RegisterServerRequest)(nil),   // 0: control.RegisterServerRequest
 	(*RegisterServerResponse)(nil),  // 1: control.RegisterServerResponse
@@ -388,16 +492,20 @@ var file_common_proto_control_control_proto_goTypes = []any{
 	(*RegisterLobbyResponse)(nil),   // 3: control.RegisterLobbyResponse
 	(*UnregisterLobbyRequest)(nil),  // 4: control.UnregisterLobbyRequest
 	(*UnregisterLobbyResponse)(nil), // 5: control.UnregisterLobbyResponse
+	(*HeartbeatRequest)(nil),        // 6: control.HeartbeatRequest
+	(*HeartbeatResponse)(nil),       // 7: control.HeartbeatResponse
 }
 var file_common_proto_control_control_proto_depIdxs = []int32{
 	0, // 0: control.ControlService.RegisterServer:input_type -> control.RegisterServerRequest
 	2, // 1: control.ControlService.RegisterLobby:input_type -> control.RegisterLobbyRequest
 	4, // 2: control.ControlService.UnregisterLobby:input_type -> control.UnregisterLobbyRequest
-	1, // 3: control.ControlService.RegisterServer:output_type -> control.RegisterServerResponse
-	3, // 4: control.ControlService.RegisterLobby:output_type -> control.RegisterLobbyResponse
-	5, // 5: control.ControlService.UnregisterLobby:output_type -> control.UnregisterLobbyResponse
-	3, // [3:6] is the sub-list for method output_type
-	0, // [0:3] is the sub-list for method input_type
+	6, // 3: control.ControlService.Heartbeat:input_type -> control.HeartbeatRequest
+	1, // 4: control.ControlService.RegisterServer:output_type -> control.RegisterServerResponse
+	3, // 5: control.ControlService.RegisterLobby:output_type -> control.RegisterLobbyResponse
+	5, // 6: control.ControlService.UnregisterLobby:output_type -> control.UnregisterLobbyResponse
+	7, // 7: control.ControlService.Heartbeat:output_type -> control.HeartbeatResponse
+	4, // [4:8] is the sub-list for method output_type
+	0, // [0:4] is the sub-list for method input_type
 	0, // [0:0] is the sub-list for extension type_name
 	0, // [0:0] is the sub-list for extension extendee
 	0, // [0:0] is the sub-list for field type_name
@@ -414,7 +522,7 @@ func file_common_proto_control_control_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_common_proto_control_control_proto_rawDesc), len(file_common_proto_control_control_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   6,
+			NumMessages:   8,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

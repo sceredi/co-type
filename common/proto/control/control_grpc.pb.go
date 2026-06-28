@@ -22,6 +22,7 @@ const (
 	ControlService_RegisterServer_FullMethodName  = "/control.ControlService/RegisterServer"
 	ControlService_RegisterLobby_FullMethodName   = "/control.ControlService/RegisterLobby"
 	ControlService_UnregisterLobby_FullMethodName = "/control.ControlService/UnregisterLobby"
+	ControlService_Heartbeat_FullMethodName       = "/control.ControlService/Heartbeat"
 )
 
 // ControlServiceClient is the client API for ControlService service.
@@ -33,6 +34,7 @@ type ControlServiceClient interface {
 	RegisterServer(ctx context.Context, in *RegisterServerRequest, opts ...grpc.CallOption) (*RegisterServerResponse, error)
 	RegisterLobby(ctx context.Context, in *RegisterLobbyRequest, opts ...grpc.CallOption) (*RegisterLobbyResponse, error)
 	UnregisterLobby(ctx context.Context, in *UnregisterLobbyRequest, opts ...grpc.CallOption) (*UnregisterLobbyResponse, error)
+	Heartbeat(ctx context.Context, in *HeartbeatRequest, opts ...grpc.CallOption) (*HeartbeatResponse, error)
 }
 
 type controlServiceClient struct {
@@ -73,6 +75,16 @@ func (c *controlServiceClient) UnregisterLobby(ctx context.Context, in *Unregist
 	return out, nil
 }
 
+func (c *controlServiceClient) Heartbeat(ctx context.Context, in *HeartbeatRequest, opts ...grpc.CallOption) (*HeartbeatResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(HeartbeatResponse)
+	err := c.cc.Invoke(ctx, ControlService_Heartbeat_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // ControlServiceServer is the server API for ControlService service.
 // All implementations must embed UnimplementedControlServiceServer
 // for forward compatibility.
@@ -82,6 +94,7 @@ type ControlServiceServer interface {
 	RegisterServer(context.Context, *RegisterServerRequest) (*RegisterServerResponse, error)
 	RegisterLobby(context.Context, *RegisterLobbyRequest) (*RegisterLobbyResponse, error)
 	UnregisterLobby(context.Context, *UnregisterLobbyRequest) (*UnregisterLobbyResponse, error)
+	Heartbeat(context.Context, *HeartbeatRequest) (*HeartbeatResponse, error)
 	mustEmbedUnimplementedControlServiceServer()
 }
 
@@ -100,6 +113,9 @@ func (UnimplementedControlServiceServer) RegisterLobby(context.Context, *Registe
 }
 func (UnimplementedControlServiceServer) UnregisterLobby(context.Context, *UnregisterLobbyRequest) (*UnregisterLobbyResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method UnregisterLobby not implemented")
+}
+func (UnimplementedControlServiceServer) Heartbeat(context.Context, *HeartbeatRequest) (*HeartbeatResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method Heartbeat not implemented")
 }
 func (UnimplementedControlServiceServer) mustEmbedUnimplementedControlServiceServer() {}
 func (UnimplementedControlServiceServer) testEmbeddedByValue()                        {}
@@ -176,6 +192,24 @@ func _ControlService_UnregisterLobby_Handler(srv interface{}, ctx context.Contex
 	return interceptor(ctx, in, info, handler)
 }
 
+func _ControlService_Heartbeat_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(HeartbeatRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ControlServiceServer).Heartbeat(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ControlService_Heartbeat_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ControlServiceServer).Heartbeat(ctx, req.(*HeartbeatRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // ControlService_ServiceDesc is the grpc.ServiceDesc for ControlService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -194,6 +228,10 @@ var ControlService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "UnregisterLobby",
 			Handler:    _ControlService_UnregisterLobby_Handler,
+		},
+		{
+			MethodName: "Heartbeat",
+			Handler:    _ControlService_Heartbeat_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

@@ -73,3 +73,16 @@ func (h *ControlHandler) UnregisterLobby(_ context.Context, req *control.Unregis
 		Message: "Lobby unregistered successfully",
 	}, nil
 }
+
+// Heartbeat handles incoming heartbeat requests from game servers, updating their last-seen timestamp and load.
+func (h *ControlHandler) Heartbeat(_ context.Context, req *control.HeartbeatRequest) (*control.HeartbeatResponse, error) {
+	err := h.serverSvc.Heartbeat(req.GetName(), int(req.GetLoad()))
+	if err != nil {
+		slog.Error("Failed to process heartbeat",
+			slog.String("name", req.GetName()),
+			slog.String("error", err.Error()),
+		)
+		return nil, grpc_utils.ToGRPCError(err)
+	}
+	return &control.HeartbeatResponse{Success: true}, nil
+}

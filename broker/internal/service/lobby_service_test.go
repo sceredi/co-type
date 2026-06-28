@@ -3,6 +3,7 @@ package service
 import (
 	"errors"
 	"testing"
+	"time"
 
 	"github.com/sceredi/co-type/broker/internal/repository"
 	"github.com/sceredi/co-type/common/domain"
@@ -53,6 +54,10 @@ func (m *mockServerService) GetByName(name string) (*domain.Server, error) {
 	}
 	return m.server, nil
 }
+
+func (m *mockServerService) Heartbeat(_ string, _ int) error { return nil }
+
+func (m *mockServerService) EvictStale(_ time.Duration) int { return 0 }
 
 func TestLobbyService_Create(t *testing.T) {
 	repo := &mockLobbyRepository{}

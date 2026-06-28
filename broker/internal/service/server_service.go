@@ -6,6 +6,7 @@ package service
 import (
 	"context"
 	"log/slog"
+	"time"
 
 	"github.com/sceredi/co-type/broker/internal/repository"
 	"github.com/sceredi/co-type/common/domain"
@@ -19,6 +20,10 @@ type ServerService interface {
 	LowestLoad() (*domain.Server, error)
 	// GetByName retrieves a server by its name. It returns the server or an error if the server is not found or if the operation fails.
 	GetByName(name string) (*domain.Server, error)
+	// Heartbeat updates the last-seen timestamp and load for a registered server.
+	Heartbeat(name string, load int) error
+	// EvictStale removes servers that have not sent a heartbeat within ttl and returns the count of evicted servers.
+	EvictStale(ttl time.Duration) int
 }
 
 type serverService struct {
@@ -69,4 +74,29 @@ func (s *serverService) GetByName(name string) (*domain.Server, error) {
 		}
 	}
 	return nil, domain.ErrServerNotFound
+}
+
+func (s *serverService) Heartbeat(name string, load int) error {
+	slog.DebugContext(context.Background(), "Received heartbeat",
+		slog.String("name", name),
+		slog.Int("load", load),
+	)
+	return s.serverRepo.UpdateLastSeen(name, load, time.Now())
+}
+
+func (s *serverService) EvictStale(ttl time.Duration) int {
+	stale := s.serverRepo.ListStale(ttl)
+	for _, name := range stale {
+		if err := s.serverRepo.Delete(name); err != nil {
+			slog.WarnContext(context.Background(), "Failed to evict stale server",
+				slog.String("name", name),
+				slog.String("error", err.Error()),
+			)
+			continue
+		}
+		slog.InfoContext(context.Background(), "Evicted stale server",
+			slog.String("name", name),
+		)
+	}
+	return len(stale)
 }
