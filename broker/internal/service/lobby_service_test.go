@@ -53,6 +53,10 @@ func (m *mockServerService) LowestLoad() (*domain.Server, error) {
 	return nil, nil
 }
 
+func (m *mockServerService) LowestLoadExcluding(_ string) (*domain.Server, error) {
+	return nil, nil
+}
+
 func (m *mockServerService) GetByName(name string) (*domain.Server, error) {
 	if m.err != nil {
 		return nil, m.err
@@ -66,9 +70,17 @@ func (m *mockServerService) Upsert(_, _ string, _ int) *domain.Server { return n
 
 func (m *mockServerService) EvictStale(_ time.Duration) int { return 0 }
 
+type mockPendingResumeRepository struct{}
+
+func (m *mockPendingResumeRepository) Set(_ repository.LobbyID, _ repository.ServerName) {}
+func (m *mockPendingResumeRepository) Get(_ repository.LobbyID) (repository.ServerName, bool) {
+	return "", false
+}
+func (m *mockPendingResumeRepository) Delete(_ repository.LobbyID) {}
+
 func TestLobbyService_Create(t *testing.T) {
 	repo := &mockLobbyRepository{}
-	svc := NewLobbyService(repo, &mockServerService{})
+	svc := NewLobbyService(repo, &mockPendingResumeRepository{}, &mockServerService{})
 
 	err := svc.Create("lobby1", "server1")
 	if err != nil {
@@ -83,7 +95,7 @@ func TestLobbyService_Get(t *testing.T) {
 	expectedServer := &domain.Server{Name: "server1"}
 	repo := &mockLobbyRepository{serverName: "server1"}
 	serverSvc := &mockServerService{server: expectedServer}
-	svc := NewLobbyService(repo, serverSvc)
+	svc := NewLobbyService(repo, &mockPendingResumeRepository{}, serverSvc)
 
 	server, err := svc.Get("lobby1")
 	if err != nil {
@@ -97,7 +109,7 @@ func TestLobbyService_Get(t *testing.T) {
 func TestLobbyService_Get_Error(t *testing.T) {
 	repoErr := errors.New("not found")
 	repo := &mockLobbyRepository{err: repoErr}
-	svc := NewLobbyService(repo, &mockServerService{})
+	svc := NewLobbyService(repo, &mockPendingResumeRepository{}, &mockServerService{})
 
 	_, err := svc.Get("lobby1")
 	if !errors.Is(err, repoErr) {
@@ -107,7 +119,7 @@ func TestLobbyService_Get_Error(t *testing.T) {
 
 func TestLobbyService_Delete(t *testing.T) {
 	repo := &mockLobbyRepository{}
-	svc := NewLobbyService(repo, &mockServerService{})
+	svc := NewLobbyService(repo, &mockPendingResumeRepository{}, &mockServerService{})
 
 	err := svc.Delete("lobby1")
 	if err != nil {
@@ -121,7 +133,7 @@ func TestLobbyService_Delete(t *testing.T) {
 func TestLobbyService_Delete_Error(t *testing.T) {
 	deleteErr := errors.New("delete failed")
 	repo := &mockLobbyRepository{deleteErr: deleteErr}
-	svc := NewLobbyService(repo, &mockServerService{})
+	svc := NewLobbyService(repo, &mockPendingResumeRepository{}, &mockServerService{})
 
 	err := svc.Delete("lobby1")
 	if !errors.Is(err, deleteErr) {

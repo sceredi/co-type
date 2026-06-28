@@ -34,7 +34,8 @@ func New(_ *config.Config) (*App, error) {
 	serverRepo := memory.NewServerRepository()
 	serverSvc := service.NewServerService(serverRepo)
 	lobbyRepo := memory.NewLobbyRepository()
-	lobbySvc := service.NewLobbyService(lobbyRepo, serverSvc)
+	pendingResumeRepo := memory.NewPendingResumeRepository()
+	lobbySvc := service.NewLobbyService(lobbyRepo, pendingResumeRepo, serverSvc)
 
 	controlHandler := handler.NewControlHandler(serverSvc, lobbySvc)
 	discoveryHandler := handler.NewDiscoveryHandler(serverSvc, lobbySvc)

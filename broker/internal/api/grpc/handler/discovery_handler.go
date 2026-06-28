@@ -47,3 +47,17 @@ func (h *DiscoveryHandler) ServerHostingLobby(_ context.Context, req *discovery.
 		Port: int64(server.Port),
 	}, nil
 }
+
+// RequestResumeGame handles incoming gRPC requests to resume a crashed game. It assigns (or
+// reuses) a server for the lobby and returns its address.
+func (h *DiscoveryHandler) RequestResumeGame(_ context.Context, req *discovery.RequestResumeGameRequest) (*discovery.RequestResumeGameResponse, error) {
+	server, err := h.lobbySvc.RequestResumeGame(repository.LobbyID(req.LobbyId))
+	if err != nil {
+		return nil, grpc_utils.ToGRPCError(err)
+	}
+	return &discovery.RequestResumeGameResponse{
+		Name: server.Name,
+		Addr: server.Addr,
+		Port: int64(server.Port),
+	}, nil
+}
