@@ -37,10 +37,10 @@ func TestServerService_CreateServer(t *testing.T) {
 		{
 			name: "returns ErrServerAlreadyExists when server already exists",
 			seed: []*domain.Server{
-				{Name: "test_server2", Addr: "8.8.8.8", Port: 8080},
+				{Name: "test_server", Addr: "8.8.8.8", Port: 8080},
 			},
 			hostName: "test_server",
-			addr:     "8.8.8.8",
+			addr:     "10.0.0.1",
 			port:     9090,
 			wantErr:  domain.ErrServerAlreadyExists,
 		},
