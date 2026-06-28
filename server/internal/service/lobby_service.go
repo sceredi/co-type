@@ -20,6 +20,8 @@ type LobbyService interface {
 	Ready(lobbyID, playerName string) (*domain.Lobby, error)
 	Get(id string) *domain.Lobby
 	SendKeyPress(lobbyID, playerName, key string, isBackspace bool) (*domain.Lobby, error)
+	// ListIDs returns the IDs of all lobbies currently managed by this server.
+	ListIDs() []string
 }
 
 type lobbyService struct {
@@ -245,4 +247,8 @@ func (s *lobbyService) SendKeyPress(lobbyID, playerName, key string, isBackspace
 		ch <- lobby
 	}
 	return lobby, nil
+}
+
+func (s *lobbyService) ListIDs() []string {
+	return s.lobbyRepo.ListIDs()
 }

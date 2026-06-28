@@ -23,9 +23,8 @@ import (
 
 // App represents the main application structure for the server, containing everything needed to run the server.
 type App struct {
-	Server *grpc.Server
-	Conn   *grpc.ClientConn
-	// TODO: wrap into a "grpc.client.{discovery_client, connection_supervisor}" that does healthchecks and reconnection
+	Server           *grpc.Server
+	Conn             *grpc.ClientConn
 	DiscoveryService service.DiscoveryService
 	cancelCtx        context.CancelFunc
 }
@@ -61,8 +60,7 @@ func New(cfg *config.Config) (*App, error) {
 
 	app.CreateListener(grpcServer, "game")
 
-	// TODO: same as todo above
-	err = discoverySvc.Register(cfg.Name, cfg.Addr, cfg.Port)
+	err = discoverySvc.Register(cfg.Name, cfg.Addr, cfg.Port, []string{})
 	if err != nil {
 		cancel()
 		if closeErr := conn.Close(); closeErr != nil {
@@ -71,7 +69,7 @@ func New(cfg *config.Config) (*App, error) {
 		return nil, err
 	}
 
-	discoverySvc.StartHeartbeat(ctx, cfg.Name, 0)
+	discoverySvc.StartHeartbeat(ctx, cfg.Name, cfg.Addr, cfg.Port, 0, lobbySvc.ListIDs)
 
 	return &App{
 		Server:           grpcServer,

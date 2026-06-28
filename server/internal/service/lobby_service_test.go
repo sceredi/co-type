@@ -38,6 +38,8 @@ func (m *mockLobbyRepository) Delete(id string) error {
 	return m.deleteErr
 }
 
+func (m *mockLobbyRepository) ListIDs() []string { return nil }
+
 type mockControlGateway struct {
 	receivedLobbyID    string
 	receivedServerName string
@@ -45,7 +47,7 @@ type mockControlGateway struct {
 	err                error
 }
 
-func (m *mockControlGateway) RegisterServer(name, host string, port int) error {
+func (m *mockControlGateway) RegisterServer(name, host string, port int, _ []string) error {
 	return nil
 }
 

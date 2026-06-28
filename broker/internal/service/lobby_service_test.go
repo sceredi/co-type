@@ -35,6 +35,11 @@ func (m *mockLobbyRepository) Delete(lobbyID repository.LobbyID) error {
 	return m.deleteErr
 }
 
+func (m *mockLobbyRepository) Upsert(lobbyID repository.LobbyID, serverName repository.ServerName) {
+	m.lobbyID = lobbyID
+	m.serverName = serverName
+}
+
 type mockServerService struct {
 	server *domain.Server
 	err    error
@@ -56,6 +61,8 @@ func (m *mockServerService) GetByName(name string) (*domain.Server, error) {
 }
 
 func (m *mockServerService) Heartbeat(_ string, _ int) error { return nil }
+
+func (m *mockServerService) Upsert(_, _ string, _ int) *domain.Server { return nil }
 
 func (m *mockServerService) EvictStale(_ time.Duration) int { return 0 }
 

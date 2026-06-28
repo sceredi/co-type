@@ -67,6 +67,21 @@ func (r *serverRepository) UpdateLastSeen(name string, load int, t time.Time) er
 	return domain.ErrServerNotFound
 }
 
+func (r *serverRepository) Upsert(server *domain.Server) *domain.Server {
+	r.mu.Lock()
+	defer r.mu.Unlock()
+	for _, e := range r.entries {
+		if e.server.Name == server.Name {
+			e.server.Addr = server.Addr
+			e.server.Port = server.Port
+			e.lastSeen = time.Now()
+			return e.server
+		}
+	}
+	r.entries = append(r.entries, &serverEntry{server: server, lastSeen: time.Now()})
+	return server
+}
+
 func (r *serverRepository) Delete(name string) error {
 	r.mu.Lock()
 	defer r.mu.Unlock()

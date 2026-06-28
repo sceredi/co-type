@@ -9,6 +9,8 @@ import (
 type LobbyService interface {
 	// Create registers a new lobby in the broker service. It takes a lobby ID and the server name managing it, and returns an error if the operation fails (e.g., if the lobby already exists).
 	Create(lobbyID repository.LobbyID, serverName repository.ServerName) error
+	// Upsert registers or updates a lobby in the broker service. It never returns ErrLobbyAlreadyExists.
+	Upsert(lobbyID repository.LobbyID, serverName repository.ServerName)
 	// Get retrieves a lobby by its ID from the broker service. It returns the server managing the lobby or an error if the lobby is not found or if the operation fails.
 	Get(lobbyID repository.LobbyID) (*domain.Server, error)
 	// Delete removes a lobby by its ID from the broker service. It returns an error if the lobby is not found or if the operation fails.
@@ -30,6 +32,10 @@ func NewLobbyService(lobbyRepo repository.LobbyRepository, serverSvc ServerServi
 
 func (s *lobbyService) Create(lobbyID repository.LobbyID, serverName repository.ServerName) error {
 	return s.lobbyRepo.Create(lobbyID, serverName)
+}
+
+func (s *lobbyService) Upsert(lobbyID repository.LobbyID, serverName repository.ServerName) {
+	s.lobbyRepo.Upsert(lobbyID, serverName)
 }
 
 func (s *lobbyService) Get(lobbyID repository.LobbyID) (*domain.Server, error) {

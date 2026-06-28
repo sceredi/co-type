@@ -11,8 +11,9 @@ import (
 
 // ControlGateway defines the interface for managing control operations in the server service.
 type ControlGateway interface {
-	// RegisterServer registers the server with the control service using the provided name, host, and port.
-	RegisterServer(name, host string, port int) error
+	// RegisterServer registers the server with the control service using the provided name, host, port, and
+	// the list of lobby IDs currently managed by this server (empty on first startup).
+	RegisterServer(name, host string, port int, lobbyIDs []string) error
 
 	RegisterLobby(lobbyID, serverName string) error
 
@@ -32,11 +33,12 @@ func NewControlGateway(ctx context.Context, conn control.ControlServiceClient) C
 	return &controlGateway{ctx: ctx, conn: conn}
 }
 
-func (g *controlGateway) RegisterServer(name, host string, port int) error {
+func (g *controlGateway) RegisterServer(name, host string, port int, lobbyIDs []string) error {
 	req := &control.RegisterServerRequest{
-		Name: name,
-		Host: host,
-		Port: int64(port),
+		Name:     name,
+		Host:     host,
+		Port:     int64(port),
+		LobbyIds: lobbyIDs,
 	}
 	res, err := g.conn.RegisterServer(g.ctx, req)
 	if err != nil {

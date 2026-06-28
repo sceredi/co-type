@@ -11,4 +11,6 @@ type LobbyRepository interface {
 	Get(id string) *domain.Lobby
 	// Delete removes a lobby by its ID from the repository. It returns an error if the operation fails.
 	Delete(id string) error
+	// ListIDs returns all lobby IDs currently stored in the repository.
+	ListIDs() []string
 }

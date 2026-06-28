@@ -23,17 +23,13 @@ func NewControlHandler(serverSvc service.ServerService, lobbySvc service.LobbySe
 	return &ControlHandler{serverSvc: serverSvc, lobbySvc: lobbySvc}
 }
 
-// RegisterServer handles incoming gRPC requests to register a new server. It validates the request and attempts to create a new server entry using the ServerService.
+// RegisterServer handles incoming gRPC requests to register a new server. It is idempotent: if the
+// server is already known (e.g. after a broker restart) its address is updated and all supplied
+// lobby IDs are re-registered.
 func (h *ControlHandler) RegisterServer(_ context.Context, req *control.RegisterServerRequest) (*control.RegisterServerResponse, error) {
-	_, err := h.serverSvc.Create(req.GetName(), req.GetHost(), int(req.GetPort()))
-	if err != nil {
-		slog.Error("Failed to register server",
-			slog.String("name", req.GetName()),
-			slog.String("host", req.GetHost()),
-			slog.Int("port", int(req.GetPort())),
-			slog.String("error", err.Error()),
-		)
-		return nil, grpc_utils.ToGRPCError(err)
+	h.serverSvc.Upsert(req.GetName(), req.GetHost(), int(req.GetPort()))
+	for _, lobbyID := range req.GetLobbyIds() {
+		h.lobbySvc.Upsert(repository.LobbyID(lobbyID), repository.ServerName(req.GetName()))
 	}
 	return &control.RegisterServerResponse{
 		Success: true,

@@ -32,6 +32,14 @@ func (r *lobbyRepository) Create(lobbyID repository.LobbyID, serverName reposito
 	return nil
 }
 
+func (r *lobbyRepository) Upsert(lobbyID repository.LobbyID, serverName repository.ServerName) {
+	slog.DebugContext(context.Background(), "Upserting lobby in memory",
+		slog.String("lobby_id", string(lobbyID)),
+		slog.String("server_name", string(serverName)),
+	)
+	r.lobbies[lobbyID] = serverName
+}
+
 func (r *lobbyRepository) Get(id repository.LobbyID) (repository.ServerName, error) {
 	serverName, ok := r.lobbies[id]
 	if !ok {
