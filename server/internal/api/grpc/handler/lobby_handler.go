@@ -93,42 +93,51 @@ func (h *LobbyHandler) Subscribe(req *lobby.SubscribeRequest, stream lobby.Lobby
 	for {
 		select {
 		case <-ctx.Done():
-			current := h.lobbySvc.Get(req.LobbyId)
-			if current != nil {
-				switch current.Base.Status {
-				case domain.LobbyWaitingForPlayers:
-					if err := h.lobbySvc.Leave(req.LobbyId, req.PlayerName); err != nil {
-						slog.ErrorContext(ctx, "Failed to remove disconnected player from lobby",
-							slog.String("lobbyID", req.LobbyId),
-							slog.String("player", req.PlayerName),
-							slog.String("error", err.Error()),
-						)
-					}
-				case domain.LobbyPlaying, domain.LobbyPaused:
-					if err := h.lobbySvc.PlayerDisconnected(req.LobbyId, req.PlayerName); err != nil {
-						slog.ErrorContext(ctx, "Failed to mark player as disconnected",
-							slog.String("lobbyID", req.LobbyId),
-							slog.String("player", req.PlayerName),
-							slog.String("error", err.Error()),
-						)
-					}
-				default:
-					slog.DebugContext(ctx, "As expected not handling state",
-						slog.String("lobbyID", req.LobbyId),
-						slog.String("player", req.PlayerName),
-						slog.Int("state", int(current.Base.Status)),
-					)
-				}
-			}
+			h.handleSubscriberDisconnect(ctx, req.LobbyId, req.PlayerName)
 			return status.FromContextError(ctx.Err()).Err()
 		case event, ok := <-eventCh:
 			if !ok {
 				return nil
 			}
 			if err := stream.Send(newLobbyEvent(event.Base)); err != nil {
+				h.handleSubscriberDisconnect(ctx, req.LobbyId, req.PlayerName)
 				return err
 			}
 		}
+	}
+}
+
+// handleSubscriberDisconnect cleans up after a subscriber's connection is lost.
+// In lobby phase the player is removed; in game phase the game is paused and the
+// player is kept so they can reconnect.
+func (h *LobbyHandler) handleSubscriberDisconnect(ctx context.Context, lobbyID, playerName string) {
+	current := h.lobbySvc.Get(lobbyID)
+	if current == nil {
+		return
+	}
+	switch current.Base.Status {
+	case domain.LobbyWaitingForPlayers:
+		if err := h.lobbySvc.Leave(lobbyID, playerName); err != nil {
+			slog.ErrorContext(ctx, "Failed to remove disconnected player from lobby",
+				slog.String("lobbyID", lobbyID),
+				slog.String("player", playerName),
+				slog.String("error", err.Error()),
+			)
+		}
+	case domain.LobbyPlaying, domain.LobbyPaused:
+		if err := h.lobbySvc.PlayerDisconnected(lobbyID, playerName); err != nil {
+			slog.ErrorContext(ctx, "Failed to mark player as disconnected",
+				slog.String("lobbyID", lobbyID),
+				slog.String("player", playerName),
+				slog.String("error", err.Error()),
+			)
+		}
+	default:
+		slog.DebugContext(ctx, "Subscriber disconnected in unhandled lobby state, ignoring",
+			slog.String("lobbyID", lobbyID),
+			slog.String("player", playerName),
+			slog.Int("status", int(current.Base.Status)),
+		)
 	}
 }
 
