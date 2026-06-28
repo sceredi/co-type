@@ -43,11 +43,15 @@ func waitForGameUpdate(updates <-chan *domain.Lobby) tea.Cmd {
 	return func() tea.Msg {
 		l, ok := <-updates
 		if !ok {
-			return nil
+			return serverDisconnectedMsg{}
 		}
 		return gameUpdateMsg{lobby: l}
 	}
 }
+
+// serverDisconnectedMsg is emitted when the subscription channel is closed,
+// indicating the server has become unreachable.
+type serverDisconnectedMsg struct{}
 
 type gameUpdateMsg struct{ lobby *domain.Lobby }
 
@@ -91,6 +95,10 @@ func (m Model) Update(msg tea.Msg) (Model, tea.Cmd) {
 				Lobby:     m.game.Lobby,
 			}))
 		}
+
+	case serverDisconnectedMsg:
+		slog.WarnContext(context.Background(), "server disconnected, pausing game")
+		m.game.Lobby.Status = domain.LobbyPaused
 
 	case gameUpdateMsg:
 		if msg.lobby != nil {
