@@ -1,3 +1,9 @@
+## [0.9.1](https://github.com/sceredi/co-type/compare/v0.9.0...v0.9.1) (2026-06-28)
+
+### Bug Fixes
+
+* prevent duplicate server creation based on name only ([cb90559](https://github.com/sceredi/co-type/commit/cb90559e6763ecf362b2b7bf75ef91e8b316589b))
+
 ## [0.9.0](https://github.com/sceredi/co-type/compare/v0.8.0...v0.9.0) (2026-06-27)
 
 ### Features
