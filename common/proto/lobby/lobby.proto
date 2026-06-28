@@ -13,6 +13,10 @@ service LobbyService {
   rpc ReadyPlayer(ReadyPlayerRequest) returns (ReadyPlayerResponse);
   rpc Subscribe(SubscribeRequest) returns (stream LobbyEvent);
   rpc SendKeyPress(SendKeyPressRequest) returns (SendKeyPressResponse);
+  // RPC to resume a crashed game on a new server. The first caller creates the lobby;
+  // subsequent callers (reconnecting players) provide their game state so the server
+  // can keep the state with the highest revision.
+  rpc ResumeGame(ResumeGameRequest) returns (ResumeGameResponse);
 }
 
 enum LobbyStatus {
@@ -112,5 +116,16 @@ message SendKeyPressRequest {
 }
 
 message SendKeyPressResponse {
+  Lobby lobby = 1;
+}
+
+// Request to resume a crashed game on a new server.
+message ResumeGameRequest {
+  Lobby lobby = 1;
+  string player_name = 2;
+}
+
+// Response after resuming a game.
+message ResumeGameResponse {
   Lobby lobby = 1;
 }

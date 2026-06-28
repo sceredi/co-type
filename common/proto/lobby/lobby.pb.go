@@ -1014,6 +1014,104 @@ func (x *SendKeyPressResponse) GetLobby() *Lobby {
 	return nil
 }
 
+// Request to resume a crashed game on a new server.
+type ResumeGameRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Lobby         *Lobby                 `protobuf:"bytes,1,opt,name=lobby,proto3" json:"lobby,omitempty"`
+	PlayerName    string                 `protobuf:"bytes,2,opt,name=player_name,json=playerName,proto3" json:"player_name,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ResumeGameRequest) Reset() {
+	*x = ResumeGameRequest{}
+	mi := &file_common_proto_lobby_lobby_proto_msgTypes[17]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ResumeGameRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ResumeGameRequest) ProtoMessage() {}
+
+func (x *ResumeGameRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_common_proto_lobby_lobby_proto_msgTypes[17]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ResumeGameRequest.ProtoReflect.Descriptor instead.
+func (*ResumeGameRequest) Descriptor() ([]byte, []int) {
+	return file_common_proto_lobby_lobby_proto_rawDescGZIP(), []int{17}
+}
+
+func (x *ResumeGameRequest) GetLobby() *Lobby {
+	if x != nil {
+		return x.Lobby
+	}
+	return nil
+}
+
+func (x *ResumeGameRequest) GetPlayerName() string {
+	if x != nil {
+		return x.PlayerName
+	}
+	return ""
+}
+
+// Response after resuming a game.
+type ResumeGameResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Lobby         *Lobby                 `protobuf:"bytes,1,opt,name=lobby,proto3" json:"lobby,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ResumeGameResponse) Reset() {
+	*x = ResumeGameResponse{}
+	mi := &file_common_proto_lobby_lobby_proto_msgTypes[18]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ResumeGameResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ResumeGameResponse) ProtoMessage() {}
+
+func (x *ResumeGameResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_common_proto_lobby_lobby_proto_msgTypes[18]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ResumeGameResponse.ProtoReflect.Descriptor instead.
+func (*ResumeGameResponse) Descriptor() ([]byte, []int) {
+	return file_common_proto_lobby_lobby_proto_rawDescGZIP(), []int{18}
+}
+
+func (x *ResumeGameResponse) GetLobby() *Lobby {
+	if x != nil {
+		return x.Lobby
+	}
+	return nil
+}
+
 var File_common_proto_lobby_lobby_proto protoreflect.FileDescriptor
 
 const file_common_proto_lobby_lobby_proto_rawDesc = "" +
@@ -1087,6 +1185,12 @@ const file_common_proto_lobby_lobby_proto_rawDesc = "" +
 	"\x03key\x18\x03 \x01(\tR\x03key\x12!\n" +
 	"\fis_backspace\x18\x04 \x01(\bR\visBackspace\":\n" +
 	"\x14SendKeyPressResponse\x12\"\n" +
+	"\x05lobby\x18\x01 \x01(\v2\f.lobby.LobbyR\x05lobby\"X\n" +
+	"\x11ResumeGameRequest\x12\"\n" +
+	"\x05lobby\x18\x01 \x01(\v2\f.lobby.LobbyR\x05lobby\x12\x1f\n" +
+	"\vplayer_name\x18\x02 \x01(\tR\n" +
+	"playerName\"8\n" +
+	"\x12ResumeGameResponse\x12\"\n" +
 	"\x05lobby\x18\x01 \x01(\v2\f.lobby.LobbyR\x05lobby*O\n" +
 	"\vLobbyStatus\x12\x17\n" +
 	"\x13WAITING_FOR_PLAYERS\x10\x00\x12\v\n" +
@@ -1094,7 +1198,7 @@ const file_common_proto_lobby_lobby_proto_rawDesc = "" +
 	"\n" +
 	"\x06PAUSED\x10\x02\x12\x0e\n" +
 	"\n" +
-	"GAME_ENDED\x10\x032\xe4\x03\n" +
+	"GAME_ENDED\x10\x032\xa7\x04\n" +
 	"\fLobbyService\x12D\n" +
 	"\vCreateLobby\x12\x19.lobby.CreateLobbyRequest\x1a\x1a.lobby.CreateLobbyResponse\x12>\n" +
 	"\tJoinLobby\x12\x17.lobby.JoinLobbyRequest\x1a\x18.lobby.JoinLobbyResponse\x12A\n" +
@@ -1104,7 +1208,9 @@ const file_common_proto_lobby_lobby_proto_rawDesc = "" +
 	"EditPlayer\x12\x18.lobby.EditPlayerRequest\x1a\x19.lobby.EditPlayerResponse\x12D\n" +
 	"\vReadyPlayer\x12\x19.lobby.ReadyPlayerRequest\x1a\x1a.lobby.ReadyPlayerResponse\x129\n" +
 	"\tSubscribe\x12\x17.lobby.SubscribeRequest\x1a\x11.lobby.LobbyEvent0\x01\x12G\n" +
-	"\fSendKeyPress\x12\x1a.lobby.SendKeyPressRequest\x1a\x1b.lobby.SendKeyPressResponseB/Z-github.com/sceredi/co-type/common/proto/lobbyb\x06proto3"
+	"\fSendKeyPress\x12\x1a.lobby.SendKeyPressRequest\x1a\x1b.lobby.SendKeyPressResponse\x12A\n" +
+	"\n" +
+	"ResumeGame\x12\x18.lobby.ResumeGameRequest\x1a\x19.lobby.ResumeGameResponseB/Z-github.com/sceredi/co-type/common/proto/lobbyb\x06proto3"
 
 var (
 	file_common_proto_lobby_lobby_proto_rawDescOnce sync.Once
@@ -1119,7 +1225,7 @@ func file_common_proto_lobby_lobby_proto_rawDescGZIP() []byte {
 }
 
 var file_common_proto_lobby_lobby_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
-var file_common_proto_lobby_lobby_proto_msgTypes = make([]protoimpl.MessageInfo, 17)
+var file_common_proto_lobby_lobby_proto_msgTypes = make([]protoimpl.MessageInfo, 19)
 var file_common_proto_lobby_lobby_proto_goTypes = []any{
 	(LobbyStatus)(0),             // 0: lobby.LobbyStatus
 	(*GameInfo)(nil),             // 1: lobby.GameInfo
@@ -1139,6 +1245,8 @@ var file_common_proto_lobby_lobby_proto_goTypes = []any{
 	(*LobbyEvent)(nil),           // 15: lobby.LobbyEvent
 	(*SendKeyPressRequest)(nil),  // 16: lobby.SendKeyPressRequest
 	(*SendKeyPressResponse)(nil), // 17: lobby.SendKeyPressResponse
+	(*ResumeGameRequest)(nil),    // 18: lobby.ResumeGameRequest
+	(*ResumeGameResponse)(nil),   // 19: lobby.ResumeGameResponse
 }
 var file_common_proto_lobby_lobby_proto_depIdxs = []int32{
 	3,  // 0: lobby.Lobby.players:type_name -> lobby.Player
@@ -1150,25 +1258,29 @@ var file_common_proto_lobby_lobby_proto_depIdxs = []int32{
 	2,  // 6: lobby.ReadyPlayerResponse.lobby:type_name -> lobby.Lobby
 	2,  // 7: lobby.LobbyEvent.lobby:type_name -> lobby.Lobby
 	2,  // 8: lobby.SendKeyPressResponse.lobby:type_name -> lobby.Lobby
-	4,  // 9: lobby.LobbyService.CreateLobby:input_type -> lobby.CreateLobbyRequest
-	6,  // 10: lobby.LobbyService.JoinLobby:input_type -> lobby.JoinLobbyRequest
-	8,  // 11: lobby.LobbyService.LeaveLobby:input_type -> lobby.LeaveLobbyRequest
-	10, // 12: lobby.LobbyService.EditPlayer:input_type -> lobby.EditPlayerRequest
-	12, // 13: lobby.LobbyService.ReadyPlayer:input_type -> lobby.ReadyPlayerRequest
-	14, // 14: lobby.LobbyService.Subscribe:input_type -> lobby.SubscribeRequest
-	16, // 15: lobby.LobbyService.SendKeyPress:input_type -> lobby.SendKeyPressRequest
-	5,  // 16: lobby.LobbyService.CreateLobby:output_type -> lobby.CreateLobbyResponse
-	7,  // 17: lobby.LobbyService.JoinLobby:output_type -> lobby.JoinLobbyResponse
-	9,  // 18: lobby.LobbyService.LeaveLobby:output_type -> lobby.LeaveLobbyResponse
-	11, // 19: lobby.LobbyService.EditPlayer:output_type -> lobby.EditPlayerResponse
-	13, // 20: lobby.LobbyService.ReadyPlayer:output_type -> lobby.ReadyPlayerResponse
-	15, // 21: lobby.LobbyService.Subscribe:output_type -> lobby.LobbyEvent
-	17, // 22: lobby.LobbyService.SendKeyPress:output_type -> lobby.SendKeyPressResponse
-	16, // [16:23] is the sub-list for method output_type
-	9,  // [9:16] is the sub-list for method input_type
-	9,  // [9:9] is the sub-list for extension type_name
-	9,  // [9:9] is the sub-list for extension extendee
-	0,  // [0:9] is the sub-list for field type_name
+	2,  // 9: lobby.ResumeGameRequest.lobby:type_name -> lobby.Lobby
+	2,  // 10: lobby.ResumeGameResponse.lobby:type_name -> lobby.Lobby
+	4,  // 11: lobby.LobbyService.CreateLobby:input_type -> lobby.CreateLobbyRequest
+	6,  // 12: lobby.LobbyService.JoinLobby:input_type -> lobby.JoinLobbyRequest
+	8,  // 13: lobby.LobbyService.LeaveLobby:input_type -> lobby.LeaveLobbyRequest
+	10, // 14: lobby.LobbyService.EditPlayer:input_type -> lobby.EditPlayerRequest
+	12, // 15: lobby.LobbyService.ReadyPlayer:input_type -> lobby.ReadyPlayerRequest
+	14, // 16: lobby.LobbyService.Subscribe:input_type -> lobby.SubscribeRequest
+	16, // 17: lobby.LobbyService.SendKeyPress:input_type -> lobby.SendKeyPressRequest
+	18, // 18: lobby.LobbyService.ResumeGame:input_type -> lobby.ResumeGameRequest
+	5,  // 19: lobby.LobbyService.CreateLobby:output_type -> lobby.CreateLobbyResponse
+	7,  // 20: lobby.LobbyService.JoinLobby:output_type -> lobby.JoinLobbyResponse
+	9,  // 21: lobby.LobbyService.LeaveLobby:output_type -> lobby.LeaveLobbyResponse
+	11, // 22: lobby.LobbyService.EditPlayer:output_type -> lobby.EditPlayerResponse
+	13, // 23: lobby.LobbyService.ReadyPlayer:output_type -> lobby.ReadyPlayerResponse
+	15, // 24: lobby.LobbyService.Subscribe:output_type -> lobby.LobbyEvent
+	17, // 25: lobby.LobbyService.SendKeyPress:output_type -> lobby.SendKeyPressResponse
+	19, // 26: lobby.LobbyService.ResumeGame:output_type -> lobby.ResumeGameResponse
+	19, // [19:27] is the sub-list for method output_type
+	11, // [11:19] is the sub-list for method input_type
+	11, // [11:11] is the sub-list for extension type_name
+	11, // [11:11] is the sub-list for extension extendee
+	0,  // [0:11] is the sub-list for field type_name
 }
 
 func init() { file_common_proto_lobby_lobby_proto_init() }
@@ -1182,7 +1294,7 @@ func file_common_proto_lobby_lobby_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_common_proto_lobby_lobby_proto_rawDesc), len(file_common_proto_lobby_lobby_proto_rawDesc)),
 			NumEnums:      1,
-			NumMessages:   17,
+			NumMessages:   19,
 			NumExtensions: 0,
 			NumServices:   1,
 		},
