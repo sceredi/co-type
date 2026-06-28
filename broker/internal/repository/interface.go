@@ -30,6 +30,17 @@ type LobbyID string
 // ServerName is a type alias for string, representing the name of a server managing a lobby.
 type ServerName string
 
+// PendingResumeRepository stores lobbies that are waiting to be resumed on a new server.
+// The first player to call RequestResumeGame claims a server; subsequent callers get the same one.
+type PendingResumeRepository interface {
+	// Set stores or overwrites the assigned server for a pending-resume lobby.
+	Set(lobbyID LobbyID, serverName ServerName)
+	// Get returns the assigned server name and true if the lobby is pending resume, or ("", false) otherwise.
+	Get(lobbyID LobbyID) (ServerName, bool)
+	// Delete removes the lobby from the pending-resume list (called after the server registers it).
+	Delete(lobbyID LobbyID)
+}
+
 // LobbyRepository defines the interface for managing lobbies in the broker.
 type LobbyRepository interface {
 	// Create registers a new lobby in the repository with the server name managing it. It returns an error if the lobby already exists or if the operation fails.
