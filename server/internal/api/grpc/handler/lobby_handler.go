@@ -157,3 +157,15 @@ func (h *LobbyHandler) SendKeyPress(_ context.Context, req *lobby.SendKeyPressRe
 		Lobby: l.Base.ToGRPCLobby(),
 	}, nil
 }
+
+// ResumeGame handles the gRPC request to resume a crashed game on this server.
+func (h *LobbyHandler) ResumeGame(_ context.Context, req *lobby.ResumeGameRequest) (*lobby.ResumeGameResponse, error) {
+	incomingLobby := domain.NewLobbyFromGRPC(req.GetLobby())
+	l, err := h.lobbySvc.ResumeGame(incomingLobby, req.GetPlayerName())
+	if err != nil {
+		return nil, grpc_utils.ToGRPCError(err)
+	}
+	return &lobby.ResumeGameResponse{
+		Lobby: l.Base.ToGRPCLobby(),
+	}, nil
+}

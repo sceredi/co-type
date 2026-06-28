@@ -25,6 +25,11 @@ type LobbyService interface {
 	SendKeyPress(lobbyID, playerName, key string, isBackspace bool) (*domain.Lobby, error)
 	// ListIDs returns the IDs of all lobbies currently managed by this server.
 	ListIDs() []string
+	// ResumeGame restores a crashed game on this server. The first caller creates the lobby and
+	// marks all other players as disconnected; subsequent callers (reconnecting players) provide
+	// their game state so the server can keep the highest-revision snapshot. The calling player
+	// is subscribed immediately and removed from the disconnected list.
+	ResumeGame(lobby *commondomain.Lobby, playerName string) (*domain.Lobby, error)
 }
 
 type lobbyService struct {
@@ -296,4 +301,85 @@ func (s *lobbyService) PlayerDisconnected(id, userName string) error {
 
 func (s *lobbyService) ListIDs() []string {
 	return s.lobbyRepo.ListIDs()
+}
+
+func (s *lobbyService) ResumeGame(incomingLobby *commondomain.Lobby, playerName string) (*domain.Lobby, error) {
+	slog.InfoContext(context.Background(), "Resuming game",
+		slog.String("id", incomingLobby.ID),
+		slog.String("playerName", playerName),
+	)
+
+	existing := s.lobbyRepo.Get(incomingLobby.ID)
+	if existing == nil {
+		return s.initResumedLobby(incomingLobby, playerName)
+	}
+	return s.reconnectPlayer(existing, incomingLobby, playerName)
+}
+
+func (s *lobbyService) initResumedLobby(incomingLobby *commondomain.Lobby, playerName string) (*domain.Lobby, error) {
+	lobby := &domain.Lobby{
+		Base:                incomingLobby,
+		Subs:                make(map[string]chan *domain.Lobby),
+		DisconnectedPlayers: make(map[string]bool),
+	}
+	lobby.Base.Status = commondomain.LobbyPaused
+	s.markOthersDisconnected(lobby, playerName)
+
+	if _, err := s.lobbyRepo.Create(lobby); err != nil {
+		return nil, err
+	}
+	if err := s.controlGtw.RegisterLobby(incomingLobby.ID, s.serverName); err != nil {
+		_ = s.lobbyRepo.Delete(incomingLobby.ID)
+		return nil, err
+	}
+
+	slog.InfoContext(context.Background(), "Lobby created for resume, waiting for other players",
+		slog.String("id", incomingLobby.ID),
+		slog.Int("disconnected", len(lobby.DisconnectedPlayers)),
+	)
+	ch := make(chan *domain.Lobby, 64)
+	lobby.Subs[playerName] = ch
+	return lobby, nil
+}
+
+func (s *lobbyService) markOthersDisconnected(lobby *domain.Lobby, playerName string) {
+	for _, p := range lobby.Base.Players {
+		if p.Name != playerName {
+			lobby.DisconnectedPlayers[p.Name] = true
+		}
+	}
+}
+
+func (s *lobbyService) reconnectPlayer(existing *domain.Lobby, incomingLobby *commondomain.Lobby, playerName string) (*domain.Lobby, error) {
+	s.mergeGameState(existing, incomingLobby)
+
+	delete(existing.DisconnectedPlayers, playerName)
+	ch := make(chan *domain.Lobby, 64)
+	existing.Subs[playerName] = ch
+
+	if len(existing.DisconnectedPlayers) == 0 {
+		slog.InfoContext(context.Background(), "All players reconnected, resuming game", slog.String("id", incomingLobby.ID))
+		existing.Base.Status = commondomain.LobbyPlaying
+	} else {
+		slog.InfoContext(context.Background(), "Player reconnected, still waiting",
+			slog.String("id", incomingLobby.ID),
+			slog.String("player", playerName),
+			slog.Int("remaining_disconnected", len(existing.DisconnectedPlayers)),
+		)
+	}
+
+	for _, sub := range existing.Subs {
+		sub <- existing
+	}
+	return existing, nil
+}
+
+func (s *lobbyService) mergeGameState(existing *domain.Lobby, incoming *commondomain.Lobby) {
+	if incoming.Game.Revision > existing.Base.Game.Revision {
+		slog.InfoContext(context.Background(), "Updating game state to higher revision",
+			slog.String("id", incoming.ID),
+			slog.Int64("new_revision", incoming.Game.Revision),
+		)
+		existing.Base.Game = incoming.Game
+	}
 }
