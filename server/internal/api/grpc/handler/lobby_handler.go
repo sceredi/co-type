@@ -3,6 +3,7 @@ package handler
 
 import (
 	"context"
+	"log/slog"
 
 	"github.com/sceredi/co-type/common/domain"
 	grpc_utils "github.com/sceredi/co-type/common/grpc"
@@ -81,23 +82,33 @@ func (h *LobbyHandler) ReadyPlayer(_ context.Context, req *lobby.ReadyPlayerRequ
 // Subscribe handles the gRPC subscription to lobby events.
 func (h *LobbyHandler) Subscribe(req *lobby.SubscribeRequest, stream lobby.LobbyService_SubscribeServer) error {
 	ctx := stream.Context()
-	lobby := h.lobbySvc.Get(req.LobbyId)
-	if lobby == nil {
+	l := h.lobbySvc.Get(req.LobbyId)
+	if l == nil {
 		return grpc_utils.ToGRPCError(domain.ErrLobbyNotFound)
 	}
-	eventCh, ok := lobby.Subs[req.PlayerName]
+	eventCh, ok := l.Subs[req.PlayerName]
 	if !ok {
 		return grpc_utils.ToGRPCError(domain.ErrPlayerNotInLobby)
 	}
 	for {
 		select {
 		case <-ctx.Done():
+			current := h.lobbySvc.Get(req.LobbyId)
+			if current != nil && current.Base.Status == domain.LobbyWaitingForPlayers {
+				if err := h.lobbySvc.Leave(req.LobbyId, req.PlayerName); err != nil {
+					slog.ErrorContext(ctx, "Failed to remove disconnected player from lobby",
+						slog.String("lobbyID", req.LobbyId),
+						slog.String("player", req.PlayerName),
+						slog.String("error", err.Error()),
+					)
+				}
+			}
 			return status.FromContextError(ctx.Err()).Err()
-		case l, ok := <-eventCh:
+		case event, ok := <-eventCh:
 			if !ok {
 				return nil
 			}
-			if err := stream.Send(newLobbyEvent(l.Base)); err != nil {
+			if err := stream.Send(newLobbyEvent(event.Base)); err != nil {
 				return err
 			}
 		}
