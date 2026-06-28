@@ -32,3 +32,32 @@ func NewSendKeyPressCmd(lobbySvc service.LobbyService, lobbyID string, player *d
 		return KeyPressResultMsg{Lobby: l, Err: err}
 	}
 }
+
+// RequestResumeGameResultMsg is emitted after the broker assigns a server for the crashed game.
+type RequestResumeGameResultMsg struct {
+	Server *domain.Server
+	Err    error
+}
+
+// NewRequestResumeGameCmd contacts the broker to get a server that will host the resumed game.
+func NewRequestResumeGameCmd(discoverySvc service.DiscoveryService, lobbyID string) tea.Cmd {
+	return func() tea.Msg {
+		srv, err := discoverySvc.RequestResumeGame(lobbyID)
+		return RequestResumeGameResultMsg{Server: srv, Err: err}
+	}
+}
+
+// ResumeGameResultMsg is emitted after the client has connected to the new server and resumed the game.
+type ResumeGameResultMsg struct {
+	Lobby   *domain.Lobby
+	Updates <-chan *domain.Lobby
+	Err     error
+}
+
+// NewResumeGameCmd connects to the given server, calls ResumeGame, and subscribes for updates.
+func NewResumeGameCmd(lobbySvc service.LobbyService, server *domain.Server, lobby *domain.Lobby, playerName string) tea.Cmd {
+	return func() tea.Msg {
+		updatedLobby, updates, err := lobbySvc.ResumeGame(server, lobby, playerName)
+		return ResumeGameResultMsg{Lobby: updatedLobby, Updates: updates, Err: err}
+	}
+}

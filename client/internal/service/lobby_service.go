@@ -35,6 +35,10 @@ type LobbyService interface {
 
 	// SendKeyPress validates and sends a key press for the given player. Returns the updated lobby.
 	SendKeyPress(lobbyID string, player *domain.Player, key string, isBackspace bool) (*domain.Lobby, error)
+
+	// ResumeGame connects to the given server and asks it to host the crashed lobby.
+	// Returns the authoritative lobby state and a subscription channel for further updates.
+	ResumeGame(server *domain.Server, lobby *domain.Lobby, playerName string) (*domain.Lobby, <-chan *domain.Lobby, error)
 }
 
 type lobbyService struct {
@@ -100,4 +104,19 @@ func (s *lobbyService) SendKeyPress(lobbyID string, player *domain.Player, key s
 		return nil, err
 	}
 	return s.gtw.SendKeyPress(lobbyID, player.Name, key, isBackspace)
+}
+
+func (s *lobbyService) ResumeGame(server *domain.Server, lobby *domain.Lobby, playerName string) (*domain.Lobby, <-chan *domain.Lobby, error) {
+	if err := s.gtw.Connect(server); err != nil {
+		return nil, nil, err
+	}
+	updatedLobby, err := s.gtw.ResumeGame(lobby, playerName)
+	if err != nil {
+		return nil, nil, err
+	}
+	updates, err := s.gtw.Subscribe(updatedLobby.ID, playerName)
+	if err != nil {
+		return nil, nil, err
+	}
+	return updatedLobby, updates, nil
 }

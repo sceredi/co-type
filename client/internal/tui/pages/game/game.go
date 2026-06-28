@@ -23,12 +23,13 @@ type Model struct {
 	game     domain.Game
 	player   *domain.Player
 	lobbySvc service.LobbyService
+	discSvc  service.DiscoveryService
 	updates  <-chan *domain.Lobby
 }
 
 // New creates a new game model.
-func New(game domain.Game, player *domain.Player, updates <-chan *domain.Lobby, lobbySvc service.LobbyService) Model {
-	return Model{game: game, player: player, updates: updates, lobbySvc: lobbySvc}
+func New(game domain.Game, player *domain.Player, updates <-chan *domain.Lobby, lobbySvc service.LobbyService, discSvc service.DiscoveryService) Model {
+	return Model{game: game, player: player, updates: updates, lobbySvc: lobbySvc, discSvc: discSvc}
 }
 
 // Init initializes the game model.
@@ -97,8 +98,33 @@ func (m Model) Update(msg tea.Msg) (Model, tea.Cmd) {
 		}
 
 	case serverDisconnectedMsg:
-		slog.WarnContext(context.Background(), "server disconnected, pausing game")
+		slog.InfoContext(context.Background(), "server disconnected, pausing game and requesting resume")
 		m.game.Lobby.Status = domain.LobbyPaused
+		cmds = append(cmds, game_messages.NewRequestResumeGameCmd(m.discSvc, m.game.Lobby.ID))
+
+	case game_messages.RequestResumeGameResultMsg:
+		if msg.Err != nil {
+			slog.ErrorContext(context.Background(), "failed to get resume server from broker", slog.String("err", msg.Err.Error()))
+			break
+		}
+		slog.InfoContext(context.Background(), "broker assigned resume server", slog.String("server", msg.Server.Name))
+		cmds = append(cmds, game_messages.NewResumeGameCmd(m.lobbySvc, msg.Server, &m.game.Lobby, m.player.Name))
+
+	case game_messages.ResumeGameResultMsg:
+		if msg.Err != nil {
+			slog.ErrorContext(context.Background(), "failed to resume game on new server", slog.String("err", msg.Err.Error()))
+			break
+		}
+		slog.InfoContext(context.Background(), "game resumed on new server")
+		m.game.Lobby = *msg.Lobby
+		m.updates = msg.Updates
+		for _, p := range m.game.Lobby.Players {
+			if p.Name == m.player.Name {
+				m.player = p
+				break
+			}
+		}
+		cmds = append(cmds, waitForGameUpdate(m.updates))
 
 	case gameUpdateMsg:
 		if msg.lobby != nil {

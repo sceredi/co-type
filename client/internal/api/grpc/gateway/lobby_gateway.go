@@ -25,6 +25,9 @@ type LobbyGateway interface {
 	Subscribe(lobbyID, playerName string) (<-chan *domain.Lobby, error)
 	// SendKeyPress sends a validated key press to the server.
 	SendKeyPress(lobbyID, playerName, key string, isBackspace bool) (*domain.Lobby, error)
+	// ResumeGame asks the server to host the given lobby after a crash. Returns the authoritative
+	// lobby state. The caller must Subscribe afterwards to receive updates.
+	ResumeGame(lobby *domain.Lobby, playerName string) (*domain.Lobby, error)
 }
 
 type lobbyGateway struct {
@@ -142,6 +145,18 @@ func (g *lobbyGateway) SendKeyPress(lobbyID, playerName, key string, isBackspace
 		IsBackspace: isBackspace,
 	}
 	res, err := g.conn.SendKeyPress(g.ctx, req)
+	if err != nil {
+		return nil, commongrpc.FromGRPCError(err)
+	}
+	return domain.NewLobbyFromGRPC(res.GetLobby()), nil
+}
+
+func (g *lobbyGateway) ResumeGame(l *domain.Lobby, playerName string) (*domain.Lobby, error) {
+	req := &lobby.ResumeGameRequest{
+		Lobby:      l.ToGRPCLobby(),
+		PlayerName: playerName,
+	}
+	res, err := g.conn.ResumeGame(g.ctx, req)
 	if err != nil {
 		return nil, commongrpc.FromGRPCError(err)
 	}
