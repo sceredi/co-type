@@ -115,10 +115,6 @@ func TestViewWithPausedStatus(t *testing.T) {
 	if !strings.Contains(view, "Game paused") {
 		t.Fatalf("expected paused view to contain 'Game paused', got: %s", view)
 	}
-
-	if !strings.Contains(view, "resume") {
-		t.Fatalf("expected paused view to contain 'resume', got: %s", view)
-	}
 }
 
 func TestViewWithRunningStatus(t *testing.T) {

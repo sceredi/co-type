@@ -87,9 +87,20 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 					break
 				}
 			}
-			m.lobby = lobby.New(player, msg.Lobby, msg.Updates, m.ls)
-			m.page = lobbyPage
-			initCmd = m.lobby.Init()
+			if msg.Lobby.Status == domain.LobbyPlaying || msg.Lobby.Status == domain.LobbyPaused {
+				// Reconnecting to an in-progress game — skip the lobby page.
+				g := domain.Game{
+					Lobby: *msg.Lobby,
+					State: domain.GameState{Status: domain.Running},
+				}
+				m.game = game.New(g, player, msg.Updates, m.ls)
+				m.page = gamePage
+				initCmd = m.game.Init()
+			} else {
+				m.lobby = lobby.New(player, msg.Lobby, msg.Updates, m.ls)
+				m.page = lobbyPage
+				initCmd = m.lobby.Init()
+			}
 		}
 		m.welcome, cmd = m.welcome.Update(msg)
 		cmd = tea.Batch(cmd, initCmd)
