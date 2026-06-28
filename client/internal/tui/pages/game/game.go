@@ -180,7 +180,6 @@ func (m Model) View() string {
 			lipgloss.JoinVertical(
 				lipgloss.Center,
 				"Game paused",
-				"Press [ r ] to resume",
 			),
 		)
 		x := (lipgloss.Width(v) / 2) - (lipgloss.Width(topContent) / 2)

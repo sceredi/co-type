@@ -16,6 +16,9 @@ type LobbyService interface {
 	Create(id, userName string) (*domain.Lobby, error)
 	Join(id, userName string) (*domain.Lobby, error)
 	Leave(id, userName string) error
+	// PlayerDisconnected marks a player as disconnected mid-game: the game is paused and the
+	// player is kept in the lobby so they can reconnect. Only valid during LobbyPlaying/LobbyPaused.
+	PlayerDisconnected(id, userName string) error
 	EditPlayer(lobbyID, playerName string, isReady bool, allowedCharacters, blockedCharacters string, canDelete bool) (*domain.Lobby, error)
 	Ready(lobbyID, playerName string) (*domain.Lobby, error)
 	Get(id string) *domain.Lobby
@@ -72,6 +75,25 @@ func (s *lobbyService) Join(id, userName string) (*domain.Lobby, error) {
 	if lobby == nil {
 		return nil, commondomain.ErrLobbyNotFound
 	}
+
+	// Reconnection path: player dropped during game and is coming back.
+	if lobby.DisconnectedPlayers[userName] {
+		slog.DebugContext(context.Background(), "Player reconnecting to paused game",
+			slog.String("id", id),
+			slog.String("userName", userName),
+		)
+		delete(lobby.DisconnectedPlayers, userName)
+		ch := make(chan *domain.Lobby, 64)
+		lobby.Subs[userName] = ch
+		if len(lobby.DisconnectedPlayers) == 0 {
+			lobby.Base.Status = commondomain.LobbyPlaying
+		}
+		for _, ch := range lobby.Subs {
+			ch <- lobby
+		}
+		return lobby, nil
+	}
+
 	if lobby.Base.Status != commondomain.LobbyWaitingForPlayers {
 		return nil, commondomain.ErrLobbyNotOpen
 	}
@@ -247,6 +269,29 @@ func (s *lobbyService) SendKeyPress(lobbyID, playerName, key string, isBackspace
 		ch <- lobby
 	}
 	return lobby, nil
+}
+
+func (s *lobbyService) PlayerDisconnected(id, userName string) error {
+	slog.DebugContext(context.Background(), "Player disconnected mid-game",
+		slog.String("id", id),
+		slog.String("userName", userName),
+	)
+	lobby := s.lobbyRepo.Get(id)
+	if lobby == nil {
+		return commondomain.ErrLobbyNotFound
+	}
+	lobby.DisconnectedPlayers[userName] = true
+	if ch, ok := lobby.Subs[userName]; ok {
+		close(ch)
+		delete(lobby.Subs, userName)
+	}
+	if lobby.Base.Status == commondomain.LobbyPlaying {
+		lobby.Base.Status = commondomain.LobbyPaused
+	}
+	for _, ch := range lobby.Subs {
+		ch <- lobby
+	}
+	return nil
 }
 
 func (s *lobbyService) ListIDs() []string {

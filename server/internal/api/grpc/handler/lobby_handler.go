@@ -94,12 +94,29 @@ func (h *LobbyHandler) Subscribe(req *lobby.SubscribeRequest, stream lobby.Lobby
 		select {
 		case <-ctx.Done():
 			current := h.lobbySvc.Get(req.LobbyId)
-			if current != nil && current.Base.Status == domain.LobbyWaitingForPlayers {
-				if err := h.lobbySvc.Leave(req.LobbyId, req.PlayerName); err != nil {
-					slog.ErrorContext(ctx, "Failed to remove disconnected player from lobby",
+			if current != nil {
+				switch current.Base.Status {
+				case domain.LobbyWaitingForPlayers:
+					if err := h.lobbySvc.Leave(req.LobbyId, req.PlayerName); err != nil {
+						slog.ErrorContext(ctx, "Failed to remove disconnected player from lobby",
+							slog.String("lobbyID", req.LobbyId),
+							slog.String("player", req.PlayerName),
+							slog.String("error", err.Error()),
+						)
+					}
+				case domain.LobbyPlaying, domain.LobbyPaused:
+					if err := h.lobbySvc.PlayerDisconnected(req.LobbyId, req.PlayerName); err != nil {
+						slog.ErrorContext(ctx, "Failed to mark player as disconnected",
+							slog.String("lobbyID", req.LobbyId),
+							slog.String("player", req.PlayerName),
+							slog.String("error", err.Error()),
+						)
+					}
+				default:
+					slog.DebugContext(ctx, "As expected not handling state",
 						slog.String("lobbyID", req.LobbyId),
 						slog.String("player", req.PlayerName),
-						slog.String("error", err.Error()),
+						slog.Int("state", int(current.Base.Status)),
 					)
 				}
 			}
