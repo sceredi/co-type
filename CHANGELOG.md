@@ -1,3 +1,14 @@
+## [0.11.0](https://github.com/sceredi/co-type/compare/v0.10.0...v0.11.0) (2026-06-28)
+
+### Features
+
+* handle players disconnecting and reconnecting during game ([f5acf17](https://github.com/sceredi/co-type/commit/f5acf179b91d2fb04fb5383c3f47cfd88dd32bdd))
+* remove crashed client from lobby ([f0f6077](https://github.com/sceredi/co-type/commit/f0f60778b86c32368ed24c4f67d31473af631076))
+
+### Bug Fixes
+
+* handle disconnection noticed by stream.Send ([4eeb4be](https://github.com/sceredi/co-type/commit/4eeb4bed3ff329084424b2c64ecc6ab4b54e5224))
+
 ## [0.10.0](https://github.com/sceredi/co-type/compare/v0.9.1...v0.10.0) (2026-06-28)
 
 ### Features
