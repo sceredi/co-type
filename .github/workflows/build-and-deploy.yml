@@ -49,7 +49,7 @@ jobs:
         working-directory: ${{ matrix.module }}
         run: test -z "$(gofmt -l .)"
       - name: Run linter
-        uses: golangci/golangci-lint-action@v9.2.1
+        uses: golangci/golangci-lint-action@v9.3.0
         with:
           working-directory: ${{ matrix.module }}
           args: ./...
