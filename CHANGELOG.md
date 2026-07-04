@@ -1,3 +1,9 @@
+## [0.12.1](https://github.com/sceredi/co-type/compare/v0.12.0...v0.12.1) (2026-07-04)
+
+### Bug Fixes
+
+* newline rendering ([2c07dc6](https://github.com/sceredi/co-type/commit/2c07dc6de3f5d11d28d1d9d60faba73df2d1777f))
+
 ## [0.12.0](https://github.com/sceredi/co-type/compare/v0.11.0...v0.12.0) (2026-07-04)
 
 ### Features
