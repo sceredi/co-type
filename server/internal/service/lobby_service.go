@@ -3,6 +3,7 @@ package service
 import (
 	"context"
 	"log/slog"
+	"time"
 
 	commondomain "github.com/sceredi/co-type/common/domain"
 	"github.com/sceredi/co-type/server/internal/api/grpc/gateway"
@@ -213,6 +214,7 @@ func (s *lobbyService) Ready(lobbyID, playerName string) (*domain.Lobby, error) 
 
 	if allPlayersReady(lobby.Base) {
 		lobby.Base.Game = *commondomain.NewGameInfo(snippet.Random())
+		lobby.Base.Game.StartTimeMs = time.Now().UnixMilli()
 		lobby.Base.Status = commondomain.LobbyPlaying
 	}
 
@@ -267,6 +269,7 @@ func (s *lobbyService) SendKeyPress(lobbyID, playerName, key string, isBackspace
 	ended := applyKeyPress(&lobby.Base.Game, key, isBackspace)
 	if ended {
 		lobby.Base.Status = commondomain.LobbyGameEnded
+		lobby.Base.Game.ElapsedMs = time.Now().UnixMilli() - lobby.Base.Game.StartTimeMs
 	}
 
 	for _, ch := range lobby.Subs {
