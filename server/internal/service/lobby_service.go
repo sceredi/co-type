@@ -41,7 +41,7 @@ func NewLobbyService(serverName string, controlGtw gateway.ControlGateway, lobby
 }
 
 func (s *lobbyService) Create(id, userName string) (*domain.Lobby, error) {
-	slog.DebugContext(context.Background(), "Creating lobby",
+	slog.InfoContext(context.Background(), "Creating lobby",
 		slog.String("id", id),
 		slog.String("userName", userName),
 	)
@@ -69,7 +69,7 @@ func (s *lobbyService) Create(id, userName string) (*domain.Lobby, error) {
 }
 
 func reconnectPlayer(id, userName string, lobby *domain.Lobby) (*domain.Lobby, error) {
-	slog.DebugContext(context.Background(), "Player reconnecting to paused game",
+	slog.InfoContext(context.Background(), "Player reconnecting to paused game",
 		slog.String("id", id),
 		slog.String("userName", userName),
 	)
@@ -86,7 +86,7 @@ func reconnectPlayer(id, userName string, lobby *domain.Lobby) (*domain.Lobby, e
 }
 
 func (s *lobbyService) Join(id, userName string) (*domain.Lobby, error) {
-	slog.DebugContext(context.Background(), "Joining lobby",
+	slog.InfoContext(context.Background(), "Joining lobby",
 		slog.String("id", id),
 		slog.String("userName", userName),
 	)
@@ -144,7 +144,7 @@ func (s *lobbyService) EditPlayer(lobbyID, playerName string, isReady bool, allo
 }
 
 func (s *lobbyService) Leave(id, userName string) error {
-	slog.DebugContext(context.Background(), "Leaving lobby",
+	slog.InfoContext(context.Background(), "Leaving lobby",
 		slog.String("id", id),
 		slog.String("userName", userName),
 	)
@@ -279,7 +279,7 @@ func (s *lobbyService) SendKeyPress(lobbyID, playerName, key string, isBackspace
 }
 
 func (s *lobbyService) PlayerDisconnected(id, userName string) error {
-	slog.DebugContext(context.Background(), "Player disconnected mid-game",
+	slog.InfoContext(context.Background(), "Player disconnected mid-game",
 		slog.String("id", id),
 		slog.String("userName", userName),
 	)

@@ -41,7 +41,7 @@ func NewServerService(serverRepo repository.ServerRepository) ServerService {
 }
 
 func (s *serverService) Create(name, addr string, port int) (*domain.Server, error) {
-	slog.DebugContext(context.Background(), "Creating server",
+	slog.InfoContext(context.Background(), "Creating server",
 		slog.String("name", name),
 		slog.String("addr", addr),
 		slog.Int("port", port),

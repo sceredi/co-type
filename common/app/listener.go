@@ -26,7 +26,7 @@ func CreateListener(grpcServer *grpc.Server, serviceName string) {
 	if err != nil {
 		log.Panicf("Failed to listen port %d for service %s: %v", port, serviceName, err)
 	}
-	slog.InfoContext(context.Background(), "broker listening",
+	slog.InfoContext(context.Background(), "listening",
 		slog.String("service", serviceName),
 		slog.String("addr", addr),
 	)
