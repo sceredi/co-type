@@ -2,3 +2,15 @@ discoveryPort: 50051
 controlPort: 50052
 matchPort: 50053
 matchNodePort: 30100
+
+broker:
+  image: ghcr.io/sceredi/co-type-broker:latest
+  imagePullPolicy: IfNotPresent
+
+server:
+  image: ghcr.io/sceredi/co-type-server:latest
+  imagePullPolicy: IfNotPresent
+
+client:
+  image: ghcr.io/sceredi/co-type-client:latest
+  imagePullPolicy: IfNotPresent

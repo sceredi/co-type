@@ -16,8 +16,8 @@ spec:
     spec:
       containers:
         - name: gameserver
-          image: co-type/server:latest
-          imagePullPolicy: Never
+          image: {{ .Values.server.image }}
+          imagePullPolicy: {{ .Values.server.imagePullPolicy }}
           ports:
             - name: game
               containerPort: {{ .Values.matchPort }}

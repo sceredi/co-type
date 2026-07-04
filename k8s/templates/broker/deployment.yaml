@@ -15,8 +15,8 @@ spec:
     spec:
       containers:
         - name: broker
-          image: co-type/broker:latest
-          imagePullPolicy: Never
+          image: {{ .Values.broker.image }}
+          imagePullPolicy: {{ .Values.broker.imagePullPolicy }}
           ports:
             - name: discovery
               containerPort: {{ .Values.discoveryPort }}
