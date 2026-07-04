@@ -1,3 +1,30 @@
+## [0.12.0](https://github.com/sceredi/co-type/compare/v0.11.0...v0.12.0) (2026-07-04)
+
+### Features
+
+* add RPC for resuming a crashed game with new server assignment ([170b992](https://github.com/sceredi/co-type/commit/170b992f70b57740988932aefad17213dfdf3624))
+* **broker:** implement resume game functionality ([7add3c0](https://github.com/sceredi/co-type/commit/7add3c084964e4dbf52842a82d357648983e476d))
+* implement PendingResumeRepository ([6672699](https://github.com/sceredi/co-type/commit/66726992b4696bd5d2aefdf9f995eeef1b94b506))
+* implement resume game functionality and server assignment after crash ([5ab3dcf](https://github.com/sceredi/co-type/commit/5ab3dcfe6e9da57b932a697c5d7eaca4a914707d))
+* **server:** add ResumeGame functionality ([97f16c6](https://github.com/sceredi/co-type/commit/97f16c670fb729f015ecef1913f288bc4b497f60))
+
+### Dependency updates
+
+* **deps:** update module charm.land/bubbletea/v2 to v2.0.8 ([9a05d70](https://github.com/sceredi/co-type/commit/9a05d700aed839452f8b461e966f560d907c11f6))
+* **deps:** update module charm.land/lipgloss/v2 to v2.0.5 ([4af667a](https://github.com/sceredi/co-type/commit/4af667a84c6249fcd9fee8953efdca7d6ac5041b))
+* **deps:** update module google.golang.org/grpc to v1.82.0 ([0e6a586](https://github.com/sceredi/co-type/commit/0e6a586627d01bc72812e9e298c6fa624cbf46f3))
+
+### Build and continuous integration
+
+* **deps:** update docker/build-push-action action to v7.3.0 ([de2c84b](https://github.com/sceredi/co-type/commit/de2c84b9e1d31daf98d19d987807a3d2dd03d5a3))
+* **deps:** update docker/login-action action to v4.3.0 ([e03eb2a](https://github.com/sceredi/co-type/commit/e03eb2aa743fa3245aabb08a481da1353813685f))
+* **deps:** update docker/setup-buildx-action action to v4.2.0 ([2082314](https://github.com/sceredi/co-type/commit/2082314fd53c04f2669fc88d4daca89989a0630f))
+* **deps:** update golangci/golangci-lint-action action to v9.3.0 ([9485f24](https://github.com/sceredi/co-type/commit/9485f24568c38ebd7b14464a03ef14ae5a19bcd7))
+
+### General maintenance
+
+* pause game upon server crash ([244f90d](https://github.com/sceredi/co-type/commit/244f90d5f94361af4048cee02347c501b14e21ea))
+
 ## [0.11.0](https://github.com/sceredi/co-type/compare/v0.10.0...v0.11.0) (2026-06-28)
 
 ### Features
