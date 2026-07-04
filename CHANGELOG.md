@@ -1,3 +1,13 @@
+## [0.12.2](https://github.com/sceredi/co-type/compare/v0.12.1...v0.12.2) (2026-07-04)
+
+### Bug Fixes
+
+* delete lobby upon all players leaving/crashing ([f1e7557](https://github.com/sceredi/co-type/commit/f1e75573d920cfcbf32050400277d899611a3a93))
+
+### Build and continuous integration
+
+* **deps:** update docker/login-action action to v4.4.0 ([4b410f1](https://github.com/sceredi/co-type/commit/4b410f14c51a897fabfdf96708bc6298e1416e7f))
+
 ## [0.12.1](https://github.com/sceredi/co-type/compare/v0.12.0...v0.12.1) (2026-07-04)
 
 ### Bug Fixes
