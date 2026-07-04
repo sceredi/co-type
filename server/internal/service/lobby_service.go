@@ -16,8 +16,7 @@ type LobbyService interface {
 	Create(id, userName string) (*domain.Lobby, error)
 	Join(id, userName string) (*domain.Lobby, error)
 	Leave(id, userName string) error
-	// PlayerDisconnected marks a player as disconnected mid-game: the game is paused and the
-	// player is kept in the lobby so they can reconnect. Only valid during LobbyPlaying/LobbyPaused.
+	// PlayerDisconnected marks a player as disconnected mid-game.
 	PlayerDisconnected(id, userName string) error
 	EditPlayer(lobbyID, playerName string, isReady bool, allowedCharacters, blockedCharacters string, canDelete bool) (*domain.Lobby, error)
 	Ready(lobbyID, playerName string) (*domain.Lobby, error)
@@ -25,10 +24,7 @@ type LobbyService interface {
 	SendKeyPress(lobbyID, playerName, key string, isBackspace bool) (*domain.Lobby, error)
 	// ListIDs returns the IDs of all lobbies currently managed by this server.
 	ListIDs() []string
-	// ResumeGame restores a crashed game on this server. The first caller creates the lobby and
-	// marks all other players as disconnected; subsequent callers (reconnecting players) provide
-	// their game state so the server can keep the highest-revision snapshot. The calling player
-	// is subscribed immediately and removed from the disconnected list.
+	// ResumeGame restores a crashed game on this server.
 	ResumeGame(lobby *commondomain.Lobby, playerName string) (*domain.Lobby, error)
 }
 
@@ -71,6 +67,23 @@ func (s *lobbyService) Create(id, userName string) (*domain.Lobby, error) {
 	return lobby, nil
 }
 
+func reconnectPlayer(id, userName string, lobby *domain.Lobby) (*domain.Lobby, error) {
+	slog.DebugContext(context.Background(), "Player reconnecting to paused game",
+		slog.String("id", id),
+		slog.String("userName", userName),
+	)
+	delete(lobby.DisconnectedPlayers, userName)
+	ch := make(chan *domain.Lobby, 64)
+	lobby.Subs[userName] = ch
+	if len(lobby.DisconnectedPlayers) == 0 {
+		lobby.Base.Status = commondomain.LobbyPlaying
+	}
+	for _, ch := range lobby.Subs {
+		ch <- lobby
+	}
+	return lobby, nil
+}
+
 func (s *lobbyService) Join(id, userName string) (*domain.Lobby, error) {
 	slog.DebugContext(context.Background(), "Joining lobby",
 		slog.String("id", id),
@@ -81,22 +94,8 @@ func (s *lobbyService) Join(id, userName string) (*domain.Lobby, error) {
 		return nil, commondomain.ErrLobbyNotFound
 	}
 
-	// Reconnection path: player dropped during game and is coming back.
 	if lobby.DisconnectedPlayers[userName] {
-		slog.DebugContext(context.Background(), "Player reconnecting to paused game",
-			slog.String("id", id),
-			slog.String("userName", userName),
-		)
-		delete(lobby.DisconnectedPlayers, userName)
-		ch := make(chan *domain.Lobby, 64)
-		lobby.Subs[userName] = ch
-		if len(lobby.DisconnectedPlayers) == 0 {
-			lobby.Base.Status = commondomain.LobbyPlaying
-		}
-		for _, ch := range lobby.Subs {
-			ch <- lobby
-		}
-		return lobby, nil
+		return reconnectPlayer(id, userName, lobby)
 	}
 
 	if lobby.Base.Status != commondomain.LobbyWaitingForPlayers {
@@ -290,6 +289,23 @@ func (s *lobbyService) PlayerDisconnected(id, userName string) error {
 		close(ch)
 		delete(lobby.Subs, userName)
 	}
+
+	if len(lobby.Subs) == 0 {
+		if err := s.lobbyRepo.Delete(id); err != nil {
+			slog.ErrorContext(context.Background(), "Failed to delete abandoned lobby from repository",
+				slog.String("id", id),
+				slog.String("error", err.Error()),
+			)
+		}
+		if err := s.controlGtw.UnregisterLobby(id); err != nil {
+			slog.ErrorContext(context.Background(), "Failed to unregister abandoned lobby from broker",
+				slog.String("id", id),
+				slog.String("error", err.Error()),
+			)
+		}
+		return nil
+	}
+
 	if lobby.Base.Status == commondomain.LobbyPlaying {
 		lobby.Base.Status = commondomain.LobbyPaused
 	}
