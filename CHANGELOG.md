@@ -1,3 +1,13 @@
+## [1.0.0](https://github.com/sceredi/co-type/compare/v0.12.2...v1.0.0) (2026-07-04)
+
+### ⚠ BREAKING CHANGES
+
+* v1.0.0
+
+### Features
+
+* register game duration ([8bcb08d](https://github.com/sceredi/co-type/commit/8bcb08d6faa29b754413a110a456f3f6746ef7b7))
+
 ## [0.12.2](https://github.com/sceredi/co-type/compare/v0.12.1...v0.12.2) (2026-07-04)
 
 ### Bug Fixes
