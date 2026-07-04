@@ -4,6 +4,7 @@ package game
 import (
 	"context"
 	"log/slog"
+	"strings"
 	"time"
 
 	tea "charm.land/bubbletea/v2"
@@ -158,9 +159,6 @@ func (m Model) renderPlayers() string {
 	return v
 }
 
-// snippetPositions returns the byte offsets in snippet that correspond to the
-// end of correctTypeable typeable chars, and the end of correctTypeable+wrongTypeable
-// typeable chars. Delimiters are included in whichever segment precedes them.
 func snippetPositions(snippet string, correctTypeable, wrongTypeable int64) (correctEnd, wrongEnd int) {
 	var typed int64
 	correctEnd = len(snippet)
@@ -182,6 +180,16 @@ func snippetPositions(snippet string, correctTypeable, wrongTypeable int64) (cor
 	return correctEnd, wrongEnd
 }
 
+// Custom rendering to avoid wrong new lines.
+func renderInlineBackground(s lipgloss.Style, text string) string {
+	lines := strings.Split(text, "\n")
+	rendered := make([]string, len(lines))
+	for i, line := range lines {
+		rendered[i] = s.Render(line)
+	}
+	return strings.Join(rendered, "\n")
+}
+
 // View renders the game page.
 func (m Model) View() string {
 	style := lipgloss.NewStyle()
@@ -191,8 +199,8 @@ func (m Model) View() string {
 
 	correctEnd, wrongEnd := snippetPositions(snippet, correctTypeable, wrongTypeable)
 
-	correct := style.Background(styles.DarkGreen).Render(snippet[:correctEnd])
-	wrong := style.Background(styles.DarkRed).Render(snippet[correctEnd:wrongEnd])
+	correct := renderInlineBackground(style.Background(styles.DarkGreen), snippet[:correctEnd])
+	wrong := renderInlineBackground(style.Background(styles.DarkRed), snippet[correctEnd:wrongEnd])
 	rest := snippet[wrongEnd:]
 	board := lipgloss.NewStyle().
 		Width(max(m.width, pages.Width) * 4 / 5).
