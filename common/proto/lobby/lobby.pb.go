@@ -74,11 +74,15 @@ func (LobbyStatus) EnumDescriptor() ([]byte, []int) {
 }
 
 type GameInfo struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Snippet       string                 `protobuf:"bytes,1,opt,name=snippet,proto3" json:"snippet,omitempty"`
-	CorrectChars  int64                  `protobuf:"varint,2,opt,name=correct_chars,json=correctChars,proto3" json:"correct_chars,omitempty"`
-	WrongChars    int64                  `protobuf:"varint,3,opt,name=wrong_chars,json=wrongChars,proto3" json:"wrong_chars,omitempty"`
-	Revision      int64                  `protobuf:"varint,4,opt,name=revision,proto3" json:"revision,omitempty"`
+	state        protoimpl.MessageState `protogen:"open.v1"`
+	Snippet      string                 `protobuf:"bytes,1,opt,name=snippet,proto3" json:"snippet,omitempty"`
+	CorrectChars int64                  `protobuf:"varint,2,opt,name=correct_chars,json=correctChars,proto3" json:"correct_chars,omitempty"`
+	WrongChars   int64                  `protobuf:"varint,3,opt,name=wrong_chars,json=wrongChars,proto3" json:"wrong_chars,omitempty"`
+	Revision     int64                  `protobuf:"varint,4,opt,name=revision,proto3" json:"revision,omitempty"`
+	// start_time_ms is the Unix timestamp in milliseconds when the game started.
+	StartTimeMs int64 `protobuf:"varint,5,opt,name=start_time_ms,json=startTimeMs,proto3" json:"start_time_ms,omitempty"`
+	// elapsed_ms is the total game duration in milliseconds, set when the game ends.
+	ElapsedMs     int64 `protobuf:"varint,6,opt,name=elapsed_ms,json=elapsedMs,proto3" json:"elapsed_ms,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -137,6 +141,20 @@ func (x *GameInfo) GetWrongChars() int64 {
 func (x *GameInfo) GetRevision() int64 {
 	if x != nil {
 		return x.Revision
+	}
+	return 0
+}
+
+func (x *GameInfo) GetStartTimeMs() int64 {
+	if x != nil {
+		return x.StartTimeMs
+	}
+	return 0
+}
+
+func (x *GameInfo) GetElapsedMs() int64 {
+	if x != nil {
+		return x.ElapsedMs
 	}
 	return 0
 }
@@ -1116,13 +1134,16 @@ var File_common_proto_lobby_lobby_proto protoreflect.FileDescriptor
 
 const file_common_proto_lobby_lobby_proto_rawDesc = "" +
 	"\n" +
-	"\x1ecommon/proto/lobby/lobby.proto\x12\x05lobby\"\x86\x01\n" +
+	"\x1ecommon/proto/lobby/lobby.proto\x12\x05lobby\"\xc9\x01\n" +
 	"\bGameInfo\x12\x18\n" +
 	"\asnippet\x18\x01 \x01(\tR\asnippet\x12#\n" +
 	"\rcorrect_chars\x18\x02 \x01(\x03R\fcorrectChars\x12\x1f\n" +
 	"\vwrong_chars\x18\x03 \x01(\x03R\n" +
 	"wrongChars\x12\x1a\n" +
-	"\brevision\x18\x04 \x01(\x03R\brevision\"\x91\x01\n" +
+	"\brevision\x18\x04 \x01(\x03R\brevision\x12\"\n" +
+	"\rstart_time_ms\x18\x05 \x01(\x03R\vstartTimeMs\x12\x1d\n" +
+	"\n" +
+	"elapsed_ms\x18\x06 \x01(\x03R\telapsedMs\"\x91\x01\n" +
 	"\x05Lobby\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12'\n" +
 	"\aplayers\x18\x02 \x03(\v2\r.lobby.PlayerR\aplayers\x12#\n" +

@@ -81,6 +81,8 @@ func NewLobbyFromGRPC(l *lobby.Lobby) *Lobby {
 			CorrectChars: l.Game.GetCorrectChars(),
 			WrongChars:   l.Game.GetWrongChars(),
 			Revision:     l.Game.GetRevision(),
+			StartTimeMs:  l.Game.GetStartTimeMs(),
+			ElapsedMs:    l.Game.GetElapsedMs(),
 		},
 	}
 }
@@ -136,6 +138,8 @@ func (l *Lobby) ToGRPCLobby() *lobby.Lobby {
 			CorrectChars: l.Game.CorrectChars,
 			WrongChars:   l.Game.WrongChars,
 			Revision:     l.Game.Revision,
+			StartTimeMs:  l.Game.StartTimeMs,
+			ElapsedMs:    l.Game.ElapsedMs,
 		},
 	}
 }

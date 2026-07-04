@@ -93,7 +93,7 @@ func (m Model) Update(msg tea.Msg) (Model, tea.Cmd) {
 		}
 		if m.game.Lobby.Status == domain.LobbyGameEnded {
 			cmds = append(cmds, game_messages.NewGameEndCmd(domain.GameStats{
-				TotalTime: time.Duration(0), // TODO: track start time
+				TotalTime: time.Duration(m.game.Lobby.Game.ElapsedMs) * time.Millisecond,
 				Lobby:     m.game.Lobby,
 			}))
 		}
@@ -138,7 +138,7 @@ func (m Model) Update(msg tea.Msg) (Model, tea.Cmd) {
 			}
 			if m.game.Lobby.Status == domain.LobbyGameEnded {
 				cmds = append(cmds, game_messages.NewGameEndCmd(domain.GameStats{
-					TotalTime: time.Duration(0),
+					TotalTime: time.Duration(m.game.Lobby.Game.ElapsedMs) * time.Millisecond,
 					Lobby:     m.game.Lobby,
 				}))
 			}

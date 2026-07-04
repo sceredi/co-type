@@ -12,5 +12,5 @@ type Player struct {
 
 // NewPlayer creates a new player with the given name and default values for other fields.
 func NewPlayer(name string) *Player {
-	return &Player{Name: name, IsReady: false}
+	return &Player{Name: name, IsReady: false, CanDelete: true}
 }

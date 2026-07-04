@@ -31,6 +31,10 @@ message GameInfo {
   int64 correct_chars = 2;
   int64 wrong_chars = 3;
   int64 revision = 4;
+  // start_time_ms is the Unix timestamp in milliseconds when the game started.
+  int64 start_time_ms = 5;
+  // elapsed_ms is the total game duration in milliseconds, set when the game ends.
+  int64 elapsed_ms = 6;
 }
 
 message Lobby {
