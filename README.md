@@ -47,7 +47,7 @@ Each service is configured through environment variables.
 
 ### Deploy
 
-The default Helm values pull pre-built images from the GitHub Container Registry (`ghcr.io/sceredi/co-type-*:latest`), so no local build step is required:
+You can deploy using kind by simply running:
 
 ```bash
 # Create the kind cluster and deploy everything
@@ -57,11 +57,15 @@ make deploy
 make status
 ```
 
-If you want to build and load local images instead (e.g. to test local changes):
+If you want to build and load local images use:
 
 ```bash
-make up   # docker-build + deploy + status
+make up
 ```
+
+this way the images will be automatically built and helm will use those instead.
+
+> You can also run this on a different kubernetes cluster from kind by simply using helm and overlaying the default values with the ones you want to use.
 
 ### Get service addresses
 
