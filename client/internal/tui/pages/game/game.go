@@ -21,7 +21,7 @@ type Model struct {
 	width  int
 	height int
 
-	game     domain.Game
+	lobby    domain.Lobby
 	player   *domain.Player
 	lobbySvc service.LobbyService
 	discSvc  service.DiscoveryService
@@ -29,8 +29,8 @@ type Model struct {
 }
 
 // New creates a new game model.
-func New(game domain.Game, player *domain.Player, updates <-chan *domain.Lobby, lobbySvc service.LobbyService, discSvc service.DiscoveryService) Model {
-	return Model{game: game, player: player, updates: updates, lobbySvc: lobbySvc, discSvc: discSvc}
+func New(lobby domain.Lobby, player *domain.Player, updates <-chan *domain.Lobby, lobbySvc service.LobbyService, discSvc service.DiscoveryService) Model {
+	return Model{lobby: lobby, player: player, updates: updates, lobbySvc: lobbySvc, discSvc: discSvc}
 }
 
 // Init initializes the game model.
@@ -73,9 +73,9 @@ func (m Model) Update(msg tea.Msg) (Model, tea.Cmd) {
 		slog.DebugContext(context.Background(), "key pressed", slog.String("key", key))
 
 		// Only send to server if the game is active.
-		if m.game.Lobby.Status == domain.LobbyPlaying {
+		if m.lobby.Status == domain.LobbyPlaying {
 			cmds = append(cmds, game_messages.NewSendKeyPressCmd(
-				m.lobbySvc, m.game.Lobby.ID, m.player, key, isBackspace,
+				m.lobbySvc, m.lobby.ID, m.player, key, isBackspace,
 			))
 		}
 
@@ -84,24 +84,24 @@ func (m Model) Update(msg tea.Msg) (Model, tea.Cmd) {
 			slog.ErrorContext(context.Background(), "key press rejected", slog.String("err", msg.Err.Error()))
 			break
 		}
-		m.game.Lobby = *msg.Lobby
-		for _, p := range m.game.Lobby.Players {
+		m.lobby = *msg.Lobby
+		for _, p := range m.lobby.Players {
 			if p.Name == m.player.Name {
 				m.player = p
 				break
 			}
 		}
-		if m.game.Lobby.Status == domain.LobbyGameEnded {
+		if m.lobby.Status == domain.LobbyGameEnded {
 			cmds = append(cmds, game_messages.NewGameEndCmd(domain.GameStats{
-				TotalTime: time.Duration(m.game.Lobby.Game.ElapsedMs) * time.Millisecond,
-				Lobby:     m.game.Lobby,
+				TotalTime: time.Duration(m.lobby.Game.ElapsedMs) * time.Millisecond,
+				Lobby:     m.lobby,
 			}))
 		}
 
 	case serverDisconnectedMsg:
 		slog.InfoContext(context.Background(), "server disconnected, pausing game and requesting resume")
-		m.game.Lobby.Status = domain.LobbyPaused
-		cmds = append(cmds, game_messages.NewRequestResumeGameCmd(m.discSvc, m.game.Lobby.ID))
+		m.lobby.Status = domain.LobbyPaused
+		cmds = append(cmds, game_messages.NewRequestResumeGameCmd(m.discSvc, m.lobby.ID))
 
 	case game_messages.RequestResumeGameResultMsg:
 		if msg.Err != nil {
@@ -109,7 +109,7 @@ func (m Model) Update(msg tea.Msg) (Model, tea.Cmd) {
 			break
 		}
 		slog.InfoContext(context.Background(), "broker assigned resume server", slog.String("server", msg.Server.Name))
-		cmds = append(cmds, game_messages.NewResumeGameCmd(m.lobbySvc, msg.Server, &m.game.Lobby, m.player.Name))
+		cmds = append(cmds, game_messages.NewResumeGameCmd(m.lobbySvc, msg.Server, &m.lobby, m.player.Name))
 
 	case game_messages.ResumeGameResultMsg:
 		if msg.Err != nil {
@@ -117,9 +117,9 @@ func (m Model) Update(msg tea.Msg) (Model, tea.Cmd) {
 			break
 		}
 		slog.InfoContext(context.Background(), "game resumed on new server")
-		m.game.Lobby = *msg.Lobby
+		m.lobby = *msg.Lobby
 		m.updates = msg.Updates
-		for _, p := range m.game.Lobby.Players {
+		for _, p := range m.lobby.Players {
 			if p.Name == m.player.Name {
 				m.player = p
 				break
@@ -129,17 +129,17 @@ func (m Model) Update(msg tea.Msg) (Model, tea.Cmd) {
 
 	case gameUpdateMsg:
 		if msg.lobby != nil {
-			m.game.Lobby = *msg.lobby
-			for _, p := range m.game.Lobby.Players {
+			m.lobby = *msg.lobby
+			for _, p := range m.lobby.Players {
 				if p.Name == m.player.Name {
 					m.player = p
 					break
 				}
 			}
-			if m.game.Lobby.Status == domain.LobbyGameEnded {
+			if m.lobby.Status == domain.LobbyGameEnded {
 				cmds = append(cmds, game_messages.NewGameEndCmd(domain.GameStats{
-					TotalTime: time.Duration(m.game.Lobby.Game.ElapsedMs) * time.Millisecond,
-					Lobby:     m.game.Lobby,
+					TotalTime: time.Duration(m.lobby.Game.ElapsedMs) * time.Millisecond,
+					Lobby:     m.lobby,
 				}))
 			}
 		}
@@ -150,9 +150,9 @@ func (m Model) Update(msg tea.Msg) (Model, tea.Cmd) {
 }
 
 func (m Model) renderPlayers() string {
-	rows := make([]string, len(m.game.Lobby.Players)+1)
+	rows := make([]string, len(m.lobby.Players)+1)
 	rows[0] = "Players:"
-	for i, p := range m.game.Lobby.Players {
+	for i, p := range m.lobby.Players {
 		rows[i+1] = p.Name
 	}
 	v := lipgloss.JoinVertical(lipgloss.Left, rows...)
@@ -193,9 +193,9 @@ func renderInlineBackground(s lipgloss.Style, text string) string {
 // View renders the game page.
 func (m Model) View() string {
 	style := lipgloss.NewStyle()
-	snippet := m.game.Lobby.Game.Snippet
-	correctTypeable := m.game.Lobby.Game.CorrectChars
-	wrongTypeable := m.game.Lobby.Game.WrongChars
+	snippet := m.lobby.Game.Snippet
+	correctTypeable := m.lobby.Game.CorrectChars
+	wrongTypeable := m.lobby.Game.WrongChars
 
 	correctEnd, wrongEnd := snippetPositions(snippet, correctTypeable, wrongTypeable)
 
@@ -216,7 +216,7 @@ func (m Model) View() string {
 
 	v = styles.NewContainer(v)
 
-	if m.game.Lobby.Status == domain.LobbyPaused {
+	if m.lobby.Status == domain.LobbyPaused {
 		base := lipgloss.NewLayer(v)
 		topContent := styles.NewContainer(
 			lipgloss.JoinVertical(

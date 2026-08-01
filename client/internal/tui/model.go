@@ -89,11 +89,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			}
 			if msg.Lobby.Status == domain.LobbyPlaying || msg.Lobby.Status == domain.LobbyPaused {
 				// Reconnecting to an in-progress game — skip the lobby page.
-				g := domain.Game{
-					Lobby: *msg.Lobby,
-					State: domain.GameState{Status: domain.Running},
-				}
-				m.game = game.New(g, player, msg.Updates, m.ls, m.ds)
+				m.game = game.New(*msg.Lobby, player, msg.Updates, m.ls, m.ds)
 				m.page = gamePage
 				initCmd = m.game.Init()
 			} else {
@@ -109,7 +105,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		case lobby_messages.LeaveMsg:
 			m.page = welcomePage
 		case lobby_messages.StartGameMsg:
-			m.game = game.New(msg.Game, msg.Player, msg.Updates, m.ls, m.ds)
+			m.game = game.New(msg.Lobby, msg.Player, msg.Updates, m.ls, m.ds)
 			m.page = gamePage
 			var lobbyCmd tea.Cmd
 			m.lobby, lobbyCmd = m.lobby.Update(msg)

@@ -8,19 +8,12 @@ import (
 	"github.com/sceredi/co-type/common/domain"
 )
 
-func createTestGame() domain.Game {
-	return domain.Game{
-		Lobby: domain.Lobby{
-			Game: domain.GameInfo{Snippet: "hello world"},
-			Players: []*domain.Player{
-				{Name: "Player1"},
-				{Name: "Player2"},
-			},
-		},
-		State: domain.GameState{
-			Status:       domain.Running,
-			CorrectChars: 0,
-			LastChar:     0,
+func createTestGame() domain.Lobby {
+	return domain.Lobby{
+		Game: domain.GameInfo{Snippet: "hello world"},
+		Players: []*domain.Player{
+			{Name: "Player1"},
+			{Name: "Player2"},
 		},
 	}
 }
@@ -29,7 +22,7 @@ func TestNew(t *testing.T) {
 	game := createTestGame()
 	m := New(game, nil, nil, nil, nil)
 
-	if m.game.Lobby.Game.Snippet != "hello world" {
+	if m.lobby.Game.Snippet != "hello world" {
 		t.Fatalf("expected model to store game, got empty")
 	}
 }
@@ -74,8 +67,7 @@ func TestRenderPlayersListsAllPlayers(t *testing.T) {
 
 func TestViewRendersCorrectCharactersWithGreenBackground(t *testing.T) {
 	game := createTestGame()
-	game.State.CorrectChars = 5
-	game.State.LastChar = 5
+	game.Game.CorrectChars = 5
 	m := New(game, nil, nil, nil, nil)
 
 	view := m.View()
@@ -94,8 +86,8 @@ func TestViewRendersCorrectCharactersWithGreenBackground(t *testing.T) {
 
 func TestViewRendersIncorrectCharactersWithRedBackground(t *testing.T) {
 	game := createTestGame()
-	game.State.CorrectChars = 0
-	game.State.LastChar = 3
+	game.Game.CorrectChars = 0
+	game.Game.WrongChars = 3
 	m := New(game, nil, nil, nil, nil)
 
 	view := m.View()
@@ -107,7 +99,7 @@ func TestViewRendersIncorrectCharactersWithRedBackground(t *testing.T) {
 
 func TestViewWithPausedStatus(t *testing.T) {
 	game := createTestGame()
-	game.Lobby.Status = domain.LobbyPaused
+	game.Status = domain.LobbyPaused
 	m := New(game, nil, nil, nil, nil)
 
 	view := m.View()
@@ -119,7 +111,7 @@ func TestViewWithPausedStatus(t *testing.T) {
 
 func TestViewWithRunningStatus(t *testing.T) {
 	game := createTestGame()
-	game.Lobby.Status = domain.LobbyPlaying
+	game.Status = domain.LobbyPlaying
 	m := New(game, nil, nil, nil, nil)
 
 	view := m.View()
@@ -131,8 +123,7 @@ func TestViewWithRunningStatus(t *testing.T) {
 
 func TestViewWithNoCorrectChars(t *testing.T) {
 	game := createTestGame()
-	game.State.CorrectChars = 0
-	game.State.LastChar = 0
+	game.Game.CorrectChars = 0
 	m := New(game, nil, nil, nil, nil)
 
 	view := m.View()
@@ -144,8 +135,7 @@ func TestViewWithNoCorrectChars(t *testing.T) {
 
 func TestViewWithAllCharsInput(t *testing.T) {
 	game := createTestGame()
-	game.State.CorrectChars = len(game.Lobby.Game.Snippet)
-	game.State.LastChar = len(game.Lobby.Game.Snippet)
+	game.Game.CorrectChars = int64(len(game.Game.Snippet))
 	m := New(game, nil, nil, nil, nil)
 
 	view := m.View()
@@ -165,14 +155,11 @@ func TestInit(t *testing.T) {
 }
 
 func TestRenderPlayersWithSinglePlayer(t *testing.T) {
-	game := domain.Game{
-		Lobby: domain.Lobby{
-			Game: domain.GameInfo{Snippet: "test"},
-			Players: []*domain.Player{
-				{Name: "OnlyPlayer"},
-			},
+	game := domain.Lobby{
+		Game: domain.GameInfo{Snippet: "test"},
+		Players: []*domain.Player{
+			{Name: "OnlyPlayer"},
 		},
-		State: domain.GameState{},
 	}
 	m := New(game, nil, nil, nil, nil)
 	players := m.renderPlayers()
@@ -187,12 +174,9 @@ func TestRenderPlayersWithSinglePlayer(t *testing.T) {
 }
 
 func TestRenderPlayersWithNoPlayers(t *testing.T) {
-	game := domain.Game{
-		Lobby: domain.Lobby{
-			Game:    domain.GameInfo{Snippet: "test"},
-			Players: []*domain.Player{},
-		},
-		State: domain.GameState{},
+	game := domain.Lobby{
+		Game:    domain.GameInfo{Snippet: "test"},
+		Players: []*domain.Player{},
 	}
 	m := New(game, nil, nil, nil, nil)
 	players := m.renderPlayers()

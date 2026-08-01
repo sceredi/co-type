@@ -95,13 +95,7 @@ func (m Model) Update(msg tea.Msg) (Model, tea.Cmd) {
 			}
 		}
 		if allReady(m.lobby) && m.lobby.Game.Snippet != "" {
-			game := domain.Game{
-				Lobby: *m.lobby,
-				State: domain.GameState{
-					Status: domain.Running,
-				},
-			}
-			cmds = append(cmds, lobby_messages.NewStartGameCmd(game, m.player, m.updates))
+			cmds = append(cmds, lobby_messages.NewStartGameCmd(*m.lobby, m.player, m.updates))
 		}
 		cmds = append(cmds, waitForLobbyUpdate(m.updates))
 	case lobby_messages.LobbySubscriptionClosedMsg:
