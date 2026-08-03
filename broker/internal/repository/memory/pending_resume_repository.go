@@ -1,10 +1,13 @@
 package memory
 
 import (
+	"sync"
+
 	"github.com/sceredi/co-type/broker/internal/repository"
 )
 
 type pendingResumeRepository struct {
+	mu      sync.RWMutex
 	pending map[repository.LobbyID]repository.ServerName
 }
 
@@ -16,14 +19,20 @@ func NewPendingResumeRepository() repository.PendingResumeRepository {
 }
 
 func (r *pendingResumeRepository) Set(lobbyID repository.LobbyID, serverName repository.ServerName) {
+	r.mu.Lock()
+	defer r.mu.Unlock()
 	r.pending[lobbyID] = serverName
 }
 
 func (r *pendingResumeRepository) Get(lobbyID repository.LobbyID) (repository.ServerName, bool) {
+	r.mu.RLock()
+	defer r.mu.RUnlock()
 	name, ok := r.pending[lobbyID]
 	return name, ok
 }
 
 func (r *pendingResumeRepository) Delete(lobbyID repository.LobbyID) {
+	r.mu.Lock()
+	defer r.mu.Unlock()
 	delete(r.pending, lobbyID)
 }
