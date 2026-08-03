@@ -1,3 +1,36 @@
+## [1.0.1](https://github.com/sceredi/co-type/compare/v1.0.0...v1.0.1) (2026-08-03)
+
+### Dependency updates
+
+* **deps:** update module charm.land/bubbles/v2 to v2.1.1 ([40faeda](https://github.com/sceredi/co-type/commit/40faeda86ecebf3162fe5a49566ba386a56ab5f8))
+* **deps:** update module google.golang.org/grpc to v1.82.1 ([9bf1666](https://github.com/sceredi/co-type/commit/9bf16665fd1f2e77cfa6128f6eb44c9a7ab9877b))
+* **deps:** update module google.golang.org/grpc to v1.83.0 ([9cec802](https://github.com/sceredi/co-type/commit/9cec802f9e4d5bdd596f1bbd1b13c53191e31f87))
+
+### Bug Fixes
+
+* manage concurrency in gorutine shared repositories ([ffdd2b3](https://github.com/sceredi/co-type/commit/ffdd2b3d0e47cb821e400faf3cc904dcdb0fa790))
+
+### Build and continuous integration
+
+* **deps:** update actions/setup-go action to v7 ([6d9211b](https://github.com/sceredi/co-type/commit/6d9211bfd5ff23881d042250e4af69bac42a3ed5))
+* **deps:** update actions/setup-node action to v7 ([f8967de](https://github.com/sceredi/co-type/commit/f8967def441743c12b6aac96ba723bb2918028b5))
+* **deps:** update danysk/action-checkout action to v0.2.31 ([edefc3a](https://github.com/sceredi/co-type/commit/edefc3a118196e0b70dd29ec4060f1a6e823f7e8))
+* **deps:** update docker/login-action action to v4.5.0 ([3e22b5d](https://github.com/sceredi/co-type/commit/3e22b5d27a674344a2c8d7fa6c6e0627e60388ec))
+* **deps:** update docker/login-action action to v4.5.1 ([aa3fed0](https://github.com/sceredi/co-type/commit/aa3fed083873932a2c9ebaa165847ebf3bcc428d))
+* **deps:** update docker/login-action action to v4.5.2 ([4f52dce](https://github.com/sceredi/co-type/commit/4f52dce5f2b2eeb8353730e1b7b6cd4650a4ec67))
+* **deps:** update docker/login-action action to v4.6.0 ([5020438](https://github.com/sceredi/co-type/commit/5020438eb8dec27a49bce786bd28c809cd58dcf5))
+* update broker and server images to use values from configuration ([1028fff](https://github.com/sceredi/co-type/commit/1028fff9b3d4ab0f352857ecc2115385cc9b26e1))
+
+### General maintenance
+
+* update readme ([9b36a1d](https://github.com/sceredi/co-type/commit/9b36a1d9ec6cab71c3afbc359a651ad0b30b1377))
+* update readme ([b16e0d3](https://github.com/sceredi/co-type/commit/b16e0d366cddb7f7629efbd4d941aca3829d57b7))
+
+### Refactoring
+
+* change log level from Debug to Info for server and lobby actions ([47c76e6](https://github.com/sceredi/co-type/commit/47c76e6f61721747556e631e2a26c5faa20dc5e7))
+* unify gamestate in lobby ([aac65e0](https://github.com/sceredi/co-type/commit/aac65e0c28906796c0318acd7b01f86b48eb1de4))
+
 ## [1.0.0](https://github.com/sceredi/co-type/compare/v0.12.2...v1.0.0) (2026-07-04)
 
 ### ⚠ BREAKING CHANGES
