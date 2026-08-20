@@ -6,7 +6,7 @@ replace github.com/sceredi/co-type/common => ../common
 
 require (
 	charm.land/bubbles/v2 v2.1.1
-	charm.land/bubbletea/v2 v2.0.8
+	charm.land/bubbletea/v2 v2.0.9
 	charm.land/lipgloss/v2 v2.0.6
 	github.com/sceredi/co-type/common v0.0.0-00010101000000-000000000000
 	google.golang.org/grpc v1.83.1
