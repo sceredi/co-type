@@ -30,7 +30,7 @@ jobs:
         run: go test -v -race ./broker/... ./client/... ./common/... ./server/...
 
   code-style:
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     strategy:
       fail-fast: false
       matrix:
@@ -80,7 +80,7 @@ jobs:
       release_version: ${{ env.RELEASE_VERSION }}
     concurrency:
       group: release-${{ github.event.number || github.ref }}
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     needs:
       - build
       - code-style
@@ -130,7 +130,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   deploy-image:
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     needs: release
     strategy:
       fail-fast: false
@@ -175,7 +175,7 @@ jobs:
           cache-to: type=gha,mode=max
 
   success:
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     needs:
       - build
       - code-style
